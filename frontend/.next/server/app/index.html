@@ -1,0 +1,553 @@
+<!DOCTYPE html><html lang="id"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="preload" as="image" href="/images/danantara.png"/><link rel="preload" as="image" href="/images/aku-jago.png"/><link rel="preload" as="image" href="/images/logo/LOGO-PLN.png"/><link rel="preload" as="image" href="/images/hero-img3.png"/><link rel="preload" as="image" href="/images/news-190.jpg"/><link rel="preload" as="image" href="/images/news-189.jpg"/><link rel="preload" as="image" href="/images/news-188.jpg"/><link rel="preload" as="image" href="/images/news-187.jpg"/><link rel="preload" as="image" href="/images/news-186.jpg"/><link rel="preload" as="image" href="/images/portfolio-10.jpg"/><link rel="stylesheet" href="/_next/static/css/09772d725b3fe30e.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-1c1d839c75618804.js"/><script src="/_next/static/chunks/4bd1b696-b108f5fff0398206.js" async=""></script><script src="/_next/static/chunks/517-5c42161004bac52e.js" async=""></script><script src="/_next/static/chunks/main-app-d8eef94b9e8fed99.js" async=""></script><script src="/_next/static/chunks/app/layout-df09c1a050f7348d.js" async=""></script><script src="/_next/static/chunks/403-0dabe85aad271c22.js" async=""></script><script src="/_next/static/chunks/app/page-6487066fbd993be8.js" async=""></script><link rel="preload" as="image" href="/images/portfolio-9.jpg"/><link rel="preload" as="image" href="/images/portfolio-8.jpg"/><link rel="preload" as="image" href="/images/portfolio-7.jpg"/><link rel="preload" as="image" href="/images/portfolio-6.jpg"/><link rel="preload" as="image" href="/images/portfolio-5.jpg"/><link rel="preload" as="image" href="/images/agung-nugraha.jpg"/><link rel="preload" as="image" href="/images/herry-ristiawan.png"/><link rel="preload" as="image" href="/images/chaidar-syaifullah.png"/><title>PLN Nusa Daya - WACB PLTD Logsheet &amp; HAR Portal</title><meta name="description" content="Aplikasi Web Enterprise Pelaporan Operasional PLTD &amp; Pemeliharaan Mesin Kalimantan 3"/><link rel="shortcut icon" href="/images/logo/LOGO-PLN.png"/><link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="16x16"/><link rel="icon" href="/images/logo/LOGO-PLN.png"/><link rel="apple-touch-icon" href="/images/logo/LOGO-PLN.png"/><script>
+              try {
+                if (localStorage.getItem('pln_theme') === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+
+              // Auto-recover from chunk load errors when bundles are updated
+              window.addEventListener('error', function(e) {
+                var msg = (e && e.message) || '';
+                if (msg.indexOf('Loading chunk') !== -1 || msg.indexOf('ChunkLoadError') !== -1) {
+                  var lastKey = 'pln_last_chunk_reload';
+                  var last = parseInt(sessionStorage.getItem(lastKey) || '0', 10);
+                  if (Date.now() - last > 3000) {
+                    sessionStorage.setItem(lastKey, String(Date.now()));
+                    window.location.reload();
+                  }
+                }
+              });
+            </script><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body class="bg-gray-50 text-gray-900 antialiased min-h-screen dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200"><style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+          --primary: #1a9de1;
+          --primary-dk: #1178b5;
+          --primary-lt: #e8f6fd;
+          --dark: #1a1a2e;
+          --text: #334155;
+          --text-light: #64748b;
+          --bg: #ffffff;
+          --nav-h: 76px;
+        }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: #ffffff; }
+
+        /* Navbar — Seamless Blend with Hero Header */
+        .navbar-corp {
+          position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: var(--nav-h);
+          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.15) 70%, transparent 100%);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.25); transition: all .35s ease;
+          box-shadow: none;
+        }
+        .navbar-corp.scrolled {
+          background: rgba(255, 255, 255, 0.98);
+          border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .nav-container-corp {
+          max-width: 1400px; margin: 0 auto; height: 100%; padding: 0 28px;
+          display: flex; align-items: center; justify-content: space-between; gap: 20px;
+        }
+        .logo-danantara-corp { height: 42px; width: auto; object-fit: contain; }
+        .nav-link-corp {
+          display: flex; align-items: center; gap: 4px; padding: 10px 12px;
+          font-size: 14px; font-weight: 500; color: #334155; border-radius: 6px;
+          transition: color .2s; white-space: nowrap; cursor: pointer;
+        }
+        .nav-link-corp:hover { color: var(--primary); }
+        .nav-item-corp.active .nav-link-corp {
+          color: var(--primary); font-weight: 600; position: relative;
+        }
+        .nav-item-corp.active .nav-link-corp::after {
+          content: ''; position: absolute; bottom: 0; left: 12px; right: 12px;
+          height: 2.5px; background: var(--primary); border-radius: 2px;
+        }
+        .dropdown-corp {
+          display: none; position: absolute; top: calc(100% + 2px); left: 0;
+          min-width: 230px; background: white; border-radius: 12px;
+          box-shadow: 0 12px 35px rgba(0,0,0,.12); border: 1px solid #e2e8f0;
+          padding: 8px; z-index: 200;
+        }
+        .nav-item-corp:hover .dropdown-corp { display: block; }
+        .dropdown-corp li a, .dropdown-corp li span {
+          display: block; padding: 9px 14px; font-size: 13px; color: #334155;
+          border-radius: 8px; transition: all .2s; cursor: pointer;
+        }
+        .dropdown-corp li a:hover, .dropdown-corp li span:hover { background: var(--primary-lt); color: var(--primary); }
+
+        .logo-akujago-corp { height: 38px; width: auto; object-fit: contain; }
+        .logo-pln-corp { height: 42px; width: auto; object-fit: contain; }
+
+        /* Hero */
+        .hero, .hero-corp {
+          position: relative;
+          width: 100%;
+          min-height: calc(100vh - var(--nav-h));
+          display: flex;
+          align-items: center;
+          background: #ffffff;
+          padding: calc(var(--nav-h) + 40px) 0 60px;
+          overflow: hidden;
+        }
+
+        /* Full Background Video — 1080p Crisp Acceleration */
+        .hero-bg-video {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          z-index: 1;
+          transform: translate3d(0, 0, 0);
+          -webkit-transform: translate3d(0, 0, 0);
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+
+        /* Vertical Gradient Overlay: Bawah 100% ke Atas 0% Jernih */
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to top,
+            rgba(255, 255, 255, 1.0) 0%,
+            rgba(255, 255, 255, 0.78) 18%,
+            rgba(255, 255, 255, 0.35) 42%,
+            rgba(255, 255, 255, 0.10) 65%,
+            rgba(255, 255, 255, 0.0) 85%,
+            rgba(255, 255, 255, 0.0) 100%
+          ) !important;
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        /* Foreground Container */
+        .hero-container {
+          position: relative;
+          z-index: 3;
+          max-width: 1340px;
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 32px;
+          display: flex;
+          align-items: center;
+        }
+
+        .hero-content {
+          max-width: 720px;
+        }
+
+        .hero-title {
+          font-size: clamp(34px, 4.4vw, 56px);
+          font-weight: 800;
+          line-height: 1.18;
+          color: #0f172a;
+          margin-bottom: 22px;
+          letter-spacing: -0.5px;
+          text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
+        }
+
+        .hero-subtitle {
+          font-size: 18px;
+          color: #1e293b;
+          line-height: 1.7;
+          margin-bottom: 36px;
+          font-weight: 600;
+          text-shadow: 0 1px 8px rgba(255, 255, 255, 0.95);
+        }
+
+        .hero-actions {
+          display: flex;
+          align-items: center;
+          gap: 18px;
+          flex-wrap: wrap;
+        }
+
+        .btn-hero-outline {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 13px 38px;
+          border: 2px solid var(--primary);
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 15px;
+          color: var(--primary);
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(4px);
+          text-decoration: none;
+          cursor: pointer;
+          transition: all .25s ease;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+        }
+        .btn-hero-outline:hover {
+          background: var(--primary);
+          color: #ffffff;
+          box-shadow: 0 6px 20px rgba(26, 157, 225, 0.4);
+          transform: translateY(-2px);
+        }
+
+        .btn-hero-portal {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 13px 30px;
+          background: linear-gradient(135deg, #1a9de1, #1178b5);
+          color: #ffffff;
+          border-radius: 9999px;
+          font-weight: 700;
+          font-size: 15px;
+          text-decoration: none;
+          box-shadow: 0 6px 20px rgba(26, 157, 225, 0.35);
+          transition: all .25s ease;
+        }
+        .btn-hero-portal:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 26px rgba(26, 157, 225, 0.5);
+        }
+
+        /* Trademark Section Title */
+        .section-header-corp { text-align: center; margin-bottom: 50px; }
+        .section-title-wrapper-corp { display: inline-flex; align-items: center; gap: 16px; }
+        .section-line-corp { display: block; width: 38px; height: 2px; background: #1a9de1; border-radius: 2px; }
+        .section-title-corp { font-size: 26px; font-weight: 800; color: #1a1a2e; letter-spacing: 1.5px; text-transform: uppercase; }
+
+        /* About */
+        .about-section-corp { padding: 70px 0 80px; background: #ffffff; }
+        .about-container-corp {
+          max-width: 1280px; margin: 0 auto; padding: 0 32px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start;
+        }
+        .about-text-corp { font-size: 15px; color: #475569; line-height: 1.8; text-align: justify; }
+
+        /* Stats */
+        .stats-section-corp { padding: 60px 0 80px; background: #ffffff; }
+        .stats-container-corp {
+          max-width: 1280px; margin: 0 auto; padding: 0 32px;
+          display: grid; grid-template-columns: 1fr 1.2fr; align-items: center; gap: 60px;
+        }
+        .stats-grid-corp { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 32px; }
+        .stat-item-corp { display: flex; align-items: center; gap: 18px; }
+        .stat-icon-corp {
+          width: 54px; height: 54px; border-radius: 12px; background: #e8f6fd;
+          color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .stat-number-corp { font-size: 34px; font-weight: 800; color: #1a1a2e; line-height: 1.1; }
+        .stat-label-corp { font-size: 14px; color: #64748b; margin-top: 4px; font-weight: 500; }
+
+        /* Services (Clean, Minimalist & Professional Corporate Showcase) */
+        .services-section-corp {
+          padding: 80px 0 90px;
+          background: #ffffff;
+          position: relative;
+        }
+        .section-subtitle-corp {
+          font-size: 15px;
+          color: #64748b;
+          margin-top: 10px;
+          font-weight: 400;
+          text-align: center;
+          max-width: 680px;
+          margin-left: auto;
+          margin-right: auto;
+          line-height: 1.6;
+        }
+
+        .service-card-corp {
+          position: relative;
+          background: #ffffff;
+          border-radius: 14px;
+          padding: 28px 22px 24px;
+          text-align: left;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+          border: 1px solid #e2e8f0;
+          transition: all .25s ease;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          flex: 0 0 285px;
+          min-width: 285px;
+          z-index: 1;
+        }
+        .service-card-corp:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+          border-color: #cbd5e1;
+        }
+
+        .service-card-header-corp {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+        .service-badge-corp {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 11px;
+          font-weight: 600;
+          color: #475569;
+          background: #f1f5f9;
+          padding: 3px 9px;
+          border-radius: 6px;
+          border: 1px solid #e2e8f0;
+        }
+        .service-num-corp {
+          font-size: 16px;
+          font-weight: 700;
+          color: #94a3b8;
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .service-icon-box-corp {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: #f0f7fc;
+          color: #1a9de1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 16px;
+          transition: all .25s ease;
+        }
+        .service-card-corp:hover .service-icon-box-corp {
+          background: #1a9de1;
+          color: #ffffff;
+        }
+
+        .service-title-corp {
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 10px;
+          line-height: 1.4;
+          min-height: 44px;
+        }
+        .service-desc-corp {
+          font-size: 13px;
+          color: #64748b;
+          line-height: 1.6;
+          margin-bottom: 16px;
+          flex-grow: 1;
+        }
+
+        .service-features-corp {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 18px 0;
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          border-top: 1px solid #f1f5f9;
+          padding-top: 14px;
+        }
+        .service-feature-item-corp {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          color: #334155;
+          font-weight: 500;
+        }
+        .service-check-icon-corp {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          background: #e0f2fe;
+          color: #0284c7;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .service-action-link-corp {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #1a9de1;
+          text-decoration: none;
+          margin-top: auto;
+          transition: gap .25s ease;
+          cursor: pointer;
+        }
+        .service-card-corp:hover .service-action-link-corp {
+          gap: 10px;
+          color: #0d84c1;
+        }
+
+        .carousel-btn-corp {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 46px;
+          height: 46px;
+          border-radius: 50%;
+          background: #ffffff;
+          color: #1a9de1;
+          border: 1px solid #e2e8f0;
+          font-size: 24px;
+          line-height: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 20;
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.1);
+          transition: all .25s ease;
+        }
+        .carousel-btn-corp:hover {
+          background: #1a9de1;
+          color: #ffffff;
+          border-color: #1a9de1;
+          transform: translateY(-50%) scale(1.1);
+          box-shadow: 0 8px 24px rgba(26, 157, 225, 0.35);
+        }
+        .carousel-prev-corp { left: -14px; }
+        .carousel-next-corp { right: -14px; }
+
+        /* News — Expanded Readable Cards with Meta & Badges */
+        .news-section-corp { padding: 80px 0 90px; background: #ffffff; }
+        .news-card-corp {
+          background: #ffffff; border-radius: 16px; overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;
+          transition: all .35s ease; display: flex; flex-direction: column;
+          flex: 0 0 calc(33.333% - 18px); min-width: 360px;
+        }
+        .news-card-corp:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(0,0,0,0.1); border-color: #cbd5e1; }
+        .news-img-wrapper-corp { position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden; background: #f8fafc; }
+        .news-img-wrapper-corp img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+        .news-card-corp:hover .news-img-wrapper-corp img { transform: scale(1.05); }
+        .news-content-corp { padding: 22px 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .news-badge-corp {
+          display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+          color: #0284c7; background: #e0f2fe; padding: 4px 10px; border-radius: 6px;
+          text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; align-self: flex-start;
+        }
+        .news-meta-corp { display: flex; align-items: center; gap: 14px; font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
+        .news-title-corp {
+          font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4; margin-bottom: 10px;
+          transition: color .2s;
+        }
+        .news-card-corp:hover .news-title-corp { color: var(--primary); }
+        .news-excerpt-corp {
+          font-size: 13.5px; color: #475569; line-height: 1.65; margin-bottom: 18px; flex-grow: 1;
+        }
+        .news-read-btn-corp {
+          display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700;
+          color: #1a9de1; text-decoration: none; cursor: pointer; transition: gap .2s ease;
+          border: none; background: transparent; padding: 0;
+        }
+        .news-read-btn-corp:hover { gap: 10px; color: #0d84c1; }
+
+        /* Portfolio — Pure White Background (No Gray) */
+        .portfolio-section-corp { padding: 80px 0; background: #ffffff; }
+        .filter-btn-corp {
+          background: transparent; border: none; font-size: 13px; font-weight: 700;
+          color: #475569; padding: 8px 18px; border-radius: 6px; cursor: pointer;
+          letter-spacing: .5px; transition: all .2s ease;
+        }
+        .filter-btn-corp:hover { color: #1a9de1; }
+        .filter-btn-corp.active { background: #1a9de1; color: #ffffff; }
+        .portfolio-grid-corp {
+          max-width: 1280px; margin: 0 auto; padding: 0 32px;
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+        }
+        .portfolio-item-corp {
+          position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 16/11;
+          background: #ffffff; border: 1px solid #f1f5f9;
+          box-shadow: 0 4px 18px rgba(0,0,0,0.06); cursor: pointer;
+        }
+        .portfolio-item-corp img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+        .portfolio-item-corp:hover img { transform: scale(1.08); }
+        .portfolio-overlay-corp {
+          position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+          display: flex; align-items: flex-end; padding: 20px; opacity: 0; transition: opacity .3s ease;
+        }
+        .portfolio-item-corp:hover .portfolio-overlay-corp { opacity: 1; }
+
+        /* Scroll Reveal Animation */
+        .scroll-reveal {
+          opacity: 0;
+          transform: translateY(28px);
+          transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+          will-change: opacity, transform;
+        }
+        .scroll-reveal.revealed {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Direksi */
+        .direksi-section-corp { padding: 80px 0 90px; background: #ffffff; }
+        .direksi-grid-corp {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+          max-width: 1180px; margin: 0 auto; padding: 0 32px;
+        }
+        .direksi-card-corp {
+          background: #ffffff; border-radius: 14px; overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;
+          transition: all .35s ease; display: flex; flex-direction: column;
+        }
+        .direksi-card-corp:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
+        .direksi-photo-wrapper-corp { position: relative; width: 100%; aspect-ratio: 4/5; background: #f8fafc; overflow: hidden; }
+        .direksi-photo-corp { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .5s ease; }
+        .direksi-card-corp:hover .direksi-photo-corp { transform: scale(1.04); }
+
+        /* Contact */
+        .contact-section-corp { padding: 80px 0 40px; background: #ffffff; }
+        .contact-container-corp {
+          max-width: 1280px; margin: 0 auto; padding: 0 32px;
+          display: grid; grid-template-columns: 1.1fr 1fr 1.3fr; gap: 40px; align-items: start;
+        }
+        .social-link-corp {
+          width: 38px; height: 38px; border-radius: 50%; border: 1px solid #1a9de1;
+          color: #1a9de1; display: flex; align-items: center; justify-content: center;
+          transition: all .25s ease;
+        }
+        .social-link-corp:hover { background: #1a9de1; color: #ffffff; transform: translateY(-2px); }
+
+        /* Carousel controls */
+        .carousel-btn-corp {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 44px; height: 44px; border-radius: 50%; background: #1a9de1;
+          color: white; border: none; font-size: 24px; line-height: 1;
+          display: flex; align-items: center; justify-content: center; cursor: pointer;
+          z-index: 20; box-shadow: 0 4px 14px rgba(26,157,225,0.4); transition: all .25s ease;
+        }
+        .carousel-btn-corp:hover { background: #1178b5; transform: translateY(-50%) scale(1.08); }
+        .carousel-prev-corp { left: -10px; }
+        .carousel-next-corp { right: -10px; }
+
+        @media (max-width: 1024px) {
+          .hero-container, .hero-container-corp { grid-template-columns: 1fr; text-align: center; }
+          .hero-content { margin: 0 auto; }
+          .hero-actions { justify-content: center; }
+          .about-container-corp { grid-template-columns: 1fr; }
+          .stats-container-corp { grid-template-columns: 1fr; }
+          .service-card-corp { flex: 0 0 calc(50% - 12px); }
+          .news-card-corp { flex: 0 0 calc(50% - 12px); }
+          .portfolio-grid-corp { grid-template-columns: repeat(2, 1fr); }
+          .direksi-grid-corp { grid-template-columns: repeat(2, 1fr); }
+          .contact-container-corp { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+          .nav-menu-corp { display: none; }
+          .service-card-corp { flex: 0 0 100%; }
+          .news-card-corp { flex: 0 0 100%; }
+          .portfolio-grid-corp { grid-template-columns: 1fr; }
+          .direksi-grid-corp { grid-template-columns: 1fr; }
+          .stats-grid-corp { grid-template-columns: 1fr; }
+        }
+      </style><header class="navbar-corp" id="navbar"><div class="nav-container-corp"><div class="nav-brand"><a href="#home"><img src="/images/danantara.png" alt="Danantara Indonesia" class="logo-danantara-corp"/></a></div><nav class="nav-menu-corp"><ul style="display:flex;align-items:center;gap:6px;list-style:none"><li class="nav-item-corp relative active"><span class="nav-link-corp">Home</span></li><li class="nav-item-corp relative"><span class="nav-link-corp">Profil<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Tentang Kami</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Visi Misi</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Tata Nilai</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Profil Direksi</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Profil Komisaris</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Anak Perusahaan</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Wilayah Kerja</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Company Profile</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Kontak Kami</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Tata Kelola<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Board Manual</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Code of Conduct</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Pedoman GCG</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Annual Report</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Sustainability Report</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Risk Management</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Whistle Blowing System</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Layanan<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Asset Management Contract</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Drups</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">ListriQu</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Laporan Manajemen<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Laporan Triwulan I</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Semester I</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Triwulan III</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Semester II</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Pengadaan<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Info Pengadaan</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Pedoman Pengadaan</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Media<!-- --> <span style="font-size:11px;opacity:0.7">▾</span></span><ul class="dropdown-corp" style="list-style:none"><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Berita PLN Nusa Daya</span></li><li><span style="display:block;padding:8px 14px;font-size:13px;color:#334155;border-radius:6px;cursor:pointer">Portal Artikel &amp; Blog</span></li></ul></li><li class="nav-item-corp relative"><span class="nav-link-corp">Privacy Policy</span></li></ul></nav><div style="display:flex;align-items:center;gap:16px"><a href="https://plnnusadaya.co.id/aku-jago" target="_blank" rel="noreferrer" title="Aku Jago"><img src="/images/aku-jago.png" alt="Aku Jago" class="logo-akujago-corp"/></a><img src="/images/logo/LOGO-PLN.png" alt="PLN Nusa Daya" class="logo-pln-corp"/></div></div></header><section id="home" class="jsx-e4325403efd2980 hero relative w-full overflow-hidden min-h-[90vh] md:min-h-[85vh] lg:min-h-screen flex items-center bg-white"><video autoPlay="" muted="" loop="" playsInline="" preload="auto" style="transform:translate3d(0, 0, 0);-webkit-transform:translate3d(0, 0, 0);backface-visibility:hidden;-webkit-backface-visibility:hidden" class="jsx-e4325403efd2980 hero-bg-video absolute inset-0 h-full w-full object-cover z-0"><source src="/videos/hero-corp.mp4" type="video/mp4" class="jsx-e4325403efd2980"/><source src="/images/hero-corp.mp4" type="video/mp4" class="jsx-e4325403efd2980"/><source src="/images/GIF1.mp4" type="video/mp4" class="jsx-e4325403efd2980"/></video><div style="background:linear-gradient(to top, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 0.78) 18%, rgba(255, 255, 255, 0.35) 42%, rgba(255, 255, 255, 0.10) 65%, rgba(255, 255, 255, 0.0) 85%, rgba(255, 255, 255, 0.0) 100%);backdrop-filter:none;-webkit-backdrop-filter:none" class="jsx-e4325403efd2980 hero-overlay absolute inset-0 z-[1] pointer-events-none"></div><div class="jsx-e4325403efd2980 hero-container relative z-10 mx-auto flex w-full max-w-[1280px] items-center px-6 sm:px-8 lg:px-12 pt-[90px] pb-14 min-h-[90vh] md:min-h-[85vh] lg:min-h-screen"><div class="jsx-e4325403efd2980 hero-content w-full max-w-[720px] lg:max-w-[55%] text-left"><h1 style="text-shadow:0 1px 12px rgba(255, 255, 255, 0.85), 0 0 2px rgba(255, 255, 255, 0.9)" class="jsx-e4325403efd2980 hero-title text-[#17182D] text-[36px] sm:text-[46px] lg:text-[54px] xl:text-[60px] font-extrabold leading-[1.12] tracking-[-0.02em] mb-6 animate-hero-title">PT Pelayanan Listrik<br class="jsx-e4325403efd2980"/>Nasional Nusa Daya</h1><p style="text-shadow:0 1px 8px rgba(255, 255, 255, 0.85)" class="jsx-e4325403efd2980 hero-subtitle text-[#1e293b] text-[16px] sm:text-[17px] lg:text-[18px] leading-[1.72] mb-9 font-medium animate-hero-desc">Perusahaan Pengelola Aset Ketenagalistrikan<br class="jsx-e4325403efd2980 hidden sm:inline"/>Terkemuka di Wilayah Tengah dan Timur Indonesia dan<br class="jsx-e4325403efd2980 hidden sm:inline"/>tumbuh berkelanjutan</p><div class="jsx-e4325403efd2980 hero-actions flex flex-col sm:flex-row items-stretch sm:items-center gap-4 animate-hero-actions"><a href="#about" id="getStartedBtn" class="jsx-e4325403efd2980 btn-hero-outline inline-flex items-center justify-center px-9 py-3.5 rounded-full border-2 border-[#1a9de1] text-[#1a9de1] bg-white/85 hover:bg-[#1a9de1] hover:text-white font-semibold text-[15px] tracking-wide transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[#1a9de1]/25 hover:-translate-y-0.5 cursor-pointer text-center">Get Started</a><a class="btn-hero-portal inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#1a9de1] to-[#005daa] hover:from-[#1588c4] hover:to-[#004a88] text-white font-semibold text-[15px] tracking-wide transition-all duration-300 shadow-lg shadow-[#1a9de1]/25 hover:shadow-xl hover:shadow-[#1a9de1]/40 hover:-translate-y-0.5 text-center" href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="jsx-e4325403efd2980 w-4 h-4"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" class="jsx-e4325403efd2980"></path><polyline points="10 17 15 12 10 7" class="jsx-e4325403efd2980"></polyline><line x1="15" y1="12" x2="3" y2="12" class="jsx-e4325403efd2980"></line></svg>Portal Logsheet</a></div></div></div></section><section class="about-section-corp" id="about"><div class="section-header-corp"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">ABOUT US</h2><span class="section-line-corp"></span></div></div><div class="about-container-corp"><div class="about-text-corp"><p>PT Pelayanan Listrik Nasional Nusa Daya (PT PLN Nusa Daya) atau disingkat PLN ND adalah salah satu Anak Perusahaan PT PLN (Persero) yang berkedudukan di Pulau Tarakan Provinsi Kalimantan Utara, dibentuk berdasarkan Surat Keputusan Direksi PT PLN (Persero) No. 258-1/010/DIR/2003 tanggal 17 Oktober 2003 dan disahkan berdasarkan Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003. PT PLN Nusa Daya telah menjalankan bisnis penyediaan dan penjualan tenaga listrik yang terintegrasi mulai dari tahun 2003 sampai dengan tahun 2016 dengan menerapkan tarif regional yang berbeda dari tarif dasar listrik (TDL) Nasional di Pulau Tarakan.</p></div><div class="about-text-corp"><p>Mengantisipasi dinamika bisnis PT PLN Nusa Daya, maka berdasarkan Keputusan RUPS Sirkuler No. 109/DIR/2016 pada tanggal 30 November 2016 dan berdasarkan keputusan RUPS tersebut yang dikukuhkan dalam Anggaran Dasar PT PLN Nusa Daya Perubahan No. 5 tanggal 7 Desember 2016, pemegang saham menugaskan PT PLN Nusa Daya untuk melaksanakan pengelolaan Jasa Operasi &amp; Pemeliharaan Pembangkit (KIT), Jasa Operasi &amp; Pemeliharaan Transmisi, Jasa Operasi &amp; Pemeliharaan Distribusi (YANTEK) serta Pelayanan Pelanggan (BILLMAN) di Wilayah Indonesia Timur yang mencakup Kalimantan, Sulawesi, Nusa Tenggara, Maluku dan Papua, dengan Kedudukan Kantor pusat PT PLN Nusa Daya di Kota Balikpapan Kalimantan Timur.</p><a href="https://plnnusadaya.co.id/#about" target="_blank" rel="noreferrer" style="display:inline-flex;align-items:center;margin-top:24px;padding:10px 32px;border:1.5px solid var(--primary);border-radius:9999px;font-weight:600;font-size:14px;color:var(--primary);text-decoration:none">Learn More</a></div></div></section><section class="stats-section-corp" id="stats"><div class="stats-container-corp"><div><img src="/images/hero-img3.png" alt="PLN Nusa Daya Power Assets" style="width:100%;max-width:460px;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 14px 28px rgba(0,0,0,0.06))"/></div><div class="stats-grid-corp"><div class="stat-item-corp"><div class="stat-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg></div><div><div class="stat-number-corp">0</div><div class="stat-label-corp">Total Proyek</div></div></div><div class="stat-item-corp"><div class="stat-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div><div class="stat-number-corp">0</div><div class="stat-label-corp">Tenaga Kerja</div></div></div><div class="stat-item-corp"><div class="stat-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5m-4 0h4"></path></svg></div><div><div class="stat-number-corp">0</div><div class="stat-label-corp">Kantor Unit Pelaksana</div></div></div><div class="stat-item-corp"><div class="stat-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"></path></svg></div><div><div class="stat-number-corp">0</div><div class="stat-label-corp">Years of Experience</div></div></div></div></div></section><section class="services-section-corp" id="services"><div class="section-header-corp"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">SERVICES</h2><span class="section-line-corp"></span></div><p class="section-subtitle-corp">Solusi Komprehensif Operasi, Pemeliharaan Aset, dan Inovasi Ketenagalistrikan Terintegrasi</p></div><div style="max-width:1340px;margin:0 auto;padding:0 20px;position:relative"><button class="carousel-btn-corp carousel-prev-corp" aria-label="Previous">‹</button><div style="width:100%;overflow:hidden;padding:16px 0"><div style="display:flex;gap:26px;transition:transform .45s cubic-bezier(.4,0,.2,1);transform:translateX(-0px)"><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">⚡ O&amp;M Pembangkit</span><span class="service-num-corp">01</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg></div><h3 class="service-title-corp">Asset Management Contract (AMC) Pembangkit</h3><p class="service-desc-corp">Pengoperasian dan pemeliharaan mesin pembangkit listrik secara andal, optimalisasi pemakaian BBM, penanganan gangguan cepat, dan pengelolaan limbah K3L berstandar tinggi.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Operasi &amp; Pemeliharaan Rutin</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Efisiensi &amp; Rekonsiliasi BBM</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Pengelolaan Limbah &amp; K3L</li></ul><a href="https://plnnusadaya.co.id/amc-pembangkit" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">🌐 Grid Transmisi</span><span class="service-num-corp">02</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path></svg></div><h3 class="service-title-corp">Asset Management Contract (AMC) Transmisi</h3><p class="service-desc-corp">Jasa Operasi dan Pemeliharaan gardu induk menyangkut pencatatan, kontrol dan penyetelan kondisi operasi peralatan, patroli jalur transmisi, dan mitigasi darurat gangguan.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Operasi Gardu Induk (GI)</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Patroli Jalur Transmisi</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Tindakan Tanggap Darurat 24 Jam</li></ul><a href="https://plnnusadaya.co.id/amc-transmisi" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">🔌 Jaringan Distribusi</span><span class="service-num-corp">03</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg></div><h3 class="service-title-corp">Asset Management Contract (AMC) Distribusi</h3><p class="service-desc-corp">Pengoperasian, pemeliharaan, serta inspeksi jaringan distribusi tegangan menengah &amp; rendah, perbaikan jaringan cepat, dan perbaikan KwH meter di seluruh wilayah kerja.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Inspeksi JTM &amp; JTR Berkala</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Perbaikan &amp; Tera KwH Meter</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Keandalan Jaringan Distribusi</li></ul><a href="https://plnnusadaya.co.id/amc-distribusi" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">🏭 Power Supply IPP</span><span class="service-num-corp">04</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg></div><h3 class="service-title-corp">Penyedia Pembangkit Listrik (&lt;100 MW)</h3><p class="service-desc-corp">Penyediaan energi listrik mandiri dan andal dengan skema IPP berkapasitas hingga 100 MW untuk mendukung ketahanan energi dan industri di wilayah Timur Indonesia.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Kapasitas Pembangkit s.d 100 MW</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Skema IPP Cepat &amp; Efisien</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Fokus Kawasan Timur Indonesia</li></ul><a href="https://plnnusadaya.co.id/drups" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">👥 Customer Care</span><span class="service-num-corp">05</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><h3 class="service-title-corp">Pelayanan Pelanggan &amp; Yantek</h3><p class="service-desc-corp">Layanan pelanggan profesional dan responsif 24/7 melalui armada Pelayanan Teknik (Yantek) serta manajemen penagihan (Billman) yang berorientasi kepuasan konsumen.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Pelayanan Teknik (YANTEK)</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Billing Management (BILLMAN)</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Respon Cepat Siaga 24 Jam</li></ul><a href="https://plnnusadaya.co.id/listriqu" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div><div class="service-card-corp scroll-reveal"><div class="service-card-header-corp"><span class="service-badge-corp">🌱 Beyond kWh</span><span class="service-num-corp">06</span></div><div class="service-icon-box-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div><h3 class="service-title-corp">Inovasi Beyond kWh</h3><p class="service-desc-corp">Layanan inovatif melampaui kebutuhan energi dasar, menghadirkan energi baru terbarukan, solusi dekarbonisasi, serta digitalisasi aset ketenagalistrikan masa depan.</p><ul class="service-features-corp"><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Green &amp; Renewable Energy</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Digital Asset Management</li><li class="service-feature-item-corp"><span class="service-check-icon-corp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg></span>Efisiensi &amp; Dekarbonisasi</li></ul><a href="https://plnnusadaya.co.id/beyond-kwh" target="_blank" rel="noreferrer" class="service-action-link-corp">Pelajari Layanan <span>→</span></a></div></div></div><button class="carousel-btn-corp carousel-next-corp" aria-label="Next">›</button></div><div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:28px"><span style="width:28px;height:10px;border-radius:9999px;background:#1a9de1;cursor:pointer;transition:all .3s ease"></span><span style="width:10px;height:10px;border-radius:9999px;background:#cbd5e1;cursor:pointer;transition:all .3s ease"></span><span style="width:10px;height:10px;border-radius:9999px;background:#cbd5e1;cursor:pointer;transition:all .3s ease"></span></div></section><section class="news-section-corp" id="news"><div class="section-header-corp" style="display:flex;flex-direction:column;align-items:center;gap:14px"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">LATEST NEWS</h2><span class="section-line-corp"></span></div><p class="section-subtitle-corp" style="margin:0">Kabar Terkini, Agenda Korporasi, dan Informasi Strategis Ketenagalistrikan PT PLN Nusa Daya</p><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px"><a style="display:inline-flex;align-items:center;gap:7px;padding:8px 20px;border-radius:9999px;font-size:13px;font-weight:600;background:#e8f6fd;color:#1a9de1;border:1.5px solid #bae6fd;text-decoration:none;transition:all .2s ease" href="/admin/articles"><span>✏️</span> Tulis / Kelola Berita (Admin)</a><a style="display:inline-flex;align-items:center;gap:7px;padding:8px 20px;border-radius:9999px;font-size:13px;font-weight:600;background:#f8fafc;color:#475569;border:1.5px solid #e2e8f0;text-decoration:none;transition:all .2s ease" href="/berita">Lihat Semua Berita →</a></div></div><div style="max-width:1340px;margin:0 auto;padding:0 20px;position:relative"><button class="carousel-btn-corp carousel-prev-corp" aria-label="Previous">‹</button><div style="width:100%;overflow:hidden;padding:16px 0"><div style="display:flex;gap:24px;transition:transform .45s cubic-bezier(.4,0,.2,1);transform:translateX(-0px)"><div class="news-card-corp scroll-reveal"><div class="news-img-wrapper-corp"><img src="/images/news-190.jpg" alt="Amandemen Kontrak Transmisi dan Distribusi Wilayah Maluku"/></div><div class="news-content-corp"><span class="news-badge-corp">KORPORAT</span><div class="news-meta-corp"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>04 Jun 2026</span><span>•</span><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Humas PLN Nusa Daya</span></div><h3 class="news-title-corp" style="cursor:pointer">Amandemen Kontrak Transmisi dan Distribusi Wilayah Maluku</h3><p class="news-excerpt-corp">Pada 4 Juni 2026, PLN Nusa Daya bersama PLN UIW Maluku dan Maluku Utara menandatangani amandemen kontrak strategis guna memperkuat keandalan pasokan energi dan optimasi mutu layanan pelanggan di Maluku.</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9"><button class="news-read-btn-corp">Baca Selengkapnya <span>→</span></button><a href="https://plnnusadaya.co.id/190/new" target="_blank" rel="noreferrer" style="font-size:12px;color:#94a3b8;text-decoration:none" title="Buka sumber resmi PLN Nusa Daya">🌐 Sumber</a></div></div></div><div class="news-card-corp scroll-reveal"><div class="news-img-wrapper-corp"><img src="/images/news-189.jpg" alt="Qurban Berkelanjutan PLN Nusa Daya Berbagi Keberkahan"/></div><div class="news-content-corp"><span class="news-badge-corp">CSR &amp; KEBERLANJUTAN</span><div class="news-meta-corp"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>02 Jun 2026</span><span>•</span><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>CSR PLN Nusa Daya</span></div><h3 class="news-title-corp" style="cursor:pointer">Qurban Berkelanjutan PLN Nusa Daya Berbagi Keberkahan</h3><p class="news-excerpt-corp">Program “Qurban Berkelanjutan” menjadi wujud kepedulian sosial PLN Nusa Daya dalam berbagi berkah dan menyejahterakan masyarakat di sekitar ring-1 pembangkit listrik wilayah kerja Kalimantan &amp; Indonesia Timur.</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9"><button class="news-read-btn-corp">Baca Selengkapnya <span>→</span></button><a href="https://plnnusadaya.co.id/189/new" target="_blank" rel="noreferrer" style="font-size:12px;color:#94a3b8;text-decoration:none" title="Buka sumber resmi PLN Nusa Daya">🌐 Sumber</a></div></div></div><div class="news-card-corp scroll-reveal"><div class="news-img-wrapper-corp"><img src="/images/news-188.jpg" alt="Siaga Idul Adha: PLN Nusa Daya Pastikan Keandalan Pembangkit"/></div><div class="news-content-corp"><span class="news-badge-corp">OPERASIONAL</span><div class="news-meta-corp"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>28 Mei 2026</span><span>•</span><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Divisi Operasi KIT</span></div><h3 class="news-title-corp" style="cursor:pointer">Siaga Idul Adha: PLN Nusa Daya Pastikan Keandalan Pembangkit</h3><p class="news-excerpt-corp">Siaga Penuh untuk Terangnya Hari Raya Idul Adha 1447 H. Tim teknis PLN Nusa Daya menyiagakan 25.000+ personil dan posko siaga 24 jam untuk menjamin kontinuitas pasokan listrik tanpa padam selama perayaan.</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9"><button class="news-read-btn-corp">Baca Selengkapnya <span>→</span></button><a href="https://plnnusadaya.co.id/188/new" target="_blank" rel="noreferrer" style="font-size:12px;color:#94a3b8;text-decoration:none" title="Buka sumber resmi PLN Nusa Daya">🌐 Sumber</a></div></div></div><div class="news-card-corp scroll-reveal"><div class="news-img-wrapper-corp"><img src="/images/news-187.jpg" alt="Top CSR Awards 2026: Dedikasi Terbaik Energi Berkelanjutan"/></div><div class="news-content-corp"><span class="news-badge-corp">PENGHARGAAN</span><div class="news-meta-corp"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>20 Mei 2026</span><span>•</span><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Sekretariat Perusahaan</span></div><h3 class="news-title-corp" style="cursor:pointer">Top CSR Awards 2026: Dedikasi Terbaik Energi Berkelanjutan</h3><p class="news-excerpt-corp">PT PLN Nusa Daya meraih dua penghargaan bergengsi dalam Top CSR Awards 2026 atas komitmen kuat dalam elektrifikasi hijau, pemberdayaan UMKM lokal, dan tata kelola lingkungan terpadu.</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9"><button class="news-read-btn-corp">Baca Selengkapnya <span>→</span></button><a href="https://plnnusadaya.co.id/187/new" target="_blank" rel="noreferrer" style="font-size:12px;color:#94a3b8;text-decoration:none" title="Buka sumber resmi PLN Nusa Daya">🌐 Sumber</a></div></div></div><div class="news-card-corp scroll-reveal"><div class="news-img-wrapper-corp"><img src="/images/news-186.jpg" alt="Hari Kebangkitan Nasional ke-118: Bangkit Menuju Kemandirian Energi"/></div><div class="news-content-corp"><span class="news-badge-corp">SUMBER DAYA MANUSIA</span><div class="news-meta-corp"><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>15 Mei 2026</span><span>•</span><span style="display:flex;align-items:center;gap:5px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Divisi SDM &amp; Budaya</span></div><h3 class="news-title-corp" style="cursor:pointer">Hari Kebangkitan Nasional ke-118: Bangkit Menuju Kemandirian Energi</h3><p class="news-excerpt-corp">Upacara Hari Kebangkitan Nasional ke-118 diikuti seluruh insan PT PLN Nusa Daya dengan semangat transformasi digital dan penguatan tata nilai AKHLAK dalam mengawal ketahanan energi nasional.</p><div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:14px;border-top:1px solid #f1f5f9"><button class="news-read-btn-corp">Baca Selengkapnya <span>→</span></button><a href="https://plnnusadaya.co.id/186/new" target="_blank" rel="noreferrer" style="font-size:12px;color:#94a3b8;text-decoration:none" title="Buka sumber resmi PLN Nusa Daya">🌐 Sumber</a></div></div></div></div></div><button class="carousel-btn-corp carousel-next-corp" aria-label="Next">›</button></div></section><section class="portfolio-section-corp" id="portfolio"><div class="section-header-corp"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">PORTOFOLIO</h2><span class="section-line-corp"></span></div></div><div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:40px"><button class="filter-btn-corp active">ALL</button><button class="filter-btn-corp">PEMBANGKIT</button><button class="filter-btn-corp">TRANSMISI</button><button class="filter-btn-corp">DISTRIBUSI</button><button class="filter-btn-corp">PELAYANAN PELANGGAN</button><button class="filter-btn-corp">BEYOND KWH</button></div><div class="portfolio-grid-corp"><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-10.jpg" alt="O&amp;M Pembangkit Listrik"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">O&amp;M Pembangkit Listrik</span></div></div><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-9.jpg" alt="Pembangkit Listrik Modern"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">Pembangkit Listrik Modern</span></div></div><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-8.jpg" alt="O&amp;M Distribusi &amp; Yantek"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">O&amp;M Distribusi &amp; Yantek</span></div></div><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-7.jpg" alt="O&amp;M Gardu Induk Transmisi"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">O&amp;M Gardu Induk Transmisi</span></div></div><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-6.jpg" alt="Inspeksi Jaringan Listrik"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">Inspeksi Jaringan Listrik</span></div></div><div class="portfolio-item-corp scroll-reveal"><img src="/images/portfolio-5.jpg" alt="PLTU Sistem Kelistrikan"/><div class="portfolio-overlay-corp"><span style="color:white;font-size:14px;font-weight:600">PLTU Sistem Kelistrikan</span></div></div></div></section><section class="direksi-section-corp" id="direksi"><div class="section-header-corp"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">PROFIL DIREKSI</h2><span class="section-line-corp"></span></div></div><div class="direksi-grid-corp"><div class="direksi-card-corp scroll-reveal"><div class="direksi-photo-wrapper-corp"><img src="/images/agung-nugraha.jpg" alt="Agung Nugraha" class="direksi-photo-corp"/></div><div style="padding:22px 18px 24px;text-align:center;background:#ffffff;flex-grow:1;display:flex;flex-direction:column;justify-content:center"><h3 style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:6px">Agung Nugraha</h3><p style="font-size:11.5px;font-weight:600;color:#64748b;letter-spacing:0.5px;line-height:1.5;text-transform:uppercase">DIREKTUR UTAMA</p></div></div><div class="direksi-card-corp scroll-reveal"><div class="direksi-photo-wrapper-corp"><img src="/images/herry-ristiawan.png" alt="Herry Ristiawan" class="direksi-photo-corp"/></div><div style="padding:22px 18px 24px;text-align:center;background:#ffffff;flex-grow:1;display:flex;flex-direction:column;justify-content:center"><h3 style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:6px">Herry Ristiawan</h3><p style="font-size:11.5px;font-weight:600;color:#64748b;letter-spacing:0.5px;line-height:1.5;text-transform:uppercase">DIREKTUR KEUANGAN, MANAJEMEN RISIKO, DAN HUMAN CAPITAL</p></div></div><div class="direksi-card-corp scroll-reveal"><div class="direksi-photo-wrapper-corp"><img src="/images/chaidar-syaifullah.png" alt="Chaidar Syaifullah" class="direksi-photo-corp"/></div><div style="padding:22px 18px 24px;text-align:center;background:#ffffff;flex-grow:1;display:flex;flex-direction:column;justify-content:center"><h3 style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:6px">Chaidar Syaifullah</h3><p style="font-size:11.5px;font-weight:600;color:#64748b;letter-spacing:0.5px;line-height:1.5;text-transform:uppercase">DIREKTUR OPERASI DAN PENGEMBANGAN USAHA</p></div></div></div></section><section class="contact-section-corp" id="contact"><div class="section-header-corp"><div class="section-title-wrapper-corp"><span class="section-line-corp"></span><h2 class="section-title-corp">CONTACT US</h2><span class="section-line-corp"></span></div></div><div class="contact-container-corp"><div><h3 style="font-size:22px;font-weight:800;color:#1a1a2e;line-height:1.3;margin-bottom:14px">PT Pelayanan Listrik<br/>Nasional Nusa Daya</h3><p style="font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px">Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia dan tumbuh berkelanjutan</p><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><a href="#" class="social-link-corp" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg></a><a href="#" class="social-link-corp" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a><a href="#" class="social-link-corp" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg></a><a href="#" class="social-link-corp" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.01a8.16 8.16 0 004.77 1.52V7.08a4.85 4.85 0 01-1-.39z"></path></svg></a><a href="#" class="social-link-corp" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"></path></svg></a><a href="#" class="social-link-corp" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg></a></div></div><div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;font-size:14px;color:#334155;line-height:1.6"><div style="width:38px;height:38px;border-radius:50%;background:#e8f6fd;color:#1a9de1;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"></path><circle cx="12" cy="10" r="3"></circle></svg></div><div><p>Jln. Letjen ZA Maulani RT 41 No 78</p><p>Damai Bahagia, Kec.Balikpapan Selatan</p><p>Balikpapan - Kalimantan Timur</p></div></div><div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;font-size:14px;color:#334155"><div style="width:38px;height:38px;border-radius:50%;background:#e8f6fd;color:#1a9de1;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div><p>plnnd@plnnusadaya.co.id</p></div><div style="display:flex;align-items:center;gap:14px;font-size:14px;color:#334155"><div style="width:38px;height:38px;border-radius:50%;background:#e8f6fd;color:#1a9de1;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14h-3.08z"></path></svg></div><p>Telp (0542) 8975052</p></div></div><div><form style="display:flex;flex-direction:column;gap:16px"><input type="text" placeholder="Your Name" required="" style="width:100%;padding:12px 16px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px" value=""/><input type="email" placeholder="Your Email" required="" style="width:100%;padding:12px 16px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px" value=""/><input type="text" placeholder="Subject" required="" style="width:100%;padding:12px 16px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px" value=""/><textarea placeholder="Message" rows="4" required="" style="width:100%;padding:12px 16px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px"></textarea><button type="submit" style="align-self:flex-start;padding:12px 36px;background:#1a9de1;color:white;border:none;border-radius:9999px;font-size:14px;font-weight:600;cursor:pointer">Send Message</button></form></div></div><div style="border-top:1px solid #f1f5f9;margin-top:60px;padding-top:28px;text-align:center;font-size:13.5px;color:#64748b"><p>© Copyright 2026 <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p></div></section><button style="position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:8px;background:#1a9de1;color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(26,157,225,0.4);opacity:0;pointer-events:none;transition:all .3s ease;z-index:99" aria-label="Scroll to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px"><polyline points="18 15 12 9 6 15"></polyline></svg></button><script src="/_next/static/chunks/webpack-1c1d839c75618804.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"1:\"$Sreact.fragment\"\n2:I[72227,[\"177\",\"static/chunks/app/layout-df09c1a050f7348d.js\"],\"Providers\"]\n3:I[15244,[],\"\"]\n4:I[43866,[],\"\"]\n5:I[57033,[],\"ClientPageRoot\"]\n6:I[10954,[\"403\",\"static/chunks/403-0dabe85aad271c22.js\",\"974\",\"static/chunks/app/page-6487066fbd993be8.js\"],\"default\"]\n9:I[86213,[],\"OutletBoundary\"]\nb:I[86213,[],\"MetadataBoundary\"]\nd:I[86213,[],\"ViewportBoundary\"]\nf:I[34835,[],\"\"]\n:HL[\"/_next/static/css/09772d725b3fe30e.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":null,\"b\":\"n0gLffzCcrQ-symkU0jjw\",\"p\":\"\",\"c\":[\"\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/09772d725b3fe30e.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"id\",\"suppressHydrationWarning\":true,\"children\":[[\"$\",\"head\",null,{\"children\":[\"$\",\"script\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"\\n              try {\\n                if (localStorage.getItem('pln_theme') === 'dark') {\\n                  document.documentElement.classList.add('dark');\\n                } else {\\n                  document.documentElement.classList.remove('dark');\\n                }\\n              } catch (_) {}\\n\\n              // Auto-recover from chunk load errors when bundles are updated\\n              window.addEventListener('error', function(e) {\\n                var msg = (e \u0026\u0026 e.message) || '';\\n                if (msg.indexOf('Loading chunk') !== -1 || msg.indexOf('ChunkLoadError') !== -1) {\\n                  var lastKey = 'pln_last_chunk_reload';\\n                  var last = parseInt(sessionStorage.getItem(lastKey) || '0', 10);\\n                  if (Date.now() - last \u003e 3000) {\\n                    sessionStorage.setItem(lastKey, String(Date.now()));\\n                    window.location.reload();\\n                  }\\n                }\\n              });\\n            \"}}]}],[\"$\",\"body\",null,{\"className\":\"bg-gray-50 text-gray-900 antialiased min-h-screen dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200\",\"children\":[\"$\",\"$L2\",null,{\"children\":[\"$\",\"$L3\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L4\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[],[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]]}]]}],{\"children\":[\"__PAGE__\",[\"$\",\"$1\",\"c\",{\"children\":[[\"$\",\"$L5\",null,{\"Component\":\"$6\",\"searchParams\":{},\"params\":{},\"promises\":[\"$@7\",\"$@8\"]}],null,[\"$\",\"$L9\",null,{\"children\":\"$La\"}]]}],{},null,false]},null,false],[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$1\",\"qU_NyidpmaEOMzakSyqeW\",{\"children\":[[\"$\",\"$Lb\",null,{\"children\":\"$Lc\"}],[\"$\",\"$Ld\",null,{\"children\":\"$Le\"}],null]}]]}],false]],\"m\":\"$undefined\",\"G\":[\"$f\",\"$undefined\"],\"s\":false,\"S\":true}\n"])</script><script>self.__next_f.push([1,"7:{}\n8:{}\n"])</script><script>self.__next_f.push([1,"e:[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}]]\nc:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"title\",\"1\",{\"children\":\"PLN Nusa Daya - WACB PLTD Logsheet \u0026 HAR Portal\"}],[\"$\",\"meta\",\"2\",{\"name\":\"description\",\"content\":\"Aplikasi Web Enterprise Pelaporan Operasional PLTD \u0026 Pemeliharaan Mesin Kalimantan 3\"}],[\"$\",\"link\",\"3\",{\"rel\":\"shortcut icon\",\"href\":\"/images/logo/LOGO-PLN.png\"}],[\"$\",\"link\",\"4\",{\"rel\":\"icon\",\"href\":\"/favicon.ico\",\"type\":\"image/x-icon\",\"sizes\":\"16x16\"}],[\"$\",\"link\",\"5\",{\"rel\":\"icon\",\"href\":\"/images/logo/LOGO-PLN.png\"}],[\"$\",\"link\",\"6\",{\"rel\":\"apple-touch-icon\",\"href\":\"/images/logo/LOGO-PLN.png\"}]]\n"])</script><script>self.__next_f.push([1,"a:null\n"])</script></body></html>

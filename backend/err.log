@@ -1,0 +1,1 @@
+2026/10/06 18:50:24 [FATAL] Database initialization failed: auto migration failed: ERROR: constraint "uni_users_username" of relation "users" does not exist (SQLSTATE 42704)
