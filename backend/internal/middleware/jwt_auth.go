@@ -11,7 +11,7 @@ import (
 )
 
 type JWTClaims struct {
-	UserID   uint        `json:"user_id"`
+	UserID   string      `json:"user_id"`
 	Username string      `json:"username"`
 	Role     models.Role `json:"role"`
 	KdRegion string      `json:"kd_region"`
@@ -52,14 +52,6 @@ func JWTAuth(cfg *config.Config) fiber.Handler {
 
 		tokenStr := parts[1]
 
-		// Support direct bypass for WACB tokens or dev mock
-		if strings.HasPrefix(tokenStr, "mock_") || strings.Contains(tokenStr, "|") {
-			c.Locals("role", models.RoleOperator)
-			c.Locals("username", "operator")
-			c.Locals("user_id", uint(1))
-			return c.Next()
-		}
-
 		token, err := jwt.ParseWithClaims(tokenStr, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 			return []byte(cfg.JWTSecret), nil
 		})
@@ -81,7 +73,7 @@ func JWTAuth(cfg *config.Config) fiber.Handler {
 
 		c.Locals("user_id", claims.UserID)
 		c.Locals("username", claims.Username)
-		c.Locals("role", claims.Role)
+		c.Locals("role", models.Role(strings.ToUpper(string(claims.Role))))
 		c.Locals("kd_region", claims.KdRegion)
 		c.Locals("kd_unit", claims.KdUnit)
 

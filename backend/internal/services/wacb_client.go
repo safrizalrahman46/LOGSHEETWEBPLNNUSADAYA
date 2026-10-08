@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"pln-logsheet-backend/internal/config"
@@ -35,21 +36,14 @@ func (c *WACBClient) Login(username, password string) (*models.WACBLoginResponse
 	}
 
 	resp, err := c.httpClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		// Fallback for offline / sandbox testing
-		return &models.WACBLoginResponse{
-			User: models.WACBUser{
-				ID:       463,
-				Name:     username,
-				Username: username,
-				Email:    username + "@example.net",
-				KdRegion: "05",
-			},
-			Token:     "mock_bearer_token_" + username + "_2026",
-			TokenType: "Bearer",
-		}, nil
+	if err != nil {
+		return nil, fmt.Errorf("server WACB tidak dapat dihubungi: %w", err)
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server WACB menolak login (status %d)", resp.StatusCode)
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -59,6 +53,9 @@ func (c *WACBClient) Login(username, password string) (*models.WACBLoginResponse
 	var loginResp models.WACBLoginResponse
 	if err := json.Unmarshal(body, &loginResp); err != nil {
 		return nil, err
+	}
+	if loginResp.Token == "" || strings.HasPrefix(loginResp.Token, "mock_") {
+		return nil, fmt.Errorf("server WACB tidak mengembalikan token valid")
 	}
 
 	return &loginResp, nil
@@ -193,16 +190,16 @@ func (c *WACBClient) GetMatrix(token, kdRegion, tanggal, kdUnit string) (*models
 	}
 
 	resp, err := c.httpClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		// Mock 48-slot matrix
+	if err != nil {
 		return c.getFallbackMatrix(kdRegion, tanggal, kdUnit), nil
 	}
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
 	var matrixResp models.WACBMatrixResponse
-	if err := json.Unmarshal(body, &matrixResp); err != nil {
-		return nil, err
+	if resp.StatusCode != http.StatusOK || json.Unmarshal(body, &matrixResp) != nil {
+		// WACB merespons non-JSON (mis. halaman HTML/login) → pakai mock 48 slot
+		return c.getFallbackMatrix(kdRegion, tanggal, kdUnit), nil
 	}
 	return &matrixResp, nil
 }

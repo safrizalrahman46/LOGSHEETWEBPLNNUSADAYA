@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
@@ -51,8 +52,12 @@ func (h *AttendanceHandler) CheckIn(c *fiber.Ctx) error {
 	}
 
 	// Extract user from JWT context safely
-	var userID uint = 1
-	if uid, ok := c.Locals("user_id").(uint); ok {
+	var userID uint
+	if uidStr, ok := c.Locals("user_id").(string); ok {
+		if n, err := strconv.Atoi(uidStr); err == nil && n > 0 {
+			userID = uint(n)
+		}
+	} else if uid, ok := c.Locals("user_id").(uint); ok {
 		userID = uid
 	}
 	username := "operator"

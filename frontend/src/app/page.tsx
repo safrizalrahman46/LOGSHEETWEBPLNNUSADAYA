@@ -198,16 +198,21 @@ export default function HomePage() {
 
   /* ---- Services Carousel Autoplay ---- */
   const totalServices = 6;
-  const visibleServices = () => {
-    if (typeof window === "undefined") return 4;
-    if (window.innerWidth < 640) return 1;
-    if (window.innerWidth < 1024) return 2;
-    if (window.innerWidth < 1280) return 3;
-    return 4;
-  };
-  const maxServiceIdx = Math.max(0, totalServices - visibleServices());
+  // Default sama dengan nilai SSR (4) agar tidak terjadi hydration mismatch;
+  // nilai sesungguhnya dihitung setelah mount dan saat resize.
+  const [visibleServices, setVisibleServices] = useState(4);
+  const calcVisibleServices = (w: number) => (w < 640 ? 1 : w < 1024 ? 2 : w < 1280 ? 3 : 4);
+  const maxServiceIdx = Math.max(0, totalServices - visibleServices);
 
   useEffect(() => {
+    const update = () => setVisibleServices(calcVisibleServices(window.innerWidth));
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  useEffect(() => {
+    setServiceIdx((prev) => Math.min(prev, maxServiceIdx));
     const t = setInterval(() => {
       setServiceIdx((prev) => (prev >= maxServiceIdx ? 0 : prev + 1));
     }, 4500);

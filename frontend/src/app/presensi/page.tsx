@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { apiClient } from "@/lib/api";
+import "leaflet/dist/leaflet.css";
 
 interface UnitLocation {
   id: number;
@@ -162,6 +163,14 @@ export default function PresensiPage() {
     }
   }, [selectedUnit, userLocation]);
 
+  // Deteksi posisi GPS otomatis saat halaman dibuka
+  useEffect(() => {
+    if (!mounted) return;
+    const t = setTimeout(() => requestGPS(), 600);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
+
   // 4. Initialize Map (Leaflet dynamic client-side)
   useEffect(() => {
     if (!mounted || !mapContainerRef.current) return;
@@ -170,12 +179,26 @@ export default function PresensiPage() {
     import("leaflet").then((L) => {
       if (!isSubscribed || !mapContainerRef.current) return;
 
+      // Pakai aset marker Leaflet dari /public agar tidak 404
+      L.Icon.Default.mergeOptions({
+        iconUrl: "/images/leaflet/marker-icon.png",
+        iconRetinaUrl: "/images/leaflet/marker-icon-2x.png",
+        shadowUrl: "/images/leaflet/marker-shadow.png",
+        shadowSize: [41, 41],
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+      });
+
       if (!mapInstanceRef.current) {
         const defaultCenter = selectedUnit
           ? [selectedUnit.latitude, selectedUnit.longitude]
           : [-0.4948, 117.1436];
 
         const map = L.map(mapContainerRef.current).setView(defaultCenter as any, 16);
+
+        // Pastikan ukuran peta benar setelah layout/CSS siap
+        setTimeout(() => map.invalidateSize(), 250);
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',

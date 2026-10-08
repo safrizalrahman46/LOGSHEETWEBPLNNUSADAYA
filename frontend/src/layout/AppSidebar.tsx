@@ -21,6 +21,7 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
+  UserRound,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -146,6 +147,17 @@ export const AppSidebar: React.FC = () => {
         },
       ],
     },
+    {
+      groupTitle: "AKUN",
+      items: [
+        {
+          title: "Profil Saya",
+          href: "/profil",
+          icon: UserRound,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+        },
+      ],
+    },
   ];
 
   const roleBadgeColors: Record<string, string> = {
@@ -155,6 +167,7 @@ export const AppSidebar: React.FC = () => {
     SUPERVISOR: "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800",
     TEKNISI: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800",
     OPERATOR: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800",
+    GUEST: "bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700",
   };
 
   const isWide = isExpanded || isHovered || isMobileOpen;
@@ -272,24 +285,38 @@ export const AppSidebar: React.FC = () => {
         >
           {isWide ? (
             <>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
-                    {user?.name || "Operator Shift"}
-                  </p>
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-                  <span
-                    className={cn(
-                      "rounded border px-1.5 py-0.5 text-[9px] font-extrabold uppercase",
-                      roleBadgeColors[user?.role || "OPERATOR"]
-                    )}
-                  >
-                    {user?.role || "OPERATOR"}
-                  </span>
-                  <span className="truncate text-[10px] text-gray-500 dark:text-gray-400">
-                    {user?.nama_unit || "Kalimantan 3"}
-                  </span>
+              <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+                  {user?.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={user.avatar}
+                      alt={user.name || "Avatar"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <UserRound className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  )}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                      {user?.name || "Guest"}
+                    </p>
+                  </div>
+                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                    <span
+                      className={cn(
+                        "rounded border px-1.5 py-0.5 text-[9px] font-extrabold uppercase",
+                        roleBadgeColors[user?.role || "GUEST"]
+                      )}
+                    >
+                      {user?.role || "GUEST"}
+                    </span>
+                    <span className="truncate text-[10px] text-gray-500 dark:text-gray-400">
+                      {user?.nama_unit || "Kalimantan 3"}
+                    </span>
+                  </div>
                 </div>
               </div>
 

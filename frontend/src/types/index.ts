@@ -7,7 +7,7 @@ export type Role =
   | "OPERATOR";
 
 export interface User {
-  id: number;
+  id: string | number;
   username: string;
   name: string;
   email: string;
@@ -15,6 +15,7 @@ export interface User {
   kd_region: string;
   kd_unit?: string;
   nama_unit?: string;
+  avatar?: string;
 }
 
 export interface WACBUnitItem {

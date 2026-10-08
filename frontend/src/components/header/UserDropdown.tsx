@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Building2, CloudUpload, Wrench, Clock, UserCheck } from "lucide-react";
+import { ChevronDown, LogOut, Building2, CloudUpload, Wrench, Clock, UserCheck, UserRound } from "lucide-react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { User } from "@/types";
@@ -44,22 +44,26 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="dropdown-toggle flex items-center gap-2.5 rounded-xl p-1.5 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
       >
-        <span className="relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-gray-200 dark:ring-gray-700">
-          <Image
-            width={40}
-            height={40}
-            src="/images/user/owner.png"
-            alt="User Avatar"
-            className="h-full w-full object-cover"
-          />
+        <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gray-100 ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+          {user?.avatar ? (
+            <Image
+              width={40}
+              height={40}
+              src={user.avatar}
+              alt={user.name || "User Avatar"}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <UserRound className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+          )}
         </span>
 
         <div className="hidden text-left xl:block">
           <span className="block text-xs font-bold text-gray-800 dark:text-white">
-            {user?.name || "Operator Shift"}
+            {user?.name || "Guest"}
           </span>
           <span className="block text-[10px] font-semibold text-gray-500 dark:text-gray-400">
-            {user?.role || "OPERATOR"}
+            {user?.role || "GUEST"}
           </span>
         </div>
 
@@ -78,11 +82,11 @@ export default function UserDropdown() {
         {/* User Card Header */}
         <div className="border-b border-gray-100 pb-3 dark:border-gray-800">
           <span className="block text-sm font-bold text-gray-900 dark:text-white">
-            {user?.name || "Operator Shift"}
+            {user?.name || "Guest"}
           </span>
           <div className="mt-1 flex items-center gap-1.5 flex-wrap">
             <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[9px] font-extrabold uppercase text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
-              {user?.role || "OPERATOR"}
+              {user?.role || "GUEST"}
             </span>
             <span className="truncate text-xs text-gray-500 dark:text-gray-400">
               {user?.nama_unit || "Kalimantan 3"}
@@ -92,6 +96,17 @@ export default function UserDropdown() {
 
         {/* Quick Menu Links */}
         <ul className="flex flex-col gap-1 border-b border-gray-100 py-2 dark:border-gray-800">
+          <li>
+            <DropdownItem
+              onItemClick={closeDropdown}
+              tag="a"
+              href="/profil"
+              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white transition-colors"
+            >
+              <UserRound className="h-4 w-4 text-gray-400" />
+              <span>Profil Saya</span>
+            </DropdownItem>
+          </li>
           <li>
             <DropdownItem
               onItemClick={closeDropdown}

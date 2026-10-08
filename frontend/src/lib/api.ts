@@ -32,9 +32,10 @@ apiClient.interceptors.response.use(
         (p) => window.location.pathname === p || window.location.pathname.startsWith("/berita")
       );
       if (!isPublic) {
+        const hadToken = Boolean(localStorage.getItem("pln_token"));
         localStorage.removeItem("pln_token");
         localStorage.removeItem("pln_user");
-        window.location.href = "/login";
+        window.location.href = hadToken ? "/login?expired=1" : "/login";
       }
     }
     return Promise.reject(error);

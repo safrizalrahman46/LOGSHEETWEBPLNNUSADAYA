@@ -18,11 +18,12 @@ const (
 )
 
 type User struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
+	ID        string         `gorm:"primaryKey;type:varchar(64)" json:"id"`
 	Username  string         `gorm:"unique;not null" json:"username"`
 	Password  string         `gorm:"not null" json:"-"`
 	Name      string         `gorm:"not null" json:"name"`
 	Email     string         `json:"email"`
+	Avatar    string         `gorm:"type:text" json:"avatar"`
 	Role      Role           `gorm:"type:varchar(20);not null;default:'OPERATOR'" json:"role"`
 	KdRegion  string         `gorm:"default:'05'" json:"kd_region"`
 	KdUnit    string         `json:"kd_unit"`

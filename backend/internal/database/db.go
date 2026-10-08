@@ -46,6 +46,11 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 
 	DB = db
 
+	// 3b. Normalisasi data lama: role huruf kecil → huruf besar
+	if err := db.Exec("UPDATE users SET role = UPPER(role) WHERE role <> UPPER(role)").Error; err != nil {
+		log.Printf("[DATABASE] Warning normalisasi role: %v", err)
+	}
+
 	// 4. Seed Default Data (Users, Unit Locations, Articles)
 	seedUsers(db)
 	seedUnitLocations(db)
@@ -96,6 +101,7 @@ func seedUsers(db *gorm.DB) {
 
 	initialUsers := []models.User{
 		{
+			ID:       "U_SUPERADMIN",
 			Username: "superadmin",
 			Password: passStr,
 			Name:     "Super Administrator PLN",
@@ -104,6 +110,7 @@ func seedUsers(db *gorm.DB) {
 			KdRegion: "05",
 		},
 		{
+			ID:       "U_ADMIN",
 			Username: "admin",
 			Password: passStr,
 			Name:     "Admin Operasional Kaltimra",
@@ -112,6 +119,7 @@ func seedUsers(db *gorm.DB) {
 			KdRegion: "05",
 		},
 		{
+			ID:       "U_MANAGER",
 			Username: "manager",
 			Password: passStr,
 			Name:     "Manager Unit Pelaksana",
@@ -120,6 +128,7 @@ func seedUsers(db *gorm.DB) {
 			KdRegion: "05",
 		},
 		{
+			ID:       "U_SUPERVISOR",
 			Username: "supervisor",
 			Password: passStr,
 			Name:     "Supervisor Shift Control Room",
@@ -130,6 +139,7 @@ func seedUsers(db *gorm.DB) {
 			NamaUnit: "ULD BATU AMPAR",
 		},
 		{
+			ID:       "U_TEKNISI",
 			Username: "teknisi",
 			Password: passStr,
 			Name:     "Teknisi Har PLTD Kaltimra",
@@ -140,6 +150,7 @@ func seedUsers(db *gorm.DB) {
 			NamaUnit: "ULD BATU AMPAR",
 		},
 		{
+			ID:       "U_OPERATOR",
 			Username: "operator",
 			Password: passStr,
 			Name:     "Operator PLTD Batu Ampar",

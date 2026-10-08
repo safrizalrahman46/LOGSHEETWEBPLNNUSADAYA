@@ -70,6 +70,9 @@ func main() {
 	}
 	app.Get("/health", healthHandler)
 
+	// Static uploads (avatar dsb.) → frontend/public/uploads
+	app.Static("/uploads", handlers.UploadsRootDir())
+
 	api := app.Group("/api")
 	api.Get("/health", healthHandler)
 
@@ -87,6 +90,9 @@ func main() {
 
 	// User Profile & Management
 	protected.Get("/auth/me", authHandler.Me)
+	protected.Put("/auth/profile", authHandler.UpdateProfile)
+	protected.Post("/auth/change-password", authHandler.ChangePassword)
+	protected.Post("/auth/avatar", authHandler.UploadAvatar)
 	protected.Get("/admin/users", middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin), authHandler.GetUsers)
 
 	// Attendance & Geofencing GPS

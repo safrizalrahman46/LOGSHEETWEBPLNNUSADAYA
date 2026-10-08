@@ -23,6 +23,9 @@ free-nextjs-admin-dashboard-main/
 free-nextjs-admin-dashboard-main.zip
 landing-page/
 
+# Upload runtime (foto profil, dll.)
+frontend/public/uploads/
+
 # Editor / OS
 .vscode/
 .idea/

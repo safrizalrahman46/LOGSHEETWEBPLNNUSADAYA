@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Lock, User, Eye, EyeOff, ArrowLeft, Info, BarChart3, MapPin } from "lucide-react";
+import { Lock, User, Eye, EyeOff, ArrowLeft, Info, BarChart3, MapPin, Clock3 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 
 export default function LoginPage() {
@@ -13,8 +13,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ username?: string; password?: string }>({});
   const [showAccountsGuide, setShowAccountsGuide] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("expired") === "1") {
+      setSessionExpired(true);
+      const next = window.location.pathname + "?";
+      window.history.replaceState({}, "", next.replace(/\?$/, ""));
+    }
+  }, []);
 
   const validateField = (name: "username" | "password", value: string): string => {
     const v = value.trim();
@@ -35,6 +46,7 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
+    setSessionExpired(false);
 
     const errs = {
       username: validateField("username", username),
@@ -151,6 +163,14 @@ export default function LoginPage() {
             <p className="mt-1 text-xs text-center text-slate-500">
               Silakan login untuk melanjutkan akses ke sistem PLN Nusa Daya.
             </p>
+
+            {/* Session Expired Notice */}
+            {sessionExpired && (
+              <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs font-semibold text-amber-700">
+                <Clock3 className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.</span>
+              </div>
+            )}
 
             {/* Error Message Alert */}
             {errorMsg && (
