@@ -176,7 +176,7 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 
 	NotifyUser(h.db, LocalUserID(c), req.KdUnit, "logsheet", "rendah",
 		"Logsheet berhasil dikirim",
-		fmt.Sprintf("%s jam %s â€” %s (%s) diterima WACB DIGIKIT.", req.Tanggal, req.Jam, statusSummary, req.NamaUnit))
+		fmt.Sprintf("%s jam %s — %s (%s) diterima WACB DIGIKIT.", req.Tanggal, req.Jam, statusSummary, req.NamaUnit))
 	NotifyRoles(h.db, []string{"SUPERVISOR", "ADMIN", "SUPERADMIN"}, req.KdUnit, "logsheet", "rendah",
 		"Logsheet baru masuk",
 		fmt.Sprintf("%s mengisi logsheet %s jam %s untuk %s.", req.OperatorName, req.Tanggal, req.Jam, req.NamaUnit))

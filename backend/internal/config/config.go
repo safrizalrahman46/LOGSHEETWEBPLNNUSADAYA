@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -23,6 +25,7 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
+	loadDotEnv()
 	return &Config{
 		Port:        getEnv("PORT", "8080"),
 		WACBBaseURL: getEnv("WACB_BASE_URL", "https://wacb.nusadaya.net/api"),
@@ -48,6 +51,42 @@ func (c *Config) GetDSN() string {
 func (c *Config) GetPostgresDSN() string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=postgres port=%s sslmode=%s TimeZone=Asia/Makassar",
 		c.DBHost, c.DBUser, c.DBPassword, c.DBPort, c.DBSSLMode)
+}
+
+// loadDotEnv memuat variabel dari file .env (di folder kerja / folder executable)
+// tanpa menimpa env yang sudah ter-set. Format per baris: KEY=VALUE,
+// baris kosong dan diawali '#' diabaikan. File .env tidak masuk git (.gitignore).
+func loadDotEnv() {
+	candidates := []string{".env", filepath.Join("backend", ".env")}
+	if exe, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Join(filepath.Dir(exe), ".env"))
+	}
+	for _, path := range candidates {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			key, val, ok := strings.Cut(line, "=")
+			if !ok {
+				continue
+			}
+			key = strings.TrimSpace(key)
+			val = strings.Trim(strings.TrimSpace(val), `"'`)
+			if key == "" || val == "" {
+				continue
+			}
+			if _, exists := os.LookupEnv(key); exists {
+				continue
+			}
+			os.Setenv(key, val)
+		}
+		return // pakai file .env pertama yang ditemukan
+	}
 }
 
 func getEnv(key, defaultVal string) string {
