@@ -83,6 +83,83 @@ type SystemAuditLog struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+// Notification merepresentasikan tabel notifications (uuid, enum priority/target).
+type Notification struct {
+	ID          string    `gorm:"primaryKey;type:uuid;default:uuid_generate_v4()" json:"id"`
+	Title       string    `gorm:"not null" json:"title"`
+	Description string    `gorm:"type:text" json:"description"`
+	Time        time.Time `gorm:"default:now()" json:"time"`
+	Priority    string    `gorm:"type:notification_priority;default:'sedang'" json:"priority"` // tinggi, sedang, rendah
+	Type        string    `gorm:"type:varchar(32);default:'general'" json:"type"`              // logsheet, sync, presensi, har, auth, error, general
+	TargetType  string    `gorm:"type:notification_target;default:'general'" json:"target_type"`
+	IsRead      bool      `gorm:"default:false" json:"is_read"`
+	UserID      string    `gorm:"type:varchar(64);index" json:"user_id"` // username penerima; "" / NULL = siapa saja
+	UnitID      string    `gorm:"type:varchar(32)" json:"unit_id"`
+	Payload     string    `gorm:"type:jsonb;default:'{}'" json:"payload"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// LogsheetDetail merepresentasikan tabel logsheets (data master logsheet WACB).
+type LogsheetDetail struct {
+	ID             string    `gorm:"primaryKey;type:varchar(32)" json:"id"`
+	LocalID        string    `gorm:"type:varchar(64)" json:"local_id"`
+	OperatorID     string    `gorm:"type:varchar(64)" json:"operator_id"`
+	OperatorName   string    `gorm:"type:varchar(128)" json:"operator_name"`
+	UnitID         string    `gorm:"type:varchar(32);index" json:"unit_id"`
+	UnitName       string    `gorm:"type:varchar(128)" json:"unit_name"`
+	MachineID      string    `gorm:"type:varchar(32);index" json:"machine_id"`
+	MachineName    string    `gorm:"type:varchar(128)" json:"machine_name"`
+	MachineStatus  string    `gorm:"type:machine_status" json:"machine_status"` // operasi, standby, gangguan-rusak
+	BebanMesin     float64   `json:"beban_mesin"`
+	StandKWh       float64   `gorm:"column:stand_kwh" json:"stand_kwh"`
+	StandBBM       float64   `json:"stand_bbm"`
+	Tegangan       float64   `json:"tegangan"`
+	CosPhi         float64   `json:"cos_phi"`
+	Frequency      float64   `json:"frequency"`
+	SubmittedAt    time.Time `gorm:"default:now()" json:"submitted_at"`
+	SyncStatus     string    `gorm:"type:logsheet_sync_status;default:'draft'" json:"sync_status"`             // draft, pendingSync, pendingEdit, synced, failed
+	ReportStatus   string    `gorm:"type:logsheet_report_status;default:'onTime'" json:"report_status"`         // onTime, late, missing, abnormal
+	ApprovalStatus string    `gorm:"type:logsheet_approval_status;default:'pendingReview'" json:"approval_status"` // pendingReview, approved, rejected
+	Notes          string    `gorm:"type:text" json:"notes"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+// Machine merepresentasikan tabel machines (data master mesin).
+type Machine struct {
+	ID                string    `gorm:"primaryKey;type:varchar(32)" json:"id"`
+	UnitID            string    `gorm:"type:varchar(32);not null" json:"unit_id"`
+	UP3               string    `gorm:"type:varchar(64)" json:"up3"`
+	MachineName       string    `gorm:"type:varchar(128);not null" json:"machine_name"`
+	Brand             string    `gorm:"type:varchar(64)" json:"brand"`
+	MachineType       string    `gorm:"type:varchar(64)" json:"machine_type"`
+	SerialNumber      string    `gorm:"type:varchar(64)" json:"serial_number"`
+	GeneratorCode     string    `gorm:"type:varchar(64)" json:"generator_code"`
+	OwnershipStatus   string    `gorm:"type:varchar(8);default:'P'" json:"ownership_status"`
+	PerformanceLabel  string    `gorm:"type:varchar(64)" json:"performance_label"`
+	Capacity          string    `gorm:"type:varchar(32)" json:"capacity"`
+	AvailableCapacity string    `gorm:"type:varchar(32)" json:"available_capacity"`
+	DispatchCapacity  string    `gorm:"type:varchar(32)" json:"dispatch_capacity"`
+	Status            string    `gorm:"type:machine_status;default:'operasi'" json:"status"` // operasi, standby, gangguan-rusak
+	ConditionLabel    string    `gorm:"type:varchar(64)" json:"condition_label"`
+	CreatedAt         time.Time `json:"created_at"`
+	UpdatedAt         time.Time `json:"updated_at"`
+}
+
+// Unit merepresentasikan tabel units (master unit PLTD).
+type Unit struct {
+	ID           string    `gorm:"primaryKey;type:varchar(32)" json:"id"`
+	Name         string    `gorm:"type:varchar(128);not null" json:"name"`
+	LocationName string    `gorm:"type:varchar(128)" json:"location_name"`
+	Latitude     float64   `json:"latitude"`
+	Longitude    float64   `json:"longitude"`
+	RadiusMeter  float64   `gorm:"default:250" json:"radius_meter"`
+	Status       string    `gorm:"type:unit_status;default:'active'" json:"status"` // active, inactive
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
 type UnitLocation struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
 	KdUnit      string    `gorm:"uniqueIndex;not null" json:"kd_unit"`
@@ -133,3 +210,9 @@ type Article struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
+
+// TableName memetakan LogsheetDetail ke tabel logsheets yang sudah ada di DB
+// (GORM default akan membuat logsheet_details, padahal tabel riil bernama logsheets).
+func (LogsheetDetail) TableName() string {
+	return "logsheets"
+}

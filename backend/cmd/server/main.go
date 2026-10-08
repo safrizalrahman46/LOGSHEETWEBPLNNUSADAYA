@@ -41,6 +41,10 @@ func main() {
 	attendanceHandler := handlers.NewAttendanceHandler(db, geofenceService)
 	articleHandler := handlers.NewArticleHandler(db)
 	guestHandler := handlers.NewGuestHandler(db)
+	notificationHandler := handlers.NewNotificationHandler(db)
+	machineHandler := handlers.NewMachineHandler(db)
+	masterHandler := handlers.NewMasterHandler(db)
+	statsHandler := handlers.NewStatsHandler(db)
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -93,7 +97,33 @@ func main() {
 	protected.Put("/auth/profile", authHandler.UpdateProfile)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
 	protected.Post("/auth/avatar", authHandler.UploadAvatar)
-	protected.Get("/admin/users", middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin), authHandler.GetUsers)
+	adminOnly := middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin)
+	protected.Get("/admin/users", adminOnly, authHandler.GetUsers)
+	protected.Post("/admin/users", adminOnly, authHandler.CreateUser)
+	protected.Put("/admin/users/:id", adminOnly, authHandler.UpdateUser)
+	protected.Delete("/admin/users/:id", adminOnly, authHandler.DeleteUser)
+	protected.Get("/admin/roles", adminOnly, authHandler.GetRoles)
+
+	// Notifications
+	protected.Get("/notifications", notificationHandler.List)
+	protected.Post("/notifications/read-all", notificationHandler.MarkAllRead)
+	protected.Post("/notifications/:id/read", notificationHandler.MarkRead)
+	protected.Post("/notifications", adminOnly, notificationHandler.Create)
+
+	// Data Master (Admin): mesin, logsheet, matrix, statistik dashboard
+	protected.Get("/admin/machines", adminOnly, machineHandler.List)
+	protected.Get("/admin/units", adminOnly, machineHandler.ListUnits)
+	protected.Post("/admin/machines", adminOnly, machineHandler.Create)
+	protected.Put("/admin/machines/:id", adminOnly, machineHandler.Update)
+	protected.Delete("/admin/machines/:id", adminOnly, machineHandler.Delete)
+
+	protected.Get("/admin/logsheets", adminOnly, masterHandler.ListLogsheets)
+	protected.Post("/admin/logsheets", adminOnly, masterHandler.CreateLogsheet)
+	protected.Put("/admin/logsheets/:id", adminOnly, masterHandler.UpdateLogsheet)
+	protected.Delete("/admin/logsheets/:id", adminOnly, masterHandler.DeleteLogsheet)
+	protected.Get("/admin/matrix-master", adminOnly, masterHandler.GetMatrixMaster)
+
+	protected.Get("/admin/stats", statsHandler.Get)
 
 	// Attendance & Geofencing GPS
 	protected.Post("/attendance/check-in", attendanceHandler.CheckIn)

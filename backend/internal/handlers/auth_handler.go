@@ -172,6 +172,230 @@ func (h *AuthHandler) GetUsers(c *fiber.Ctx) error {
 	})
 }
 
+// roleList daftar role yang sah untuk RBAC.
+var roleList = []models.Role{
+	models.RoleSuperadmin, models.RoleAdmin, models.RoleManager,
+	models.RoleSupervisor, models.RoleTeknisi, models.RoleOperator,
+}
+
+func allowedRole(r string) (models.Role, bool) {
+	upper := models.Role(strings.ToUpper(strings.TrimSpace(r)))
+	for _, valid := range roleList {
+		if upper == valid {
+			return upper, true
+		}
+	}
+	return "", false
+}
+
+type CreateUserRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	KdRegion string `json:"kd_region"`
+	KdUnit   string `json:"kd_unit"`
+	NamaUnit string `json:"nama_unit"`
+}
+
+// CreateUser menambah user baru (Data Master User).
+// POST /api/admin/users
+func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
+	var req CreateUserRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Data user tidak valid"})
+	}
+
+	req.Username = strings.TrimSpace(req.Username)
+	if len(req.Username) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Username minimal 3 karakter"})
+	}
+	if len(req.Password) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Password minimal 3 karakter"})
+	}
+	if strings.TrimSpace(req.Name) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Nama wajib diisi"})
+	}
+	role, ok := allowedRole(req.Role)
+	if !ok {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Role tidak dikenal (SUPERADMIN/ADMIN/MANAGER/SUPERVISOR/TEKNISI/OPERATOR)"})
+	}
+
+	var existing models.User
+	if err := h.db.Where("username = ?", req.Username).First(&existing).Error; err == nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Username sudah dipakai"})
+	}
+
+	hashed, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	user := models.User{
+		ID:       "U-" + strings.ToUpper(req.Username),
+		Username: req.Username,
+		Password: string(hashed),
+		Name:     strings.TrimSpace(req.Name),
+		Email:    strings.TrimSpace(req.Email),
+		Role:     role,
+		KdRegion: strings.TrimSpace(req.KdRegion),
+		KdUnit:   strings.TrimSpace(req.KdUnit),
+		NamaUnit: strings.TrimSpace(req.NamaUnit),
+	}
+	if user.KdRegion == "" {
+		user.KdRegion = "05"
+	}
+
+	if err := h.db.Create(&user).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menyimpan user: " + err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"success": true,
+		"message": "User berhasil ditambahkan",
+		"user":    user,
+	})
+}
+
+type UpdateUserRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
+	Password string `json:"password"` // kosong = tidak diganti
+	KdRegion string `json:"kd_region"`
+	KdUnit   string `json:"kd_unit"`
+	NamaUnit string `json:"nama_unit"`
+}
+
+// UpdateUser memperbarui user (Data Master User).
+// PUT /api/admin/users/:id
+func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var user models.User
+	if err := h.db.First(&user, "id = ?", id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"success": false, "message": "User tidak ditemukan"})
+	}
+
+	var req UpdateUserRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Data user tidak valid"})
+	}
+
+	updates := map[string]interface{}{}
+	if strings.TrimSpace(req.Name) != "" {
+		updates["name"] = strings.TrimSpace(req.Name)
+	}
+	if req.Email != "" {
+		updates["email"] = strings.TrimSpace(req.Email)
+	}
+	if req.Role != "" {
+		role, ok := allowedRole(req.Role)
+		if !ok {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Role tidak dikenal"})
+		}
+		// jangan izinkan menurunkan role diri sendiri
+		if user.ID == fmt.Sprintf("%v", c.Locals("user_id")) && role != user.Role {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Tidak bisa mengubah role akun sendiri"})
+		}
+		updates["role"] = role
+	}
+	if req.Password != "" {
+		if len(req.Password) < 3 {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Password minimal 3 karakter"})
+		}
+		hashed, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		updates["password"] = string(hashed)
+	}
+	if req.KdRegion != "" {
+		updates["kd_region"] = req.KdRegion
+	}
+	if req.KdUnit != "" {
+		updates["kd_unit"] = req.KdUnit
+	}
+	if req.NamaUnit != "" {
+		updates["nama_unit"] = req.NamaUnit
+	}
+	if len(updates) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Tidak ada perubahan"})
+	}
+
+	if err := h.db.Model(&models.User{}).Where("id = ?", id).Updates(updates).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "message": "Gagal memperbarui user: " + err.Error()})
+	}
+
+	h.db.First(&user, "id = ?", id)
+	user.Role = models.Role(strings.ToUpper(string(user.Role)))
+	return c.JSON(fiber.Map{"success": true, "message": "User berhasil diperbarui", "user": user})
+}
+
+// DeleteUser menghapus user (Data Master User). Tidak boleh menghapus diri sendiri.
+// DELETE /api/admin/users/:id
+func (h *AuthHandler) DeleteUser(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == fmt.Sprintf("%v", c.Locals("user_id")) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Tidak bisa menghapus akun sendiri"})
+	}
+
+	res := h.db.Where("id = ?", id).Delete(&models.User{})
+	if res.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"success": false, "message": "Gagal menghapus user"})
+	}
+	if res.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"success": false, "message": "User tidak ditemukan"})
+	}
+	return c.JSON(fiber.Map{"success": true, "message": "User berhasil dihapus"})
+}
+
+// roleDescriptions deskripsi singkat tiap role.
+var roleDescriptions = map[models.Role]string{
+	models.RoleSuperadmin:  "Akses penuh termasuk manajemen user, role, dan seluruh modul.",
+	models.RoleAdmin:       "Mengelola data master, artikel, dan seluruh operasional aplikasi.",
+	models.RoleManager:     "Memantau dashboard, matriks, laporan, dan statistik publik.",
+	models.RoleSupervisor:  "Menginput logsheet, menyetujui tiket HAR, dan memantau operasional.",
+	models.RoleTeknisi:     "Menangani modul HAR & AMC serta data pemeliharaan mesin.",
+	models.RoleOperator:    "Menginput logsheet, presensi GPS, dan antrean offline.",
+}
+
+// rolePermissions daftar kunci menu yang boleh diakses tiap role.
+var rolePermissions = map[models.Role][]string{
+	models.RoleSuperadmin: {"dashboard", "matrix", "logsheet_input", "har", "sync", "unit", "public", "stats", "presensi", "berita", "articles", "master_user", "master_role", "master_mesin", "master_logsheet", "master_matrix", "profil"},
+	models.RoleAdmin:      {"dashboard", "matrix", "logsheet_input", "har", "sync", "unit", "public", "stats", "presensi", "berita", "articles", "master_user", "master_role", "master_mesin", "master_logsheet", "master_matrix", "profil"},
+	models.RoleManager:    {"dashboard", "matrix", "har", "sync", "unit", "public", "stats", "presensi", "berita", "profil"},
+	models.RoleSupervisor: {"dashboard", "matrix", "logsheet_input", "har", "sync", "unit", "public", "stats", "presensi", "berita", "profil"},
+	models.RoleTeknisi:    {"dashboard", "matrix", "har", "sync", "unit", "public", "stats", "presensi", "berita", "profil"},
+	models.RoleOperator:   {"dashboard", "matrix", "logsheet_input", "sync", "unit", "public", "stats", "presensi", "berita", "profil"},
+}
+
+// GetRoles menampilkan data master role + jumlah pengguna & hak aksesnya.
+// GET /api/admin/roles
+func (h *AuthHandler) GetRoles(c *fiber.Ctx) error {
+	type roleRow struct {
+		Name        models.Role `json:"name"`
+		Description string      `json:"description"`
+		Permissions []string    `json:"permissions"`
+		UsersCount  int64       `json:"users_count"`
+	}
+	rows := make([]roleRow, 0, len(roleList))
+	for _, r := range roleList {
+		var count int64
+		h.db.Model(&models.User{}).Where("UPPER(role) = ?", string(r)).Count(&count)
+		rows = append(rows, roleRow{
+			Name:        r,
+			Description: roleDescriptions[r],
+			Permissions: rolePermissions[r],
+			UsersCount:  count,
+		})
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"roles":   rows,
+		"menus": []string{
+			"dashboard", "matrix", "logsheet_input", "har", "sync", "unit", "public",
+			"stats", "presensi", "berita", "articles",
+			"master_user", "master_role", "master_mesin", "master_logsheet", "master_matrix", "profil",
+		},
+	})
+}
+
 type UpdateProfileRequest struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`

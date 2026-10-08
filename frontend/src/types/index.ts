@@ -172,3 +172,107 @@ export interface HARTicket {
   supervisor_approval?: string;
   created_at?: string;
 }
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  priority: "tinggi" | "sedang" | "rendah";
+  type: string;
+  target_type: string;
+  is_read: boolean;
+  user_id: string;
+  unit_id: string;
+  created_at?: string;
+}
+
+export interface MasterUnit {
+  id: string;
+  name: string;
+  location_name?: string;
+  latitude?: number;
+  longitude?: number;
+  radius_meter?: number;
+  status: string;
+}
+
+export interface MasterMachine {
+  id: string;
+  unit_id: string;
+  up3?: string;
+  machine_name: string;
+  brand?: string;
+  machine_type?: string;
+  serial_number?: string;
+  generator_code?: string;
+  ownership_status?: string;
+  performance_label?: string;
+  capacity?: string;
+  available_capacity?: string;
+  dispatch_capacity?: string;
+  status: "operasi" | "standby" | "gangguan-rusak";
+  condition_label?: string;
+  created_at?: string;
+}
+
+export interface MasterLogsheet {
+  id: string;
+  unit_id: string;
+  unit_name: string;
+  machine_id: string;
+  machine_name: string;
+  machine_status: string;
+  beban_mesin: number;
+  stand_kwh: number;
+  stand_bbm: number;
+  submitted_at: string;
+  sync_status: string;
+  report_status: string;
+  approval_status: string;
+  notes?: string;
+}
+
+export interface RoleRow {
+  name: Role;
+  description: string;
+  permissions: string[];
+  users_count: number;
+}
+
+export interface StatsData {
+  machines: {
+    total: number;
+    counts: Record<string, number>;
+    alerts: {
+      id: string;
+      name: string;
+      unit_id: string;
+      status: string;
+      detail: string;
+      capacity: string;
+    }[];
+  };
+  har: {
+    total: number;
+    counts: Record<string, number>;
+    alerts: {
+      id: number;
+      ticket_number: string;
+      machine_name: string;
+      nama_unit: string;
+      status: string;
+      fault_description: string;
+      maintenance_type: string;
+    }[];
+  };
+  logsheet: {
+    today: number;
+    total: number;
+    local_records: number;
+    pending_approval: number;
+    per_hour: { jam: string; jumlah: number }[];
+    beban_per_mesin: { mesin: string; beban: number }[];
+  };
+  presensi: { today: number; anomaly: number };
+}

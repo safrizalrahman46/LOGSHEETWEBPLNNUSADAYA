@@ -1,4 +1,4 @@
-package handlers
+﻿package handlers
 
 import (
 	"fmt"
@@ -93,6 +93,9 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 	token := c.Get("Authorization")
 	wacbResp, err := h.wacbClient.SubmitLogsheet(token, req.KdRegion, messageText)
 	if err != nil {
+		NotifyUser(h.db, LocalUserID(c), req.KdUnit, "error", "tinggi",
+			"Pengiriman logsheet gagal",
+			fmt.Sprintf("Logsheet %s jam %s gagal dikirim ke WACB: %s", req.Tanggal, req.Jam, err.Error()))
 		return c.Status(fiber.StatusBadGateway).JSON(fiber.Map{
 			"success": false,
 			"message": "Gagal mengirim laporan ke WACB: " + err.Error(),
@@ -137,6 +140,13 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 		UpdatedAt:          time.Now(),
 	}
 	h.db.Create(&localRecord)
+
+	NotifyUser(h.db, LocalUserID(c), req.KdUnit, "logsheet", "rendah",
+		"Logsheet berhasil dikirim",
+		fmt.Sprintf("%s jam %s â€” %s (%s) diterima WACB DIGIKIT.", req.Tanggal, req.Jam, statusSummary, req.NamaUnit))
+	NotifyRoles(h.db, []string{"SUPERVISOR", "ADMIN", "SUPERADMIN"}, req.KdUnit, "logsheet", "rendah",
+		"Logsheet baru masuk",
+		fmt.Sprintf("%s mengisi logsheet %s jam %s untuk %s.", req.OperatorName, req.Tanggal, req.Jam, req.NamaUnit))
 
 	return c.JSON(fiber.Map{
 		"success":      true,

@@ -1,9 +1,11 @@
-package database
+﻿package database
 
 import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -39,6 +41,9 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 		&models.UnitLocation{},
 		&models.AttendanceRecord{},
 		&models.Article{},
+		&models.Notification{},
+		&models.Machine{},
+		&models.Unit{},
 	)
 	if err != nil {
 		log.Printf("[DATABASE] Warning during AutoMigrate (non-fatal): %v", err)
@@ -46,15 +51,16 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 
 	DB = db
 
-	// 3b. Normalisasi data lama: role huruf kecil → huruf besar
+	// 3b. Normalisasi data lama: role huruf kecil â†’ huruf besar
 	if err := db.Exec("UPDATE users SET role = UPPER(role) WHERE role <> UPPER(role)").Error; err != nil {
 		log.Printf("[DATABASE] Warning normalisasi role: %v", err)
 	}
 
-	// 4. Seed Default Data (Users, Unit Locations, Articles)
+	// 4. Seed Default Data (Users, Unit Locations, Articles, Notifikasi)
 	seedUsers(db)
 	seedUnitLocations(db)
 	seedArticles(db)
+	seedNotifications(db)
 
 	log.Println("[DATABASE] PostgreSQL successfully connected & migrated.")
 	return db, nil
@@ -166,6 +172,45 @@ func seedUsers(db *gorm.DB) {
 		db.Create(&u)
 	}
 	log.Println("[DATABASE] 6 RBAC initial users seeded with default password '123'.")
+}
+
+// seedNotifications memberi notifikasi sambutan ke setiap user yang belum
+// punya notifikasi sama sekali, sehingga lonceng selalu punya isi.
+func seedNotifications(db *gorm.DB) {
+	var users []models.User
+	db.Find(&users)
+
+	created := 0
+	for _, u := range users {
+		var cnt int64
+		db.Model(&models.Notification{}).Where("user_id = ?", u.ID).Count(&cnt)
+		if cnt > 0 {
+			continue
+		}
+		unitLabel := u.NamaUnit
+		if unitLabel == "" {
+			unitLabel = "Kalimantan 3"
+		}
+		n := models.Notification{
+			Title:       "Selamat datang di PLN Nusa Daya",
+			Description: fmt.Sprintf("Halo %s, Anda masuk sebagai %s untuk %s. Notifikasi logsheet, presensi, dan tiket HAR akan muncul di sini.", u.Name, strings.ToUpper(string(u.Role)), unitLabel),
+			Time:        time.Now(),
+			Priority:    "sedang",
+			Type:        "general",
+			TargetType:  "general",
+			IsRead:      false,
+			UserID:      u.ID,        
+			UnitID:      u.KdUnit,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		}
+		if err := db.Create(&n).Error; err == nil {
+			created++
+		}
+	}
+	if created > 0 {
+		log.Printf("[DATABASE] %d notifikasi sambutan dibuat.", created)
+	}
 }
 
 func seedUnitLocations(db *gorm.DB) {

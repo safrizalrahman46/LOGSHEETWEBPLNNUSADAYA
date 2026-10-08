@@ -62,6 +62,11 @@ func (h *HARHandler) CreateTicket(c *fiber.Ctx) error {
 		})
 	}
 
+	creator := fmt.Sprintf("%v", c.Locals("username"))
+	NotifyRoles(h.db, []string{"SUPERVISOR", "ADMIN", "SUPERADMIN"}, ticket.KdUnit, "approval", "sedang",
+		"Tiket HAR baru menunggu persetujuan",
+		fmt.Sprintf("%s membuat tiket %s (%s) untuk %s — mesin %s.", creator, ticket.TicketNumber, ticket.MaintenanceType, ticket.NamaUnit, ticket.NamaMesin))
+
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
 		"message": "Tiket HAR berhasil dibuat",
@@ -122,6 +127,14 @@ func (h *HARHandler) ApproveTicket(c *fiber.Ctx) error {
 	ticket.UpdatedAt = time.Now()
 
 	h.db.Save(&ticket)
+
+	NotifyRoles(h.db, []string{"TEKNISI"}, ticket.KdUnit, "approval", "tinggi",
+		"Tiket HAR disetujui",
+		fmt.Sprintf("%s menyetujui tiket %s (%s) — %s segera dikerjakan.", supervisorName, ticket.TicketNumber, ticket.NamaMesin, ticket.MaintenanceType))
+	NotifyRoles(h.db, []string{"SUPERVISOR", "ADMIN", "SUPERADMIN"}, ticket.KdUnit, "approval", "rendah",
+		"Persetujuan tiket HAR tercatat",
+		fmt.Sprintf("Tiket %s disetujui oleh %s.", ticket.TicketNumber, supervisorName))
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Tiket HAR berhasil disetujui oleh Supervisor",

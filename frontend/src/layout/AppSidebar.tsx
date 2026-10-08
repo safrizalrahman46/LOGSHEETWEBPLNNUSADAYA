@@ -22,6 +22,10 @@ import {
   ChevronLeft,
   ChevronRight,
   UserRound,
+  Users,
+  ShieldCheck,
+  Cpu,
+  Table2,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -143,6 +147,41 @@ export const AppSidebar: React.FC = () => {
           title: "Kelola Artikel",
           href: "/admin/articles",
           icon: Edit3,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+      ],
+    },
+    {
+      groupTitle: "DATA MASTER",
+      items: [
+        {
+          title: "Pengguna",
+          href: "/admin/users",
+          icon: Users,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Role & Hak Akses",
+          href: "/admin/roles",
+          icon: ShieldCheck,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Master Mesin",
+          href: "/admin/machines",
+          icon: Cpu,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Master Logsheet",
+          href: "/admin/logsheets",
+          icon: FileSpreadsheet,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Matriks Master",
+          href: "/admin/matrix",
+          icon: Table2,
           roles: ["SUPERADMIN", "ADMIN"],
         },
       ],

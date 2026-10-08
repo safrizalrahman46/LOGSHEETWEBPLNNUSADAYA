@@ -1,4 +1,4 @@
-package handlers
+﻿package handlers
 
 import (
 	"fmt"
@@ -127,6 +127,20 @@ func (h *AttendanceHandler) CheckIn(c *fiber.Ctx) error {
 	msg := fmt.Sprintf("Presensi berhasil dicatat (Jarak: %.1f meter dari site)", distance)
 	if !isWithin {
 		msg = fmt.Sprintf("Presensi dicatat dengan status ANOMALI (Jarak: %.1f meter, melebihi radius %.0f meter)", distance, unitLoc.RadiusMeter)
+	}
+
+	// Notifikasi ke pihak yang bersangkutan
+	if isWithin {
+		NotifyUser(h.db, LocalUserID(c), req.KdUnit, "presensi", "rendah",
+			"Presensi tercatat",
+			fmt.Sprintf("Presensi shift %s di %s tervalidasi (jarak %.1f m dari site).", req.Shift, req.NamaUnit, distance))
+	} else {
+		NotifyUser(h.db, LocalUserID(c), req.KdUnit, "presensi", "tinggi",
+			"Presensi di luar geofence",
+			fmt.Sprintf("Jarak %.1f m melebihi radius %.0f m untuk %s.", distance, unitLoc.RadiusMeter, req.NamaUnit))
+		NotifyRoles(h.db, []string{"SUPERVISOR", "ADMIN", "SUPERADMIN"}, req.KdUnit, "presensi", "tinggi",
+			"Presensi ANOMALI",
+			fmt.Sprintf("%s mencatat presensi di luar geofence %s (jarak %.1f m).", name, req.NamaUnit, distance))
 	}
 
 	return c.JSON(fiber.Map{
