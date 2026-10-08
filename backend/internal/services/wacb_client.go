@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"pln-logsheet-backend/internal/config"
@@ -17,6 +18,9 @@ import (
 type WACBClient struct {
 	baseURL    string
 	httpClient *http.Client
+
+	mu          sync.RWMutex
+	cachedToken string
 }
 
 func NewWACBClient(cfg *config.Config) *WACBClient {
@@ -28,12 +32,59 @@ func NewWACBClient(cfg *config.Config) *WACBClient {
 	}
 }
 
+// SetToken menyimpan token WACB terakhir (mis. dari hasil login relay user).
+func (c *WACBClient) SetToken(token string) {
+	token = strings.TrimSpace(token)
+	if token == "" || strings.HasPrefix(token, "mock_") {
+		return
+	}
+	c.mu.Lock()
+	c.cachedToken = token
+	c.mu.Unlock()
+}
+
+// CachedToken mengembalikan token WACB terakhir yang tersimpan ("" bila belum ada).
+func (c *WACBClient) CachedToken() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.cachedToken
+}
+
+// ClearToken menghapus cache token (mis. setelah token kedaluwarsa / HTTP 401).
+func (c *WACBClient) ClearToken() {
+	c.mu.Lock()
+	c.cachedToken = ""
+	c.mu.Unlock()
+}
+
+// pickToken memilih token yang dipakai ke server WACB:
+// token cache (akun service / hasil login relay) lebih diprioritaskan,
+// selain itu token yang diteruskan dari request dibersihkan dari prefix "Bearer".
+func (c *WACBClient) pickToken(token string) string {
+	if cached := c.CachedToken(); cached != "" {
+		return cached
+	}
+	t := strings.TrimSpace(token)
+	t = strings.TrimPrefix(t, "Bearer")
+	return strings.TrimSpace(t)
+}
+
+// Login melakukan autentikasi ke WACB (POST /login, lihat dokumentasi API DIGIKIT).
 func (c *WACBClient) Login(username, password string) (*models.WACBLoginResponse, error) {
-	endpoint := fmt.Sprintf("%s/login?username=%s&password=%s", c.baseURL, url.QueryEscape(username), url.QueryEscape(password))
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	endpoint := fmt.Sprintf("%s/login", c.baseURL)
+	payload, err := json.Marshal(map[string]string{
+		"username": username,
+		"password": password,
+	})
 	if err != nil {
 		return nil, err
 	}
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -58,6 +109,9 @@ func (c *WACBClient) Login(username, password string) (*models.WACBLoginResponse
 		return nil, fmt.Errorf("server WACB tidak mengembalikan token valid")
 	}
 
+	// Simpan token agar dipakai watcher & proxy berikutnya
+	c.SetToken(loginResp.Token)
+
 	return &loginResp, nil
 }
 
@@ -71,8 +125,8 @@ func (c *WACBClient) GetUnits(token, kdRegion string, kdArea *string) (*models.W
 	if err != nil {
 		return nil, err
 	}
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
+	if tok := c.pickToken(token); tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -112,8 +166,8 @@ func (c *WACBClient) GetUnitFormat(token, kdRegion, kdArea, kdUnit string) (*mod
 	if err != nil {
 		return nil, err
 	}
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
+	if tok := c.pickToken(token); tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -147,8 +201,8 @@ func (c *WACBClient) SubmitLogsheet(token, kdRegion, messageText string) (*model
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
+	if tok := c.pickToken(token); tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
 	}
 
 	resp, err := c.httpClient.Do(req)
@@ -176,20 +230,7 @@ func (c *WACBClient) SubmitLogsheet(token, kdRegion, messageText string) (*model
 }
 
 func (c *WACBClient) GetMatrix(token, kdRegion, tanggal, kdUnit string) (*models.WACBMatrixResponse, error) {
-	endpoint := fmt.Sprintf("%s/logsheet?kd_region=%s&tanggal=%s", c.baseURL, kdRegion, url.QueryEscape(tanggal))
-	if kdUnit != "" {
-		endpoint += "&kd_unit=" + url.QueryEscape(kdUnit)
-	}
-
-	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
-	}
-
-	resp, err := c.httpClient.Do(req)
+	resp, err := c.doReport(token, kdRegion, tanggal, kdUnit)
 	if err != nil {
 		return c.getFallbackMatrix(kdRegion, tanggal, kdUnit), nil
 	}
@@ -204,24 +245,70 @@ func (c *WACBClient) GetMatrix(token, kdRegion, tanggal, kdUnit string) (*models
 	return &matrixResp, nil
 }
 
+// GetMatrixStrict sama dengan GetMatrix tetapi mengembalikan error bila WACB
+// tidak dapat dihubungi / merespons tidak valid — dipakai watcher agar data
+// mock/fallback tidak pernah dianggap aktivitas nyata.
+func (c *WACBClient) GetMatrixStrict(token, kdRegion, tanggal, kdUnit string) (*models.WACBMatrixResponse, error) {
+	resp, err := c.doReport(token, kdRegion, tanggal, kdUnit)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("server WACB merespons status %d", resp.StatusCode)
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var matrixResp models.WACBMatrixResponse
+	if err := json.Unmarshal(body, &matrixResp); err != nil {
+		return nil, fmt.Errorf("respons server WACB bukan JSON valid: %w", err)
+	}
+	return &matrixResp, nil
+}
+
+// doReport memanggil endpoint Get Report Logsheet (GET /logsheet).
+func (c *WACBClient) doReport(token, kdRegion, tanggal, kdUnit string) (*http.Response, error) {
+	endpoint := fmt.Sprintf("%s/logsheet?kd_region=%s&tanggal=%s", c.baseURL, kdRegion, url.QueryEscape(tanggal))
+	if kdUnit != "" {
+		endpoint += "&kd_unit=" + url.QueryEscape(kdUnit)
+	}
+
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Accept", "application/json")
+	if tok := c.pickToken(token); tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
+	}
+	return c.httpClient.Do(req)
+}
+
 func (c *WACBClient) GetDetail(token, idBebanUld, kdUnit, tanggal, jam string) (*models.WACBDetailReportResponse, error) {
 	endpoint := fmt.Sprintf("%s/getLogsheet/%s?kd_unit=%s&tanggal=%s&jam=%s",
 		c.baseURL, url.PathEscape(idBebanUld), url.QueryEscape(kdUnit), url.QueryEscape(tanggal), url.QueryEscape(jam))
 
-	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
+	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	if token != "" {
-		req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Accept", "application/json")
+	if tok := c.pickToken(token); tok != "" {
+		req.Header.Set("Authorization", "Bearer "+tok)
 	}
 
 	resp, err := c.httpClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
+	if err != nil {
 		// Mock detail
 		return c.getFallbackDetail(idBebanUld, kdUnit, tanggal, jam), nil
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return c.getFallbackDetail(idBebanUld, kdUnit, tanggal, jam), nil
+	}
 
 	body, _ := io.ReadAll(resp.Body)
 	var detailResp models.WACBDetailReportResponse

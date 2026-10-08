@@ -44,6 +44,7 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 		&models.Notification{},
 		&models.Machine{},
 		&models.Unit{},
+		&models.WacbWatchState{},
 	)
 	if err != nil {
 		log.Printf("[DATABASE] Warning during AutoMigrate (non-fatal): %v", err)
@@ -199,7 +200,7 @@ func seedNotifications(db *gorm.DB) {
 			Type:        "general",
 			TargetType:  "general",
 			IsRead:      false,
-			UserID:      u.ID,        
+			UserID:      &u.ID,
 			UnitID:      u.KdUnit,
 			CreatedAt:   time.Now(),
 			UpdatedAt:   time.Now(),

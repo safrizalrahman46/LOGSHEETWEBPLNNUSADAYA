@@ -91,6 +91,8 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 	// 2. Relay to WACB Server if local not found or local password mismatch
 	wacbResp, err := h.wacbClient.Login(req.Username, req.Password)
 	if err == nil && wacbResp != nil && wacbResp.Token != "" && !strings.HasPrefix(wacbResp.Token, "mock_") {
+		// Token WACB dipakai ulang oleh proxy & watcher aktivitas WACB
+		h.wacbClient.SetToken(wacbResp.Token)
 		userRole := models.RoleOperator
 		if req.Role != "" {
 			userRole = models.Role(strings.ToUpper(string(req.Role)))

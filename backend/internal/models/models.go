@@ -98,9 +98,9 @@ type Notification struct {
 	Priority    string    `gorm:"type:notification_priority;default:'sedang'" json:"priority"` // tinggi, sedang, rendah
 	Type        string    `gorm:"type:varchar(32);default:'general'" json:"type"`              // logsheet, sync, presensi, har, auth, error, general
 	TargetType  string    `gorm:"type:notification_target;default:'general'" json:"target_type"`
-	IsRead      bool      `gorm:"default:false" json:"is_read"`
-	UserID      string    `gorm:"type:varchar(64);index" json:"user_id"` // username penerima; "" / NULL = siapa saja
-	UnitID      string    `gorm:"type:varchar(32)" json:"unit_id"`
+	IsRead      bool           `gorm:"default:false" json:"is_read"`
+	UserID      *string        `gorm:"type:varchar(64);index" json:"user_id"` // NULL = broadcast (terlihat semua); FK ke users.id menolak string kosong
+	UnitID      string         `gorm:"type:varchar(32)" json:"unit_id"`
 	Payload     string    `gorm:"type:jsonb;default:'{}'" json:"payload"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -214,6 +214,14 @@ type Article struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// WacbWatchState mencatat slot logsheet (unit|tanggal|jam) yang sudah pernah
+// dijadikan notifikasi aktivitas WACB, agar tidak ganda antar siklus polling.
+type WacbWatchState struct {
+	Key       string    `gorm:"primaryKey" json:"key"` // contoh: 0264|2026-10-08|15:30
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 

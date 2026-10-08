@@ -14,6 +14,7 @@ import {
   CheckCheck,
   X,
   ArrowRight,
+  Activity,
 } from "lucide-react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { apiClient } from "@/lib/api";
@@ -58,6 +59,12 @@ const TYPE_META: Record<
       "text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-300",
     href: "/dashboard",
   },
+  wacb: {
+    icon: Activity,
+    color:
+      "text-indigo-600 bg-indigo-50 dark:bg-indigo-500/15 dark:text-indigo-400",
+    href: "/logsheet/matrix",
+  },
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -67,6 +74,7 @@ const TYPE_LABEL: Record<string, string> = {
   error: "Kesalahan Sistem",
   presensi: "Presensi",
   general: "Informasi Umum",
+  wacb: "Aktivitas WACB",
 };
 
 const PRIORITY_META: Record<string, { label: string; cls: string }> = {

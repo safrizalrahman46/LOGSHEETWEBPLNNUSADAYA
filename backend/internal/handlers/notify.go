@@ -35,7 +35,7 @@ func targetForType(nType string) string {
 	switch strings.ToLower(nType) {
 	case "error", "warning":
 		return "error"
-	case "logsheet", "sync":
+	case "logsheet", "sync", "wacb":
 		return "logsheet"
 	case "approval":
 		return "approval"
@@ -45,7 +45,8 @@ func targetForType(nType string) string {
 }
 
 // NotifyUser membuat notifikasi untuk satu users.id.
-// userID kosong → notifikasi broadcast (terlihat oleh semua pengguna).
+// userID kosong → notifikasi broadcast: user_id diisi NULL
+// (kolom punya FK ke users.id sehingga string kosong akan ditolak DB).
 func NotifyUser(db *gorm.DB, userID, unitID, nType, priority, title, description string) {
 	n := models.Notification{
 		Title:       strings.TrimSpace(title),
@@ -55,10 +56,13 @@ func NotifyUser(db *gorm.DB, userID, unitID, nType, priority, title, description
 		Type:        nType,
 		TargetType:  targetForType(nType),
 		IsRead:      false,
-		UserID:      strings.TrimSpace(userID),
+		UserID:      nil,
 		UnitID:      strings.TrimSpace(unitID),
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
+	}
+	if uid := strings.TrimSpace(userID); uid != "" {
+		n.UserID = &uid
 	}
 	if n.Title == "" {
 		return

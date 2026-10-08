@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -163,6 +164,11 @@ func main() {
 	protected.Get("/export/excel", exportHandler.ExportExcel)
 
 	// Start Server
+	wacbWatcher := handlers.NewWACBWatcher(db, wacbClient,
+		time.Duration(cfg.WACBPollMinutes)*time.Minute,
+		cfg.WACBPollUser, cfg.WACBPollPassword)
+	wacbWatcher.Start()
+
 	addr := fmt.Sprintf("0.0.0.0:%s", cfg.Port)
 	log.Printf("[SERVER] Starting PLN Nusa Daya Backend on %s", addr)
 	if err := app.Listen(addr); err != nil {
