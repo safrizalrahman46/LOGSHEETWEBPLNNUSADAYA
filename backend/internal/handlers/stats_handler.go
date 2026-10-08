@@ -18,22 +18,27 @@ func NewStatsHandler(db *gorm.DB) *StatsHandler {
 }
 
 type MachineAlert struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	UnitID   string `json:"unit_id"`
-	Status   string `json:"status"`
-	Detail   string `json:"detail"`
-	Capacity string `json:"capacity"`
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	UnitID    string    `json:"unit_id"`
+	Status    string    `json:"status"`
+	Detail    string    `json:"detail"`
+	Capacity  string    `json:"capacity"`
+	Brand     string    `json:"brand"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type HARAlert struct {
-	ID            uint     `json:"id"`
-	TicketNumber  string   `json:"ticket_number"`
-	Machine       string   `json:"machine_name"`
-	Unit          string   `json:"nama_unit"`
-	Status        string   `json:"status"`
-	Fault         string   `json:"fault_description"`
-	Maintenance   string   `json:"maintenance_type"`
+	ID           uint      `json:"id"`
+	TicketNumber string    `json:"ticket_number"`
+	Machine      string    `json:"machine_name"`
+	Unit         string    `json:"nama_unit"`
+	Status       string    `json:"status"`
+	Fault        string    `json:"fault_description"`
+	Maintenance  string    `json:"maintenance_type"`
+	Technician   string    `json:"teknisi_name"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // Get merangkum statistik untuk halaman dashboard:
@@ -55,12 +60,14 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 				label = "Gangguan / Rusak"
 			}
 			machineAlerts = append(machineAlerts, MachineAlert{
-				ID:       m.ID,
-				Name:     m.MachineName,
-				UnitID:   m.UnitID,
-				Status:   m.Status,
-				Detail:   label,
-				Capacity: m.Capacity,
+				ID:        m.ID,
+				Name:      m.MachineName,
+				UnitID:    m.UnitID,
+				Status:    m.Status,
+				Detail:    label,
+				Capacity:  m.Capacity,
+				Brand:     m.Brand,
+				UpdatedAt: m.UpdatedAt,
 			})
 		}
 	}
@@ -94,6 +101,9 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 				Status:       t.Status,
 				Fault:        t.FaultDescription,
 				Maintenance:  t.MaintenanceType,
+				Technician:   t.TeknisiName,
+				CreatedAt:    t.CreatedAt,
+				UpdatedAt:    t.UpdatedAt,
 			})
 		}
 	}
@@ -140,6 +150,39 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 		LIMIT 8`, time.Now().AddDate(0, 0, -7)).
 		Scan(&bebanRows)
 
+	// --- Sebaran logsheet per hari (7 hari terakhir) untuk chart tren ---
+	type dayRow struct {
+		Tanggal string `json:"tanggal"`
+		Jumlah  int64  `json:"jumlah"`
+	}
+	perDay := []dayRow{}
+	h.db.Raw(`
+		SELECT TO_CHAR(submitted_at, 'YYYY-MM-DD') AS tanggal, COUNT(*) AS jumlah
+		FROM logsheets
+		WHERE submitted_at >= ?
+		GROUP BY 1 ORDER BY 1`, time.Now().AddDate(0, 0, -6)).
+		Scan(&perDay)
+
+	// --- Distribusi approval logsheet (untuk chart) ---
+	type approvalRow struct {
+		Status string `json:"status"`
+		Jumlah int64  `json:"jumlah"`
+	}
+	approvalCounts := map[string]int64{"pendingReview": 0, "approved": 0, "rejected": 0}
+	approvalRows := []approvalRow{}
+	h.db.Raw(`
+		SELECT approval_status AS status, COUNT(*) AS jumlah
+		FROM logsheets GROUP BY 1`).Scan(&approvalRows)
+	for _, r := range approvalRows {
+		approvalCounts[r.Status] = r.Jumlah
+	}
+
+	// --- Logsheet bermasalah (terlambat / gagal sinkron) ---
+	var lateLogsheet int64
+	h.db.Model(&models.LogsheetDetail{}).Where("report_status IN ?", []string{"late", "missing", "abnormal"}).Count(&lateLogsheet)
+	var failedSync int64
+	h.db.Model(&models.LogsheetDetail{}).Where("sync_status = ?", "failed").Count(&failedSync)
+
 	// --- Presensi hari ini ---
 	var presensiToday int64
 	h.db.Model(&models.AttendanceRecord{}).Where("created_at >= ?", todayStart).Count(&presensiToday)
@@ -160,12 +203,16 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 				"alerts": harAlerts,
 			},
 			"logsheet": fiber.Map{
-				"today":           logsheetToday,
-				"total":           logsheetTotal,
-				"local_records":   localRecords,
+				"today":            logsheetToday,
+				"total":            logsheetTotal,
+				"local_records":    localRecords,
 				"pending_approval": pendingApproval,
-				"per_hour":        hourRows,
-				"beban_per_mesin": bebanRows,
+				"per_hour":         hourRows,
+				"per_day":          perDay,
+				"beban_per_mesin":  bebanRows,
+				"approval_counts":  approvalCounts,
+				"late":             lateLogsheet,
+				"failed_sync":      failedSync,
 			},
 			"presensi": fiber.Map{
 				"today":   presensiToday,

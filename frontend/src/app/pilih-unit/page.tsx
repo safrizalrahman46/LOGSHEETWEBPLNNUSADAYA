@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Building2, MapPin, ArrowRight, Search } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { apiClient } from "@/lib/api";
@@ -120,8 +121,7 @@ export default function PilihUnitPage() {
             {filteredUnits.map((u) => (
               <div
                 key={u.kd_unit}
-                onClick={() => handleSelectUnit(u)}
-                className="group flex cursor-pointer flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition-all hover:border-brand-500/50 hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
+                className="group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition-all hover:border-brand-500/50 hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -144,9 +144,21 @@ export default function PilihUnitPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-gray-100 pt-3.5 text-xs font-bold text-brand-600 dark:border-gray-800 dark:text-brand-400">
-                  <span>Pilih Unit Ini</span>
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <div className="mt-5 flex items-center justify-between gap-2 border-t border-gray-100 pt-3.5 dark:border-gray-800">
+                  <button
+                    onClick={() => handleSelectUnit(u)}
+                    className="rounded-lg bg-brand-50 px-2.5 py-1.5 text-[11px] font-bold text-brand-600 transition-colors hover:bg-brand-100 dark:bg-brand-500/15 dark:text-brand-400 dark:hover:bg-brand-500/25"
+                    title="Jadikan unit aktif lalu ke dashboard"
+                  >
+                    Pilih Unit
+                  </button>
+                  <Link
+                    href={`/unit/${u.kd_unit}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 dark:text-brand-400"
+                  >
+                    Lihat Detail
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
                 </div>
               </div>
             ))}

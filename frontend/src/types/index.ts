@@ -1,4 +1,4 @@
-export type Role =
+﻿export type Role =
   | "SUPERADMIN"
   | "ADMIN"
   | "MANAGER"
@@ -251,6 +251,8 @@ export interface StatsData {
       status: string;
       detail: string;
       capacity: string;
+      brand?: string;
+      updated_at: string;
     }[];
   };
   har: {
@@ -264,6 +266,9 @@ export interface StatsData {
       status: string;
       fault_description: string;
       maintenance_type: string;
+      teknisi_name?: string;
+      created_at: string;
+      updated_at: string;
     }[];
   };
   logsheet: {
@@ -272,7 +277,11 @@ export interface StatsData {
     local_records: number;
     pending_approval: number;
     per_hour: { jam: string; jumlah: number }[];
+    per_day: { tanggal: string; jumlah: number }[];
     beban_per_mesin: { mesin: string; beban: number }[];
+    approval_counts: Record<string, number>;
+    late: number;
+    failed_sync: number;
   };
   presensi: { today: number; anomaly: number };
 }

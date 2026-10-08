@@ -11,6 +11,8 @@ import {
   MapPin,
   CloudUpload,
   CheckCheck,
+  X,
+  ArrowRight,
 } from "lucide-react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { apiClient } from "@/lib/api";
@@ -57,6 +59,21 @@ const TYPE_META: Record<
   },
 };
 
+const TYPE_LABEL: Record<string, string> = {
+  logsheet: "Logsheet",
+  sync: "Sinkronisasi",
+  approval: "Persetujuan HAR",
+  error: "Kesalahan Sistem",
+  presensi: "Presensi",
+  general: "Informasi Umum",
+};
+
+const PRIORITY_META: Record<string, { label: string; cls: string }> = {
+  tinggi: { label: "Prioritas Tinggi", cls: "bg-error-600 text-white" },
+  sedang: { label: "Prioritas Sedang", cls: "bg-warning-500 text-white" },
+  rendah: { label: "Prioritas Rendah", cls: "bg-brand-500 text-white" },
+};
+
 function timeAgo(iso?: string): string {
   if (!iso) return "";
   const then = new Date(iso).getTime();
@@ -76,6 +93,7 @@ export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<AppNotification[]>([]);
   const [unread, setUnread] = useState(0);
+  const [detail, setDetail] = useState<AppNotification | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchNotifications = useCallback(async () => {
@@ -194,9 +212,11 @@ export default function NotificationDropdown() {
             return (
               <li key={n.id}>
                 <Link
-                  href={meta.href}
-                  onClick={() => {
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
                     if (!n.is_read) markRead(n.id);
+                    setDetail({ ...n, is_read: true });
                     closeDropdown();
                   }}
                   className={`flex items-start gap-3 rounded-xl p-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/60 ${
@@ -240,6 +260,137 @@ export default function NotificationDropdown() {
           </Link>
         </div>
       </Dropdown>
+
+      {/* Popup detail notifikasi */}
+      {detail && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm"
+          onClick={() => setDetail(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-lg dark:border-gray-800 dark:bg-gray-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Kepala popup */}
+            <div className="flex items-start gap-3 border-b border-gray-100 bg-gray-50 px-5 py-4 dark:border-gray-800 dark:bg-gray-800/50">
+              <div
+                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                  (TYPE_META[detail.type] || TYPE_META.general).color
+                }`}
+              >
+                {(() => {
+                  const Icon = (TYPE_META[detail.type] || TYPE_META.general).icon;
+                  return <Icon className="h-5 w-5" />;
+                })()}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span
+                    className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold uppercase ${
+                      (PRIORITY_META[detail.priority] || PRIORITY_META.sedang).cls
+                    }`}
+                  >
+                    {(PRIORITY_META[detail.priority] || PRIORITY_META.sedang).label}
+                  </span>
+                  <span className="rounded-md bg-gray-200 px-2 py-0.5 text-[10px] font-bold uppercase text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                    {TYPE_LABEL[detail.type] || detail.type}
+                  </span>
+                  {!detail.is_read && (
+                    <span className="rounded-md bg-brand-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                      Baru
+                    </span>
+                  )}
+                </div>
+                <h3 className="mt-1.5 text-sm font-extrabold leading-snug text-gray-900 dark:text-white">
+                  {detail.title}
+                </h3>
+              </div>
+              <button
+                onClick={() => setDetail(null)}
+                title="Tutup"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Isi detail */}
+            <div className="space-y-4 px-5 py-4">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+                {detail.description || "Tidak ada keterangan tambahan."}
+              </p>
+
+              <dl className="space-y-2 rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/40">
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    Waktu
+                  </dt>
+                  <dd className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    {detail.time
+                      ? new Date(detail.time).toLocaleString("id-ID", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
+                      : "-"}
+                    <span className="ml-1.5 font-normal text-gray-400">
+                      ({timeAgo(detail.time || detail.created_at)})
+                    </span>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    Unit
+                  </dt>
+                  <dd className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    {detail.unit_id || "Semua unit"}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    Kategori
+                  </dt>
+                  <dd className="text-xs font-semibold uppercase text-gray-700 dark:text-gray-300">
+                    {detail.target_type}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <dt className="text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                    Status
+                  </dt>
+                  <dd
+                    className={`text-xs font-bold ${
+                      detail.is_read
+                        ? "text-success-600 dark:text-success-400"
+                        : "text-brand-600 dark:text-brand-400"
+                    }`}
+                  >
+                    {detail.is_read ? "Sudah dibaca" : "Belum dibaca"}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            {/* Aksi */}
+            <div className="flex items-center justify-between gap-3 border-t border-gray-100 bg-gray-50 px-5 py-3.5 dark:border-gray-800 dark:bg-gray-800/50">
+              <button
+                onClick={() => setDetail(null)}
+                className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-bold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+              >
+                Tutup
+              </button>
+              <Link
+                href={(TYPE_META[detail.type] || TYPE_META.general).href}
+                onClick={() => setDetail(null)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-600"
+              >
+                Buka Halaman Terkait <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

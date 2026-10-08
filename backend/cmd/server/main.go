@@ -121,7 +121,8 @@ func main() {
 	protected.Post("/admin/logsheets", adminOnly, masterHandler.CreateLogsheet)
 	protected.Put("/admin/logsheets/:id", adminOnly, masterHandler.UpdateLogsheet)
 	protected.Delete("/admin/logsheets/:id", adminOnly, masterHandler.DeleteLogsheet)
-	protected.Get("/admin/matrix-master", adminOnly, masterHandler.GetMatrixMaster)
+	// Matriks master bersifat baca-saja untuk semua pengguna login (dipakai chart halaman matriks)
+	protected.Get("/admin/matrix-master", masterHandler.GetMatrixMaster)
 
 	protected.Get("/admin/stats", statsHandler.Get)
 
