@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Zap, Activity, CheckCircle2, ShieldCheck, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 export const AppFooter: React.FC = () => {
   const [apiOnline, setApiOnline] = useState<boolean>(true);
@@ -23,8 +23,16 @@ export const AppFooter: React.FC = () => {
         {/* Left Side: Brand and Copyright */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-500 text-white shadow-theme-xs shadow-brand-500/20">
-              <Zap className="h-3.5 w-3.5 fill-pln-gold text-pln-gold" />
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white shadow-theme-xs ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700 overflow-hidden">
+              <img
+                src="/images/logo/LOGO-PLN.png"
+                alt="Logo PLN"
+                className="h-5 w-5 object-contain"
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (!img.src.includes("plnt.png")) img.src = "/images/plnt.png";
+                }}
+              />
             </div>
             <span className="font-bold text-gray-800 dark:text-gray-200">PT PLN NUSA DAYA</span>
           </div>

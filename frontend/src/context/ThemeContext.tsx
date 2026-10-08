@@ -16,33 +16,24 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [theme, setThemeState] = useState<ThemeMode>("light");
-  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("pln_theme") as ThemeMode | null;
-    const initial = saved === "dark" ? "dark" : "light";
+    const saved = localStorage.getItem("pln_theme");
+    const initial: ThemeMode = saved === "dark" ? "dark" : "light";
     setThemeState(initial);
-    if (initial === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    setIsInitialized(true);
+    document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
 
   const setTheme = (mode: ThemeMode) => {
     setThemeState(mode);
-    localStorage.setItem("pln_theme", mode);
-    if (mode === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    try {
+      localStorage.setItem("pln_theme", mode);
+    } catch (_) {}
+    document.documentElement.classList.toggle("dark", mode === "dark");
   };
 
   const toggleTheme = () => {
-    const next = theme === "light" ? "dark" : "light";
-    setTheme(next);
+    setTheme(theme === "light" ? "dark" : "light");
   };
 
   return (

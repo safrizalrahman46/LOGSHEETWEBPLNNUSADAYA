@@ -60,16 +60,18 @@ func main() {
 	}))
 
 	// Health Check
-	app.Get("/health", func(c *fiber.Ctx) error {
+	healthHandler := func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"status":   "ok",
 			"service":  "PLN Nusa Daya WACB Gateway (Golang 1.23)",
 			"database": "connected",
 			"region":   "Kalimantan 3 (05)",
 		})
-	})
+	}
+	app.Get("/health", healthHandler)
 
 	api := app.Group("/api")
+	api.Get("/health", healthHandler)
 
 	// Public Routes (No Auth Required)
 	api.Post("/auth/login", authHandler.Login)
@@ -77,6 +79,8 @@ func main() {
 	api.Get("/public/articles", articleHandler.GetPublicArticles)
 	api.Get("/public/articles/:slug", articleHandler.GetPublicArticleDetail)
 	api.Get("/public/unit-locations", attendanceHandler.GetUnitLocations)
+	api.Get("/attendance/units", attendanceHandler.GetUnitLocations)
+	api.Get("/attendance/units-location", attendanceHandler.GetUnitLocations)
 
 	// Protected Routes (with JWT Auth)
 	protected := api.Group("/", middleware.JWTAuth(cfg))
@@ -87,8 +91,8 @@ func main() {
 
 	// Attendance & Geofencing GPS
 	protected.Post("/attendance/check-in", attendanceHandler.CheckIn)
+	protected.Post("/attendance/checkin", attendanceHandler.CheckIn)
 	protected.Get("/attendance/history", attendanceHandler.GetHistory)
-	protected.Get("/attendance/units-location", attendanceHandler.GetUnitLocations)
 
 	// CMS Articles (Admin & Superadmin)
 	protected.Get("/admin/articles", middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin), articleHandler.GetAdminArticles)

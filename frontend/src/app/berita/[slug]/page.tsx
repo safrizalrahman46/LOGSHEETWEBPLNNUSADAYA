@@ -132,6 +132,10 @@ export default function DetailBeritaPage() {
             <img
               src={article.image_url}
               alt={article.title}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/images/portfolio-5.jpg";
+              }}
               className="w-full h-full object-cover"
             />
           </div>

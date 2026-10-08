@@ -14,7 +14,9 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("pln_token");
-    if (token) {
+    const url = config.url || "";
+    const isPublic = url.startsWith("/public") || url.startsWith("public") || url.includes("/public/") || url.includes("/auth/login");
+    if (token && !isPublic) {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }

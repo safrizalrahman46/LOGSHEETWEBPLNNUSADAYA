@@ -21,6 +21,19 @@ type JWTClaims struct {
 
 func JWTAuth(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// Whitelist public endpoints and health checks
+		path := c.Path()
+		if path == "/health" ||
+			path == "/api/health" ||
+			path == "/api/auth/login" ||
+			strings.HasPrefix(path, "/api/public") ||
+			strings.HasPrefix(path, "/public") ||
+			path == "/api/attendance/units" ||
+			path == "/api/attendance/units-location" ||
+			path == "/api/wacb/units" {
+			return c.Next()
+		}
+
 		authHeader := c.Get("Authorization")
 		if authHeader == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

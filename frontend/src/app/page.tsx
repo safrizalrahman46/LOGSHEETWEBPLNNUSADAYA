@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import Hero from "@/components/Hero";
+import CorpNavbar from "@/components/corp/CorpNavbar";
 import { apiClient } from "@/lib/api";
 
 /* ============================================================
@@ -12,11 +12,10 @@ import { apiClient } from "@/lib/api";
    ============================================================ */
 
 export default function HomePage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [scrollTopVisible, setScrollTopVisible] = useState(false);
   const [portfolioFilter, setPortfolioFilter] = useState("all");
+  const [selectedPortfolio, setSelectedPortfolio] = useState<any | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
@@ -25,13 +24,7 @@ export default function HomePage() {
   // News carousel index
   const [newsIdx, setNewsIdx] = useState(0);
 
-  // Corporate Document & Full Article Viewers (Makes all header pages viewable)
-  const [activeDoc, setActiveDoc] = useState<{
-    title: string;
-    category: string;
-    badge: string;
-    content: string[];
-  } | null>(null);
+  // Full article viewer (Latest News reading modal)
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
 
   // Default Curated News Items
@@ -103,7 +96,6 @@ export default function HomePage() {
   /* ---- Scroll effects & Scroll Reveal ---- */
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 30);
       setScrollTopVisible(window.scrollY > 400);
 
       const sections = ["home", "about", "stats", "services", "news", "portfolio", "direksi", "contact"];
@@ -236,331 +228,12 @@ export default function HomePage() {
     if (!el) return;
     const navH = 76;
     window.scrollTo({ top: el.offsetTop - navH, behavior: "smooth" });
-    setMobileOpen(false);
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setTimeout(() => setFormSubmitted(true), 800);
   }
-
-  /* ---- Official Corporate Documents Database (All Header Links Viewable) ---- */
-  const corporateDocuments: Record<string, { title: string; category: string; badge: string; content: string[] }> = {
-    "Visi Misi": {
-      title: "Visi & Misi PT PLN Nusa Daya",
-      category: "Identitas Korporasi",
-      badge: "Visi Misi 2026-2030",
-      content: [
-        "VISI: Menjadi Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia yang Tumbuh Berkelanjutan.",
-        "MISI 1: Menjalankan bisnis pengelolaan aset pembangkitan, transmisi, dan distribusi tenaga listrik yang andal, efisien, dan berorientasi pada kepuasan pelanggan.",
-        "MISI 2: Mengoptimalkan pemanfaatan teknologi digital terpadu dalam operasional ketenagalistrikan melalui platform WACB dan Smart Grid System.",
-        "MISI 3: Menerapkan standar Keselamatan, Kesehatan Kerja dan Lindungan Lingkungan (K3L) bertaraf internasional menuju Zero Accident.",
-        "MISI 4: Meningkatkan kompetensi dan kesejahteraan Human Capital yang unggul berlandaskan core values AKHLAK BUMN.",
-      ],
-    },
-    "Tata Nilai": {
-      title: "Tata Nilai Budaya AKHLAK",
-      category: "Budaya Korporasi",
-      badge: "Core Values BUMN",
-      content: [
-        "AMANAH: Memegang teguh kepercayaan yang diberikan dengan penuh integritas, kejujuran, dan tanggung jawab profesional.",
-        "KOMPETEN: Terus belajar, beradaptasi dengan teknologi baru, dan mengembangkan kapabilitas untuk memberikan kinerja terbaik.",
-        "HARMONIS: Saling peduli dan menghargai keberagaman, menciptakan lingkungan kerja yang kondusif, aman, dan kolaboratif.",
-        "LOYAL: Berdedikasi dan mengutamakan kepentingan Bangsa, Negara, dan Korporasi di atas kepentingan pribadi atau golongan.",
-        "ADAPTIF: Terus berinovasi, proaktif, dan antusias dalam menggerakkan ataupun menghadapi perubahan industri kelistrikan masa depan.",
-        "KOLABORATIF: Membangun kerja sama yang sinergis antar unit, mitra strategis, dan pemangku kepentingan demi ketahanan energi nasional.",
-      ],
-    },
-    "Profil Komisaris": {
-      title: "Dewan Komisaris PT PLN Nusa Daya",
-      category: "Kepemimpinan & Pengawasan",
-      badge: "Dewan Komisaris",
-      content: [
-        "Dewan Komisaris bertugas mengawasi kebijakan direksi dalam menjalankan perseroan serta memberikan nasihat berkala kepada Direksi guna memastikan tercapainya target korporasi secara berkesinambungan.",
-        "Komisaris Utama mengoordinasikan pengawasan berkala bersama Komite Audit, Komite Risiko, dan Pemegang Saham (PT PLN Persero) dengan prinsip independensi dan tata kelola berintegritas tinggi.",
-      ],
-    },
-    "Anak Perusahaan": {
-      title: "Portofolio & Afiliasi PLN Group",
-      category: "Sinergi Korporasi",
-      badge: "PLN Group",
-      content: [
-        "Sebagai salah satu lini terdepan PT PLN (Persero), PT PLN Nusa Daya bersinergi dengan seluruh entitas subholding dan afiliasi PLN Group di seluruh Indonesia.",
-        "Fokus sinergi mencakup transfer teknologi pembangkitan ramah lingkungan, penyediaan suku cadang mesin, rekayasa teknik transmisi, dan integrasi rantai pasok bahan bakar energi primer.",
-      ],
-    },
-    "Wilayah Kerja": {
-      title: "Wilayah Kerja Operasional PT PLN Nusa Daya",
-      category: "Jangkauan Operasi",
-      badge: "9 Unit Pelaksana",
-      content: [
-        "Wilayah operasional PT PLN Nusa Daya membentang di Kawasan Tengah dan Timur Indonesia, mencakup Kalimantan, Sulawesi, Maluku, Maluku Utara, Papua, Papua Barat, dan Nusa Tenggara.",
-        "Dengan 9 Kantor Unit Pelaksana (UP) dan lebih dari 335 titik instalasi pembangkit serta gardu induk, kami menjaga keandalan listrik bagi jutaan masyarakat dan pusat industri regional.",
-      ],
-    },
-    "Company Profile": {
-      title: "Company Profile PT PLN Nusa Daya",
-      category: "Profil Perusahaan",
-      badge: "Sejarah & Kapabilitas",
-      content: [
-        "PT Pelayanan Listrik Nasional Nusa Daya (PLN Nusa Daya / PLN ND) dibentuk berdasarkan Keputusan Direksi PT PLN (Persero) pada tahun 2003 di Pulau Tarakan, Kalimantan Utara.",
-        "Seiring transformasi strategis tahun 2016, kantor pusat berkedudukan di Kota Balikpapan, Kalimantan Timur, memegang mandat utama operasi & pemeliharaan aset ketenagalistrikan terkemuka.",
-        "Didukung lebih dari 25.000 tenaga kerja tersertifikasi dan portofolio pengelolaan pembangkit hingga transmisi tegangan tinggi.",
-      ],
-    },
-    "Board Manual": {
-      title: "Board Manual PT PLN Nusa Daya",
-      category: "Tata Kelola",
-      badge: "Dokumen Resmi GCG",
-      content: [
-        "Board Manual merupakan pedoman tata kerja Direksi dan Dewan Komisaris yang mengatur hubungan kerja, pembagian tugas, fungsi koordinasi, dan wewenang pengambilan keputusan.",
-        "Disusun berdasarkan prinsip transparansi, kepatuhan regulasi Kementerian BUMN, dan Anggaran Dasar Perusahaan yang sah.",
-      ],
-    },
-    "Code of Conduct": {
-      title: "Code of Conduct (Pedoman Perilaku)",
-      category: "Integritas & Etika",
-      badge: "Etika Bisnis",
-      content: [
-        "Pedoman Perilaku (Code of Conduct) memuat norma integritas, larangan benturan kepentingan (conflict of interest), pencegahan gratifikasi dan penyuapan, serta kewajiban menjaga kerahasiaan aset informasi.",
-        "Wajib dipatuhi oleh seluruh jajaran Direksi, Dewan Komisaris, dan seluruh insan PT PLN Nusa Daya.",
-      ],
-    },
-    "Pedoman GCG": {
-      title: "Pedoman Good Corporate Governance (GCG)",
-      category: "Tata Kelola Perusahaan",
-      badge: "Prinsip TARIF",
-      content: [
-        "Menerapkan prinsip Transparansi, Akuntabilitas, Responsibilitas, Independensi, dan Fairness (Kewajaran) dalam seluruh siklus bisnis.",
-        "Asesmen GCG berkala dilakukan secara independen dengan pencapaian skor 'Sangat Baik' secara konsisten.",
-      ],
-    },
-    "Annual Report": {
-      title: "Laporan Tahunan (Annual Report)",
-      category: "Transparansi Finansial",
-      badge: "Annual Report 2025/2026",
-      content: [
-        "Laporan Tahunan menyajikan kilas kinerja komprehensif PT PLN Nusa Daya, audit laporan keuangan independen dengan opini Wajar Tanpa Pengecualian (WTP), dan tinjauan pencapaian target operasional.",
-        "Dokumen ini mencerminkan komitmen keterbukaan informasi publik kepada pemegang saham dan masyarakat luas.",
-      ],
-    },
-    "Sustainability Report": {
-      title: "Laporan Keberlanjutan (Sustainability Report)",
-      category: "ESG & Keberlanjutan",
-      badge: "GRI Standards",
-      content: [
-        "Mengacu pada standar Global Reporting Initiative (GRI), memaparkan kinerja Lingkungan, Sosial, dan Tata Kelola (ESG).",
-        "Termasuk roadmap dekarbonisasi, efisiensi bahan bakar pembangkit, penanganan limbah B3, program elektrifikasi hijau, dan pemberdayaan komunitas masyarakat lokal.",
-      ],
-    },
-    "Risk Management": {
-      title: "Enterprise Risk Management (ERM)",
-      category: "Mitigasi Risiko",
-      badge: "ISO 31000",
-      content: [
-        "Penerapan kerangka kerja manajemen risiko berbasis ISO 31000 mencakup identifikasi, evaluasi, mitigasi, dan pemantauan risiko strategis, operasional, dan kepatuhan.",
-        "Memastikan keandalan pasokan listrik terlindungi dari gangguan cuaca ekstrem, fluktuasi pasokan bahan bakar, dan risiko teknis pembangkit.",
-      ],
-    },
-    "Whistle Blowing System": {
-      title: "Whistle Blowing System (WBS)",
-      category: "Integritas & Kepatuhan",
-      badge: "Saluran Pelaporan Rahasia",
-      content: [
-        "Whistle Blowing System merupakan mekanisme pelaporan pelanggaran etika, indikasi korupsi, penipuan, atau pelanggaran hukum yang terjamin kerahasiaan dan perlindungan bagi pelapor.",
-        "Saluran resmi WBS tersedia melalui portal daring, email khusus kepatuhan: wbs@plnnusadaya.co.id, dan nomor pengaduan terenkripsi.",
-      ],
-    },
-    "Drups": {
-      title: "Layanan DRUPS (Diesel Rotary UPS)",
-      category: "Layanan Khusus",
-      badge: "Zero-Interruption Power",
-      content: [
-        "Diesel Rotary Uninterruptible Power Supply (DRUPS) menyediakan perlindungan pasokan daya listrik tanpa kedip (seamless transfer) untuk fasilitas dengan toleransi kegagalan nol.",
-        "Sangat ideal bagi pusat data (data center), rumah sakit rujukan, industri semikonduktor, kilang migas, dan bandar udara internasional.",
-      ],
-    },
-    "ListriQu": {
-      title: "Layanan ListriQu",
-      category: "Layanan Konsumen",
-      badge: "Solusi Instalasi Listrik",
-      content: [
-        "ListriQu adalah aplikasi dan layanan profesional untuk inspeksi, perbaikan, instalasi, dan sertifikasi kelistrikan rumah tangga maupun komersial.",
-        "Didukung oleh teknisi berlisensi resmi dengan transparansi harga dan garansi pengerjaan berstandar keselamatan PLN.",
-      ],
-    },
-    "Laporan Triwulan I": {
-      title: "Laporan Kinerja Manajemen Triwulan I",
-      category: "Laporan Manajemen",
-      badge: "Q1 2026",
-      content: [
-        "Realisasi produksi tenaga listrik mencapai 104,2% dari RKAP triwulanan.",
-        "Availability Factor (EAF) pembangkit terjaga di angka 92,8% dengan SFC (Specific Fuel Consumption) BBM yang efisien di seluruh regional kerja.",
-      ],
-    },
-    "Semester I": {
-      title: "Laporan Kinerja Tengah Tahun (Semester I)",
-      category: "Laporan Manajemen",
-      badge: "Semester 1 2026",
-      content: [
-        "Pencapaian target pemeliharaan preventif (Preventive Maintenance) tepat waktu sebesar 98,5%.",
-        "Kesiapan cadangan daya menyambut pertengahan tahun dan mitigasi gangguan transmisi dengan respon cepat di bawah standar SLA.",
-      ],
-    },
-    "Triwulan III": {
-      title: "Laporan Kinerja Manajemen Triwulan III",
-      category: "Laporan Manajemen",
-      badge: "Q3 2026",
-      content: [
-        "Penguatan keandalan sistem interkoneksi dan evaluasi performa mesin sewa serta IPP.",
-        "Penerapan digitalisasi logsheet WACB dan presensi biometrik lapangan untuk 25.000+ personil teknis.",
-      ],
-    },
-    "Semester II": {
-      title: "Laporan Kinerja Penutupan Tahun (Semester II)",
-      category: "Laporan Manajemen",
-      badge: "Semester 2 2026",
-      content: [
-        "Penutupan buku tahunan dengan pertumbuhan laba usaha positif dan pencapaian target Zero Fatal Accident di seluruh unit.",
-        "Kesiapan siaga energi Natal & Tahun Baru dengan status siaga penuh (Full Alert) 24/7.",
-      ],
-    },
-    "Info Pengadaan": {
-      title: "Informasi Pengadaan Barang & Jasa Resmi",
-      category: "Pengadaan",
-      badge: "E-Procurement PLN",
-      content: [
-        "Pengumuman tender, prakualifikasi penyedia, dan seleksi pengadaan barang/jasa PT PLN Nusa Daya diselenggarakan secara transparan melalui portal E-Procurement PLN Group.",
-        "Menjunjung tinggi prinsip adil, akuntabel, bebas suap, dan mengutamakan Tingkat Komponen Dalam Negeri (TKDN).",
-      ],
-    },
-    "Pedoman Pengadaan": {
-      title: "Pedoman Pengadaan Barang dan Jasa",
-      category: "Regulasi Pengadaan",
-      badge: "Peraturan Direksi",
-      content: [
-        "Pedoman Pengadaan mengatur tata cara pemilihan mitra kerja, evaluasi teknis, negosiasi harga, dan monitoring kontrak berbasis integritas.",
-        "Mewajibkan kepatuhan terhadap Pakta Integritas dan Standar Manajemen Anti Penyuapan (SMAP) ISO 37001.",
-      ],
-    },
-    "Privacy Policy": {
-      title: "Kebijakan Privasi (Privacy Policy)",
-      category: "Legal & Kepatuhan",
-      badge: "UU No. 27/2022 PDP",
-      content: [
-        "PT PLN Nusa Daya berkomitmen penuh melindungi hak privasi dan kerahasiaan data pribadi pengguna situs web dan portal logsheet.",
-        "Data pengguna hanya diproses untuk kepentingan operasional resmi, autentikasi keamanan, dan pelaporan internal tanpa dibagikan kepada pihak ketiga tanpa persetujuan.",
-      ],
-    },
-  };
-
-  /* ---- Header Click Router (Scrolls or Opens Modal for 100% Header Items) ---- */
-  function handleNavClick(label: string, href: string) {
-    if (href === "home" || href === "#home") {
-      scrollTo("home");
-      return;
-    }
-    if (href === "about" || href === "#about") {
-      scrollTo("about");
-      return;
-    }
-    if (href === "services" || href === "#services") {
-      scrollTo("services");
-      return;
-    }
-    if (href === "news" || href === "#news") {
-      scrollTo("news");
-      return;
-    }
-    if (href === "direksi" || href === "#direksi") {
-      scrollTo("direksi");
-      return;
-    }
-    if (href === "contact" || href === "#contact") {
-      scrollTo("contact");
-      return;
-    }
-    if (href === "/berita") {
-      window.location.href = "/berita";
-      return;
-    }
-    if (corporateDocuments[label]) {
-      setActiveDoc(corporateDocuments[label]);
-      setMobileOpen(false);
-      return;
-    }
-    if (href && href.startsWith("http")) {
-      window.open(href, "_blank", "noreferrer");
-    }
-  }
-
-  const navLinks = [
-    { label: "Home", href: "home", children: [] },
-    {
-      label: "Profil",
-      href: "#",
-      children: [
-        { label: "Tentang Kami", href: "about" },
-        { label: "Visi Misi", href: "https://plnnusadaya.co.id/visi-misi" },
-        { label: "Tata Nilai", href: "https://plnnusadaya.co.id/tata-nilai" },
-        { label: "Profil Direksi", href: "direksi" },
-        { label: "Profil Komisaris", href: "https://plnnusadaya.co.id/profil-komisaris" },
-        { label: "Anak Perusahaan", href: "https://plnnusadaya.co.id/anak-perusahaan" },
-        { label: "Wilayah Kerja", href: "https://plnnusadaya.co.id/wilayah-kerja" },
-        { label: "Company Profile", href: "https://plnnusadaya.co.id/company-profile" },
-        { label: "Kontak Kami", href: "contact" },
-      ],
-    },
-    {
-      label: "Tata Kelola",
-      href: "#",
-      children: [
-        { label: "Board Manual", href: "https://plnnusadaya.co.id/board-manual" },
-        { label: "Code of Conduct", href: "https://plnnusadaya.co.id/code-of-conduct" },
-        { label: "Pedoman GCG", href: "https://plnnusadaya.co.id/gcg" },
-        { label: "Annual Report", href: "https://plnnusadaya.co.id/annual-report" },
-        { label: "Sustainability Report", href: "https://plnnusadaya.co.id/sustainability-report" },
-        { label: "Risk Management", href: "https://plnnusadaya.co.id/risk-management" },
-        { label: "Whistle Blowing System", href: "https://plnnusadaya.co.id/wbs" },
-      ],
-    },
-    {
-      label: "Layanan",
-      href: "#",
-      children: [
-        { label: "Asset Management Contract", href: "services" },
-        { label: "Drups", href: "https://plnnusadaya.co.id/drups" },
-        { label: "ListriQu", href: "https://plnnusadaya.co.id/listriqu" },
-      ],
-    },
-    {
-      label: "Laporan Manajemen",
-      href: "#",
-      children: [
-        { label: "Laporan Triwulan I", href: "#" },
-        { label: "Semester I", href: "#" },
-        { label: "Triwulan III", href: "#" },
-        { label: "Semester II", href: "#" },
-      ],
-    },
-    {
-      label: "Pengadaan",
-      href: "#",
-      children: [
-        { label: "Info Pengadaan", href: "https://plnnusadaya.co.id/info-pengadaan" },
-        { label: "Pedoman Pengadaan", href: "https://plnnusadaya.co.id/pedoman-pengadaan" },
-      ],
-    },
-    {
-      label: "Media",
-      href: "#",
-      children: [
-        { label: "Berita PLN Nusa Daya", href: "news" },
-        { label: "Portal Artikel & Blog", href: "/berita" },
-      ],
-    },
-    { label: "Privacy Policy", href: "https://plnnusadaya.co.id/privacy-policy", children: [] },
-  ];
 
   const services = [
     {
@@ -674,12 +347,134 @@ export default function HomePage() {
   ];
 
   const portfolioItems = [
-    { cat: "pembangkit", img: "/images/portfolio-10.jpg", label: "O&M Pembangkit Listrik" },
-    { cat: "pembangkit", img: "/images/portfolio-9.jpg",  label: "Pembangkit Listrik Modern" },
-    { cat: "distribusi", img: "/images/portfolio-8.jpg",  label: "O&M Distribusi & Yantek" },
-    { cat: "transmisi",  img: "/images/portfolio-7.jpg",  label: "O&M Gardu Induk Transmisi" },
-    { cat: "distribusi", img: "/images/portfolio-6.jpg",  label: "Inspeksi Jaringan Listrik" },
-    { cat: "pembangkit", img: "/images/portfolio-5.jpg",  label: "PLTU Sistem Kelistrikan" },
+    {
+      id: 1,
+      cat: "pembangkit",
+      categoryName: "PEMBANGKIT",
+      categoryColor: "#0284c7",
+      img: "/images/portfolio-10.jpg",
+      title: "O&M Pembangkit Listrik Wilayah Timur",
+      subtitle: "Pembangkitan Terdistribusi & Mesin Diesel-Gas",
+      desc: "Pengelolaan dan pemeliharaan mesin pembangkit listrik secara andal dan berkesinambungan di Pulau Kalimantan, Sulawesi, Maluku, dan Papua. Mengoptimalkan SFC efisiensi bahan bakar serta menjamin ketersediaan pasokan daya listrik 24/7.",
+      badges: ["Kawasan Timur", "SLA 99.8%", "Standar ISO 9001"],
+      specs: [
+        { label: "Cakupan", val: "Kalimantan & Wilayah Timur" },
+        { label: "Keandalan EAF", val: "99.8%" },
+        { label: "Standar Mutu", val: "ISO 9001, 14001, 45001" },
+      ]
+    },
+    {
+      id: 2,
+      cat: "pembangkit",
+      categoryName: "PEMBANGKIT",
+      categoryColor: "#0284c7",
+      img: "/images/portfolio-9.jpg",
+      title: "Pembangkit Listrik Tenaga Gas Modern",
+      subtitle: "Teknologi Turbin Siklus Cepat (Fast Peaker)",
+      desc: "Operasional pembangkit berbahan bakar gas alam ramah lingkungan dengan efisiensi termal tinggi, waktu start-up cepat untuk memikul beban puncak (peaker), dan kepatuhan baku mutu emisi gas buang.",
+      badges: ["Low Emission", "Siklus Tertutup", "Fast Peaker"],
+      specs: [
+        { label: "Teknologi", val: "Gas Turbine Generator" },
+        { label: "Waktu Respon", val: "< 15 Menit ke Grid" },
+        { label: "Status Emisi", val: "Sesuai Baku Mutu KLHK" },
+      ]
+    },
+    {
+      id: 3,
+      cat: "distribusi",
+      categoryName: "DISTRIBUSI",
+      categoryColor: "#10b981",
+      img: "/images/portfolio-8.jpg",
+      title: "Pemeliharaan Jaringan Distribusi & Yantek",
+      subtitle: "Jaringan Tegangan Menengah & Rendah (JTM/JTR)",
+      desc: "Armada Pelayanan Teknik (Yantek) responsif 24 jam untuk pemeliharaan preventif jaringan distribusi, perbaikan trafo distribusi, dan penanganan gangguan demi memastikan pasokan listrik ke pelanggan andal tanpa jeda.",
+      badges: ["Respon 24/7", "PDKB Bertegangan", "Siaga Gangguan"],
+      specs: [
+        { label: "Armada Yantek", val: "25.000+ Personil Lapangan" },
+        { label: "Wilayah Unit", val: "9 Unit Pelaksana Regional" },
+        { label: "Respon Time SLA", val: "< 45 Menit di Lokasi" },
+      ]
+    },
+    {
+      id: 4,
+      cat: "transmisi",
+      categoryName: "TRANSMISI",
+      categoryColor: "#f59e0b",
+      img: "/images/portfolio-7.jpg",
+      title: "Operasi & Pemeliharaan Gardu Induk Transmisi",
+      subtitle: "Sistem Saluran Udara Tegangan Tinggi (SUTT 150 kV)",
+      desc: "Pengawasan, pengoperasian, dan inspeksi menyeluruh peralatan switchyard gardu induk 70 kV dan 150 kV. Meliputi patroli right-of-way (ROW), uji thermovision infra merah berkala, dan pemeliharaan isolator transmisi.",
+      badges: ["Tegangan Tinggi 150 kV", "Patroli ROW", "Switchyard O&M"],
+      specs: [
+        { label: "Tegangan Kerja", val: "70 kV - 150 kV" },
+        { label: "Metode Inspeksi", val: "Thermovision & Drone Patrol" },
+        { label: "Kinerja Trip", val: "Zero Unplanned Outage" },
+      ]
+    },
+    {
+      id: 5,
+      cat: "distribusi",
+      categoryName: "DISTRIBUSI",
+      categoryColor: "#10b981",
+      img: "/images/portfolio-6.jpg",
+      title: "Inspeksi & Sertifikasi Jaringan Kelistrikan",
+      subtitle: "Audit Teknis & Pemeliharaan Tera kWh Meter",
+      desc: "Pemeriksaan dan peremajaan kWh meter presisi, tera meter pelanggan industri dan komersial, perbaikan sambungan rumah, serta implementasi standar keselamatan K3L ketenagalistrikan terpadu.",
+      badges: ["Tera Presisi", "Manajemen Billman", "Audit Mutu"],
+      specs: [
+        { label: "Akurasi Meter", val: "Kelas Presisi 0.5S / 0.2S" },
+        { label: "Standar Uji", val: "SNI / Standar PLN (SPLN)" },
+        { label: "Keselamatan", val: "K3L Zero Accident" },
+      ]
+    },
+    {
+      id: 6,
+      cat: "pembangkit",
+      categoryName: "PEMBANGKIT",
+      categoryColor: "#0284c7",
+      img: "/images/portfolio-5.jpg",
+      title: "Pembangkit Listrik Tenaga Uap (PLTU) Terpadu",
+      subtitle: "Penyangga Beban Dasar (Base Load System)",
+      desc: "Penyediaan pasokan daya listrik skala besar untuk menopang sistem interkoneksi kelistrikan regional dan kawasan industri, didukung manajemen handling batubara dan pemanfaatan abu FABA ramah lingkungan.",
+      badges: ["Base Load", "Pemanfaatan FABA", "Sistem Interkoneksi"],
+      specs: [
+        { label: "Fungsi Grid", val: "Penyangga Beban Dasar" },
+        { label: "Siklus Termal", val: "Boiler Sirkulasi Batubara" },
+        { label: "Program FABA", val: "100% Sirkular Ramah Lingkungan" },
+      ]
+    },
+    {
+      id: 7,
+      cat: "pelayanan",
+      categoryName: "PELAYANAN",
+      categoryColor: "#8b5cf6",
+      img: "/images/portfolio-8.jpg",
+      title: "Layanan Pelanggan & Billing Management (BILLMAN)",
+      subtitle: "Pelayanan Terpadu & Digital Meter Reading",
+      desc: "Pencatatan angka meter secara digital dan real-time menggunakan aplikasi terintegrasi WACB & PLN Mobile, penanganan permintaan teknis pelanggan, dan evaluasi kepuasan pelanggan secara berkala.",
+      badges: ["Digital Billing", "Aplikasi WACB", "Kepuasan Pelanggan"],
+      specs: [
+        { label: "Platform", val: "WACB Terintegrasi" },
+        { label: "Akurasi Billing", val: "99.9% Tepat Waktu" },
+        { label: "Kepuasan Konsumen", val: "Indeks Sangat Puas" },
+      ]
+    },
+    {
+      id: 8,
+      cat: "beyond",
+      categoryName: "BEYOND KWH",
+      categoryColor: "#06b6d4",
+      img: "/images/portfolio-9.jpg",
+      title: "Inovasi Beyond kWh & Transisi Energi Hijau",
+      subtitle: "Dekarbonisasi & Manajemen Energi Bersih",
+      desc: "Pengembangan solusi energi modern melampaui pasokan listrik konvensional, meliputi implementasi PLTS Atap komersial, penerbitan sertifikat energi terbarukan (REC), dan optimalisasi efisiensi konsumsi daya.",
+      badges: ["Green Energy", "Renewable REC", "Dekarbonisasi"],
+      specs: [
+        { label: "Inisiatif Hijau", val: "Solar PV Rooftop & REC" },
+        { label: "Mitigasi Karbon", val: "Reduksi Emisi GRK Terukur" },
+        { label: "Target ESG", val: "Net Zero Emission Roadmap" },
+      ]
+    }
   ];
   const filteredPortfolio = portfolioFilter === "all" ? portfolioItems : portfolioItems.filter((i) => i.cat === portfolioFilter);
 
@@ -698,54 +493,6 @@ export default function HomePage() {
           --nav-h: 76px;
         }
         body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: #ffffff; }
-
-        /* Navbar — Seamless Blend with Hero Header */
-        .navbar-corp {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 1000; height: var(--nav-h);
-          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.15) 70%, transparent 100%);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.25); transition: all .35s ease;
-          box-shadow: none;
-        }
-        .navbar-corp.scrolled {
-          background: rgba(255, 255, 255, 0.98);
-          border-bottom: 1px solid rgba(226, 232, 240, 0.85);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        .nav-container-corp {
-          max-width: 1400px; margin: 0 auto; height: 100%; padding: 0 28px;
-          display: flex; align-items: center; justify-content: space-between; gap: 20px;
-        }
-        .logo-danantara-corp { height: 42px; width: auto; object-fit: contain; }
-        .nav-link-corp {
-          display: flex; align-items: center; gap: 4px; padding: 10px 12px;
-          font-size: 14px; font-weight: 500; color: #334155; border-radius: 6px;
-          transition: color .2s; white-space: nowrap; cursor: pointer;
-        }
-        .nav-link-corp:hover { color: var(--primary); }
-        .nav-item-corp.active .nav-link-corp {
-          color: var(--primary); font-weight: 600; position: relative;
-        }
-        .nav-item-corp.active .nav-link-corp::after {
-          content: ''; position: absolute; bottom: 0; left: 12px; right: 12px;
-          height: 2.5px; background: var(--primary); border-radius: 2px;
-        }
-        .dropdown-corp {
-          display: none; position: absolute; top: calc(100% + 2px); left: 0;
-          min-width: 230px; background: white; border-radius: 12px;
-          box-shadow: 0 12px 35px rgba(0,0,0,.12); border: 1px solid #e2e8f0;
-          padding: 8px; z-index: 200;
-        }
-        .nav-item-corp:hover .dropdown-corp { display: block; }
-        .dropdown-corp li a, .dropdown-corp li span {
-          display: block; padding: 9px 14px; font-size: 13px; color: #334155;
-          border-radius: 8px; transition: all .2s; cursor: pointer;
-        }
-        .dropdown-corp li a:hover, .dropdown-corp li span:hover { background: var(--primary-lt); color: var(--primary); }
-
-        .logo-akujago-corp { height: 38px; width: auto; object-fit: contain; }
-        .logo-pln-corp { height: 42px; width: auto; object-fit: contain; }
 
         /* Hero */
         .hero, .hero-corp {
@@ -1117,31 +864,127 @@ export default function HomePage() {
         }
         .news-read-btn-corp:hover { gap: 10px; color: #0d84c1; }
 
-        /* Portfolio — Pure White Background (No Gray) */
-        .portfolio-section-corp { padding: 80px 0; background: #ffffff; }
+        /* Portfolio — Enhanced Large Image Cards with Rich Hover Explanations */
+        .portfolio-section-corp { padding: 90px 0 100px; background: #ffffff; }
         .filter-btn-corp {
-          background: transparent; border: none; font-size: 13px; font-weight: 700;
-          color: #475569; padding: 8px 18px; border-radius: 6px; cursor: pointer;
-          letter-spacing: .5px; transition: all .2s ease;
+          background: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700;
+          color: #475569; padding: 10px 22px; border-radius: 9999px; cursor: pointer;
+          letter-spacing: .5px; transition: all .25s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-        .filter-btn-corp:hover { color: #1a9de1; }
-        .filter-btn-corp.active { background: #1a9de1; color: #ffffff; }
+        .filter-btn-corp:hover { color: #0284c7; border-color: #38bdf8; background: #f0f9ff; }
+        .filter-btn-corp.active { background: #0284c7; color: #ffffff; border-color: #0284c7; box-shadow: 0 4px 14px rgba(2,132,199,0.35); }
         .portfolio-grid-corp {
-          max-width: 1280px; margin: 0 auto; padding: 0 32px;
-          display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+          max-width: 1360px; margin: 0 auto; padding: 0 24px;
+          display: grid; grid-template-columns: repeat(auto-fit, minmax(390px, 1fr)); gap: 32px;
         }
         .portfolio-item-corp {
-          position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 16/11;
-          background: #ffffff; border: 1px solid #f1f5f9;
-          box-shadow: 0 4px 18px rgba(0,0,0,0.06); cursor: pointer;
+          position: relative; border-radius: 20px; overflow: hidden; height: 380px; min-height: 380px;
+          background: #0f172a; border: 1px solid #e2e8f0;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08); cursor: pointer;
+          transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .4s cubic-bezier(0.16, 1, 0.3, 1), border-color .4s ease;
         }
-        .portfolio-item-corp img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
-        .portfolio-item-corp:hover img { transform: scale(1.08); }
+        .portfolio-item-corp:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 22px 50px rgba(2, 132, 199, 0.2), 0 8px 24px rgba(0,0,0,0.12);
+          border-color: #38bdf8;
+        }
+        .portfolio-img-bg {
+          width: 100%; height: 100%; object-fit: cover;
+          transition: transform .7s cubic-bezier(0.16, 1, 0.3, 1), filter .7s ease;
+        }
+        .portfolio-item-corp:hover .portfolio-img-bg {
+          transform: scale(1.1);
+          filter: brightness(0.75);
+        }
+        /* Bottom resting preview bar */
+        .portfolio-bottom-bar-corp {
+          position: absolute; bottom: 0; left: 0; right: 0;
+          background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.7) 65%, transparent 100%);
+          padding: 28px 22px 18px;
+          display: flex; flex-direction: column; gap: 6px;
+          transition: opacity .35s ease, transform .35s ease;
+          z-index: 2;
+        }
+        .portfolio-item-corp:hover .portfolio-bottom-bar-corp {
+          opacity: 0; transform: translateY(12px); pointer-events: none;
+        }
+        .portfolio-badge-pill {
+          display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800;
+          color: #ffffff; padding: 3px 10px; border-radius: 9999px; text-transform: uppercase;
+          letter-spacing: 0.6px; align-self: flex-start;
+        }
+        .portfolio-title-rest {
+          font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1.35;
+        }
+        .portfolio-hint-rest {
+          font-size: 11.5px; color: #94a3b8; display: flex; align-items: center; gap: 4px;
+        }
+
+        /* Hover Overlay — Smooth sliding information and full description */
         .portfolio-overlay-corp {
-          position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
-          display: flex; align-items: flex-end; padding: 20px; opacity: 0; transition: opacity .3s ease;
+          position: absolute; inset: 0;
+          background: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.96) 90%);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          padding: 26px 24px;
+          display: flex; flex-direction: column; justify-content: flex-end;
+          opacity: 0; transform: translateY(14px);
+          transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 3;
         }
-        .portfolio-item-corp:hover .portfolio-overlay-corp { opacity: 1; }
+        .portfolio-item-corp:hover .portfolio-overlay-corp {
+          opacity: 1; transform: translateY(0);
+        }
+        .portfolio-overlay-title {
+          font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.35; margin-bottom: 3px;
+        }
+        .portfolio-overlay-sub {
+          font-size: 11.5px; font-weight: 700; color: #38bdf8; text-transform: uppercase;
+          letter-spacing: 0.5px; margin-bottom: 8px;
+        }
+        .portfolio-overlay-desc {
+          font-size: 12.5px; color: #e2e8f0; line-height: 1.6; margin-bottom: 12px;
+          display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .portfolio-specs-row {
+          display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+        }
+        .portfolio-spec-chip {
+          background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16);
+          border-radius: 6px; padding: 3px 8px; font-size: 10.5px; color: #cbd5e1;
+        }
+        .portfolio-spec-chip strong { color: #ffffff; margin-right: 4px; }
+        .portfolio-action-btn {
+          display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+          background: #0284c7; color: #ffffff; padding: 9px 18px; border-radius: 10px;
+          font-size: 12px; font-weight: 700; border: none; cursor: pointer;
+          transition: all .2s ease; box-shadow: 0 4px 12px rgba(2,132,199,0.3);
+          align-self: flex-start;
+        }
+        .portfolio-action-btn:hover { background: #0ea5e9; transform: translateY(-2px); }
+
+        /* Lightbox Preview Modal */
+        .portfolio-lightbox-overlay {
+          position: fixed; inset: 0; z-index: 9999;
+          background: rgba(15, 23, 42, 0.82);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          display: flex; align-items: center; justify-content: center;
+          padding: 20px; animation: modalFadeIn .25s ease-out;
+        }
+        .portfolio-lightbox-card {
+          background: #ffffff; border-radius: 24px; max-width: 920px; width: 100%;
+          max-height: 92vh; overflow-y: auto;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.35); border: 1px solid #e2e8f0;
+          display: flex; flex-direction: column; position: relative;
+        }
+        .portfolio-lightbox-close {
+          position: absolute; top: 16px; right: 16px; width: 38px; height: 38px;
+          border-radius: 50%; background: rgba(15, 23, 42, 0.65); color: #ffffff;
+          border: none; font-size: 22px; display: flex; align-items: center;
+          justify-content: center; cursor: pointer; z-index: 20; transition: all .2s;
+        }
+        .portfolio-lightbox-close:hover { background: #0f172a; transform: scale(1.08); }
 
         /* Scroll Reveal Animation */
         .scroll-reveal {
@@ -1209,7 +1052,6 @@ export default function HomePage() {
           .contact-container-corp { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-          .nav-menu-corp { display: none; }
           .service-card-corp { flex: 0 0 100%; }
           .news-card-corp { flex: 0 0 100%; }
           .portfolio-grid-corp { grid-template-columns: 1fr; }
@@ -1219,70 +1061,9 @@ export default function HomePage() {
       `}</style>
 
       {/* ================================================================
-          NAVBAR
+          NAVBAR (shared component: nav-container-corp)
       ================================================================ */}
-      <header className={`navbar-corp${scrolled ? " scrolled" : ""}`} id="navbar">
-        <div className="nav-container-corp">
-          <div className="nav-brand">
-            <Link href="#home">
-              <img
-                src="/images/danantara.png"
-                onError={(e) => { e.currentTarget.src = "/images/DANANTARA1.png"; }}
-                alt="Danantara Indonesia"
-                className="logo-danantara-corp"
-              />
-            </Link>
-          </div>
-
-          <nav className="nav-menu-corp">
-            <ul style={{ display: "flex", alignItems: "center", gap: 6, listStyle: "none" }}>
-              {navLinks.map((item) => (
-                <li
-                  key={item.label}
-                  className={`nav-item-corp relative${activeSection === item.href ? " active" : ""}`}
-                >
-                  {item.children.length > 0 ? (
-                    <span className="nav-link-corp">
-                      {item.label} <span style={{ fontSize: 11, opacity: 0.7 }}>▾</span>
-                    </span>
-                  ) : (
-                    <span onClick={() => handleNavClick(item.label, item.href)} className="nav-link-corp">
-                      {item.label}
-                    </span>
-                  )}
-
-                  {item.children.length > 0 && (
-                    <ul className="dropdown-corp" style={{ listStyle: "none" }}>
-                      {item.children.map((sub: any) => (
-                        <li key={sub.label}>
-                          <span
-                            onClick={() => handleNavClick(sub.label, sub.href)}
-                            style={{ display: "block", padding: "8px 14px", fontSize: 13, color: "#334155", borderRadius: 6, cursor: "pointer" }}
-                          >
-                            {sub.label}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <a href="https://plnnusadaya.co.id/aku-jago" target="_blank" rel="noreferrer" title="Aku Jago">
-              <img src="/images/aku-jago.png" alt="Aku Jago" className="logo-akujago-corp" />
-            </a>
-            <img
-              src="/images/logo/LOGO-PLN.png"
-              onError={(e) => { e.currentTarget.src = "/images/plnt.png"; }}
-              alt="PLN Nusa Daya"
-              className="logo-pln-corp"
-            />
-          </div>
-        </div>
-      </header>
+      <CorpNavbar activeSection={activeSection} />
 
       {/* ============================================================
            HERO SECTION — Reusable Component with Full Background Video
@@ -1675,11 +1456,64 @@ export default function HomePage() {
         </div>
 
         <div className="portfolio-grid-corp">
-          {filteredPortfolio.map((item, idx) => (
-            <div key={idx} className="portfolio-item-corp scroll-reveal">
-              <img src={item.img} alt={item.label} />
+          {filteredPortfolio.map((item: any, idx: number) => (
+            <div
+              key={item.id || idx}
+              className="portfolio-item-corp scroll-reveal"
+              onClick={() => setSelectedPortfolio(item)}
+              title="Klik untuk melihat foto HD & keterangan lengkap"
+            >
+              <img src={item.img} alt={item.title} className="portfolio-img-bg" />
+
+              {/* Resting preview bar (hidden on hover) */}
+              <div className="portfolio-bottom-bar-corp">
+                <span className="portfolio-badge-pill" style={{ background: item.categoryColor || "#0284c7" }}>
+                  {item.categoryName || "PROYEK"}
+                </span>
+                <h3 className="portfolio-title-rest">{item.title}</h3>
+                <span className="portfolio-hint-rest">Arahkan kursor atau klik untuk keterangan lengkap &rarr;</span>
+              </div>
+
+              {/* Rich Hover Overlay with detailed description */}
               <div className="portfolio-overlay-corp">
-                <span style={{ color: "white", fontSize: 14, fontWeight: 600 }}>{item.label}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                  <span className="portfolio-badge-pill" style={{ background: item.categoryColor || "#0284c7" }}>
+                    {item.categoryName || "PROYEK"}
+                  </span>
+                  {item.badges && item.badges.slice(0, 2).map((b: string, bIdx: number) => (
+                    <span key={bIdx} style={{ fontSize: 10, fontWeight: 700, color: "#38bdf8", background: "rgba(56,189,248,0.15)", padding: "2px 8px", borderRadius: 4 }}>
+                      {b}
+                    </span>
+                  ))}
+                </div>
+
+                <h3 className="portfolio-overlay-title">{item.title}</h3>
+                <p className="portfolio-overlay-sub">{item.subtitle}</p>
+
+                {/* Keterangan Detail Operasional */}
+                <p className="portfolio-overlay-desc">{item.desc}</p>
+
+                {/* Spesifikasi / Highlights */}
+                {item.specs && (
+                  <div className="portfolio-specs-row">
+                    {item.specs.map((sp: any, spIdx: number) => (
+                      <div key={spIdx} className="portfolio-spec-chip">
+                        <strong>{sp.label}:</strong> {sp.val}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="portfolio-action-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedPortfolio(item);
+                  }}
+                >
+                  <span>&#128269; Lihat Foto HD &amp; Keterangan Lengkap</span>
+                </button>
               </div>
             </div>
           ))}
@@ -1904,150 +1738,6 @@ export default function HomePage() {
         </svg>
       </button>
 
-      {/* ============================================================
-          1. CORPORATE DOCUMENT VIEWER MODAL (All Header Links Viewable)
-      ============================================================ */}
-      {activeDoc && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 9999,
-            background: "rgba(15, 23, 42, 0.65)",
-            backdropFilter: "blur(6px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "20px",
-          }}
-          onClick={() => setActiveDoc(null)}
-        >
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: "18px",
-              maxWidth: "720px",
-              width: "100%",
-              maxHeight: "85vh",
-              overflowY: "auto",
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.25)",
-              border: "1px solid #e2e8f0",
-              padding: "36px 32px 32px",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setActiveDoc(null)}
-              style={{
-                position: "absolute",
-                top: 20,
-                right: 20,
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "#f1f5f9",
-                border: "none",
-                color: "#64748b",
-                fontSize: 18,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                transition: "all .2s",
-              }}
-              aria-label="Tutup"
-            >
-              ✕
-            </button>
-
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <span
-                style={{
-                  background: "#e0f2fe",
-                  color: "#0284c7",
-                  fontSize: "11.5px",
-                  fontWeight: 700,
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
-                }}
-              >
-                {activeDoc.category}
-              </span>
-              <span
-                style={{
-                  background: "#f1f5f9",
-                  color: "#475569",
-                  fontSize: "11.5px",
-                  fontWeight: 600,
-                  padding: "4px 10px",
-                  borderRadius: "6px",
-                }}
-              >
-                {activeDoc.badge}
-              </span>
-            </div>
-
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: 800,
-                color: "#0f172a",
-                lineHeight: 1.3,
-                marginBottom: 20,
-                borderBottom: "2px solid #f1f5f9",
-                paddingBottom: "14px",
-              }}
-            >
-              {activeDoc.title}
-            </h2>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "28px" }}>
-              {activeDoc.content.map((para, pIdx) => (
-                <div
-                  key={pIdx}
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    gap: "12px",
-                    background: "#f8fafc",
-                    padding: "16px 18px",
-                    borderRadius: "10px",
-                    borderLeft: "4px solid #1a9de1",
-                  }}
-                >
-                  <p style={{ fontSize: "14.5px", color: "#334155", lineHeight: 1.7, margin: 0 }}>
-                    {para}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "16px", borderTop: "1px solid #f1f5f9" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "12.5px", color: "#64748b" }}>
-                <span>🔒 Dokumen Resmi Korporat PT PLN Nusa Daya</span>
-              </div>
-              <button
-                onClick={() => setActiveDoc(null)}
-                style={{
-                  padding: "10px 24px",
-                  borderRadius: "9999px",
-                  background: "#1a9de1",
-                  color: "#ffffff",
-                  border: "none",
-                  fontWeight: 600,
-                  fontSize: "13.5px",
-                  cursor: "pointer",
-                }}
-              >
-                Tutup Dokumen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ============================================================
           2. ARTICLE READER MODAL (For Full Latest News Reading)
@@ -2208,6 +1898,90 @@ export default function HomePage() {
           </div>
         </div>
       )}
+      {/* ================================================================
+          PORTFOLIO LIGHTBOX / DETAIL MODAL
+      ================================================================ */}
+      {selectedPortfolio && (
+        <div
+          className="portfolio-lightbox-overlay"
+          onClick={() => setSelectedPortfolio(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="portfolio-lightbox-card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="portfolio-lightbox-close"
+              onClick={() => setSelectedPortfolio(null)}
+              aria-label="Tutup"
+            >
+              &times;
+            </button>
+
+            <div style={{ position: "relative", width: "100%", maxHeight: "480px", overflow: "hidden", background: "#0f172a" }}>
+              <img
+                src={selectedPortfolio.img}
+                alt={selectedPortfolio.title}
+                style={{ width: "100%", maxHeight: "480px", objectFit: "contain", background: "#0b1329", display: "block" }}
+              />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "linear-gradient(to top, rgba(15,23,42,0.9) 0%, transparent 100%)", padding: "30px 24px 16px" }}>
+                <span className="portfolio-badge-pill" style={{ background: selectedPortfolio.categoryColor || "#0284c7" }}>
+                  {selectedPortfolio.categoryName || "PROYEK"}
+                </span>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: "#ffffff", marginTop: 6, lineHeight: 1.3 }}>
+                  {selectedPortfolio.title}
+                </h2>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#38bdf8", marginTop: 2 }}>
+                  {selectedPortfolio.subtitle}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ padding: "28px 30px" }}>
+              <div style={{ marginBottom: 20 }}>
+                <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, color: "#0284c7", marginBottom: 8 }}>
+                  KETERANGAN OPERASIONAL &amp; CAKUPAN KERJA:
+                </h4>
+                <p style={{ fontSize: 14.5, color: "#334155", lineHeight: 1.8 }}>
+                  {selectedPortfolio.desc}
+                </p>
+              </div>
+
+              {selectedPortfolio.specs && (
+                <div style={{ marginBottom: 24, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, padding: "16px 20px" }}>
+                  <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, color: "#475569", marginBottom: 12 }}>
+                    SPESIFIKASI &amp; INDIKATOR KINERJA:
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+                    {selectedPortfolio.specs.map((sp: any, i: number) => (
+                      <div key={i} style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", display: "block" }}>{sp.label}</span>
+                        <strong style={{ fontSize: 13.5, color: "#0f172a", marginTop: 2, display: "block" }}>{sp.val}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
+                <span style={{ fontSize: 12, color: "#64748b" }}>
+                  &#128274; Portofolio Operasional Resmi PT PLN Nusa Daya
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPortfolio(null)}
+                  style={{ padding: "9px 24px", borderRadius: 9999, background: "#0284c7", color: "#ffffff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                >
+                  Tutup Tampilan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 }

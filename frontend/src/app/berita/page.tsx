@@ -111,8 +111,12 @@ export default function BeritaPage() {
               >
                 <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-800">
                   <img
-                    src={article.image_url || "https://images.unsplash.com/photo-1544725121-be3bf52e2dc8?q=80&w=800&auto=format&fit=crop"}
+                    src={article.image_url || "/images/portfolio-5.jpg"}
                     alt={article.title}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/images/portfolio-5.jpg";
+                    }}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute top-3 left-3 rounded-md bg-white/90 backdrop-blur-xs px-2.5 py-1 text-[10px] font-extrabold uppercase text-brand-700 dark:bg-gray-950/80 dark:text-brand-300">

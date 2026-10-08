@@ -87,6 +87,12 @@ export default function PresensiPage() {
   }, []);
 
   const loadHistory = () => {
+    // Riwayat presensi butuh token login; jangan panggil API untuk tamu
+    if (!localStorage.getItem("pln_token")) {
+      setHistory([]);
+      setLoadingHistory(false);
+      return;
+    }
     setLoadingHistory(true);
     apiClient.get("/attendance/history")
       .then((res) => {
@@ -243,6 +249,11 @@ export default function PresensiPage() {
     e.preventDefault();
     if (!userLocation || !selectedUnit) {
       alert("Harap deteksi posisi GPS Anda terlebih dahulu.");
+      return;
+    }
+
+    if (!localStorage.getItem("pln_token")) {
+      setSubmitMessage({ text: "Silakan login terlebih dahulu untuk mencatat presensi.", success: false });
       return;
     }
 

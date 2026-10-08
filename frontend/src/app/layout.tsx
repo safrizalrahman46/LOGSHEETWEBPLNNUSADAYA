@@ -24,7 +24,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.getItem('pln_theme') === 'dark') {
+                var t = localStorage.getItem('pln_theme');
+                if (t === 'dark') {
                   document.documentElement.classList.add('dark');
                 } else {
                   document.documentElement.classList.remove('dark');
@@ -47,7 +48,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-gray-50 text-gray-900 antialiased min-h-screen dark:bg-gray-950 dark:text-gray-100 transition-colors duration-200">
+        <body className="bg-white text-gray-900 antialiased min-h-screen dark:bg-gray-950 dark:text-gray-100">
         <Providers>
           {children}
         </Providers>
