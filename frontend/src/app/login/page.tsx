@@ -279,11 +279,12 @@ export default function LoginPage() {
 
               {showAccountsGuide && (
                 <div className="mt-2 text-left rounded-lg bg-slate-50 p-2.5 border border-slate-200 text-[10px] text-slate-600 space-y-1">
-                  <p className="font-semibold text-slate-700">Akun default (Password: 123):</p>
+                  <p className="font-semibold text-slate-700">Akun pengujian:</p>
+                  <p>• <strong>admin</strong> / <strong>admin123</strong> (Role: ADMIN)</p>
                   <p>• <strong>operator</strong> (Role: OPERATOR)</p>
                   <p>• <strong>teknisi</strong> (Role: TEKNISI)</p>
                   <p>• <strong>supervisor</strong> (Role: SUPERVISOR)</p>
-                  <p>• <strong>admin</strong> (Role: ADMIN)</p>
+                  <p className="font-semibold text-slate-700 pt-1">Password lainnya: 123</p>
                   <p className="text-slate-400 italic text-[9px] pt-1">
                     * Mendukung akun WACB resmi (wacb.nusadaya.net)
                   </p>
