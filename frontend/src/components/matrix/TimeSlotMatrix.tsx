@@ -100,8 +100,8 @@ export function TimeSlotMatrix({
             Unit Layanan PLTD • Tanggal: {tanggal}
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
+        <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4">
+          <div className="text-left sm:text-right">
             <div className="text-xs font-semibold uppercase text-gray-400">Keterisian Hari Ini</div>
             <div className="text-base font-extrabold text-brand-600 dark:text-brand-400">
               {doneCount} / 48 Slot <span className="text-xs font-bold text-gray-500 dark:text-gray-400">({percentage}%)</span>
@@ -123,7 +123,7 @@ export function TimeSlotMatrix({
             Memuat status slot pembebanan...
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 sm:gap-2.5 md:grid-cols-8 lg:grid-cols-12">
             {allSlots.map((slot) => {
               const item = matrixData[slot];
               const isDone = item?.status === "done";
@@ -133,7 +133,7 @@ export function TimeSlotMatrix({
                 <button
                   key={slot}
                   onClick={() => handleSlotClick(slot, item)}
-                  className={`relative flex flex-col items-center justify-between gap-1.5 rounded-xl border p-2.5 text-center transition-all active:scale-95 ${
+                  className={`relative flex flex-col items-center justify-between gap-1 rounded-xl border p-1.5 text-center transition-all active:scale-95 sm:gap-1.5 sm:p-2.5 ${
                     isDone
                       ? "border-success-300/80 bg-success-50/70 text-success-900 shadow-theme-xs hover:bg-success-100 dark:border-success-800 dark:bg-success-950/40 dark:text-success-300 dark:hover:bg-success-900/50"
                       : "border-gray-200 bg-gray-50/60 text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-400 dark:hover:bg-gray-800"

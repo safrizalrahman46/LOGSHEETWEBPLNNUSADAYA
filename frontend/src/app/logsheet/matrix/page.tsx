@@ -234,7 +234,7 @@ export default function MatrixPage() {
           <BarChart data={perUnit} layout="vertical" margin={{ left: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis type="number" allowDecimals={false} tick={axisTick} />
-            <YAxis type="category" dataKey="unit" width={130} tick={{ ...axisTick, fontSize: 9 }} />
+                  <YAxis type="category" dataKey="unit" width={100} tick={{ ...axisTick, fontSize: 9 }} />
             <Tooltip />
             <Bar dataKey="jumlah" name="Jumlah baris logsheet" fill="#10b981" radius={[0, 6, 6, 0]} />
           </BarChart>
@@ -313,7 +313,7 @@ export default function MatrixPage() {
                 Rekap status mesin, beban per jam, dan distribusi per unit
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="flex flex-wrap gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
                 {CHART_TABS.map((t) => {
                   const Icon = t.icon;
@@ -340,7 +340,7 @@ export default function MatrixPage() {
               <button
                 onClick={() => setShowAllCharts((v) => !v)}
                 title={showAllCharts ? "Satu chart besar" : "Tampilkan semua chart"}
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors ${
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ${
                   showAllCharts
                     ? "border-brand-400 bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"
                     : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"

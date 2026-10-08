@@ -255,6 +255,7 @@ export default function AdminLogsheetsPage() {
           onFieldChange={handleFieldChange}
           mapRow={mapRow}
           createLabel="Tambah Logsheet"
+          tableMinWidth="min-w-[1040px]"
         />
       </AppLayout>
     </RoleGuard>

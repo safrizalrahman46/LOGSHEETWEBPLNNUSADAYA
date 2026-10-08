@@ -283,7 +283,7 @@ export default function DashboardPage() {
             <BarChart data={bebanData} layout="vertical" margin={{ left: 8 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" tick={axisTick} />
-              <YAxis type="category" dataKey="mesin" width={120} tick={{ ...axisTick, fontSize: 9 }} />
+                  <YAxis type="category" dataKey="mesin" width={96} tick={{ ...axisTick, fontSize: 9 }} />
               <Tooltip />
               <Bar dataKey="beban" name="Beban (kW)" fill="#10b981" radius={[0, 6, 6, 0]} />
             </BarChart>
@@ -357,7 +357,7 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={handleExportExcel}
               disabled={downloading}
@@ -447,7 +447,7 @@ export default function DashboardPage() {
             />
             {/* Header */}
             <div className="bg-gradient-to-r from-error-600 via-error-500 to-error-600 px-5 py-4 sm:px-6">
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-2xl bg-white/30" />
                   <Siren className="relative h-6 w-6 text-white" />
@@ -460,7 +460,7 @@ export default function DashboardPage() {
                     {problemCount} masalah perlu ditindaklanjuti
                   </h2>
                 </div>
-                <div className="flex items-center gap-4 text-white">
+                <div className="flex items-center gap-4 text-white sm:shrink-0">
                   <div className="text-right">
                     <p className="text-3xl font-black leading-none">{gangguanCount}</p>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">
@@ -593,9 +593,9 @@ export default function DashboardPage() {
                               </div>
                             ))}
                           </div>
-                          <div className="mt-1 flex items-center justify-between text-[10px] font-semibold text-gray-400 dark:text-gray-500">
+                          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] font-semibold text-gray-400 dark:text-gray-500">
                             <span>{HAR_STEPS[step]}</span>
-                            <span>
+                            <span className="min-w-0">
                               Umur tiket {durasi(t.created_at)} • {t.teknisi_name || "teknisi belum ditentukan"}
                             </span>
                           </div>
@@ -618,7 +618,7 @@ export default function DashboardPage() {
         )}
 
         {statsState === "ok" && stats && problemCount === 0 && (
-          <div className="flex items-center gap-4 rounded-2xl border-2 border-success-200 bg-success-50 px-5 py-4 dark:border-success-500/30 dark:bg-success-500/10">
+          <div className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-success-200 bg-success-50 px-5 py-4 dark:border-success-500/30 dark:bg-success-500/10">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-success-600 text-white">
               <CheckCircle2 className="h-6 w-6" />
             </div>
@@ -734,7 +734,7 @@ export default function DashboardPage() {
                   : "Statistik membutuhkan sesi login"}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="flex flex-wrap gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
                 {CHART_TABS.map((t) => {
                   const Icon = t.icon;
@@ -761,7 +761,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => setShowAllCharts((v) => !v)}
                 title={showAllCharts ? "Satu chart besar" : "Tampilkan semua chart"}
-                className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-colors ${
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ${
                   showAllCharts
                     ? "border-brand-400 bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"
                     : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"

@@ -213,9 +213,9 @@ function InputLogsheetContent() {
       <div className="space-y-6">
         {/* Success Toast */}
         {successToast && (
-          <div className="flex items-center gap-2 rounded-xl bg-success-600 px-4 py-3 text-xs font-bold text-white shadow-theme-md animate-bounce">
-            <CheckCircle2 className="h-5 w-5" />
-            <span>{successToast}</span>
+          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-success-600 px-4 py-3 text-xs font-bold text-white shadow-theme-md animate-bounce">
+            <CheckCircle2 className="h-5 w-5 shrink-0" />
+            <span className="min-w-0">{successToast}</span>
           </div>
         )}
 
@@ -232,7 +232,7 @@ function InputLogsheetContent() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
                   onClick={() => setPreviewOpen(!previewOpen)}

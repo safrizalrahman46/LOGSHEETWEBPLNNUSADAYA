@@ -76,12 +76,12 @@ export const AppHeader: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-30 flex h-18 w-full border-b border-gray-200 bg-white/95 px-4 backdrop-blur-md transition-colors sm:px-6 dark:border-gray-800 dark:bg-gray-900/95 select-none">
-      <div className="flex w-full items-center justify-between gap-3">
+      <div className="flex w-full min-w-0 items-center justify-between gap-2 sm:gap-3">
         {/* Left Section: Sidebar Toggle & Active Unit Chip */}
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <button
             onClick={handleToggle}
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
             aria-label="Toggle Sidebar"
           >
             {isMobileOpen ? (
@@ -94,19 +94,19 @@ export const AppHeader: React.FC = () => {
           {/* Unit Switcher Button */}
           <Link
             href="/pilih-unit"
-            className="flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/80 px-3 py-2 text-xs font-semibold text-gray-800 transition-all hover:border-brand-300 hover:bg-brand-50/50 dark:border-gray-800 dark:bg-gray-800/80 dark:text-gray-200 dark:hover:border-brand-700 dark:hover:bg-brand-950/30"
+            className="flex min-w-0 max-w-[52vw] items-center gap-2 overflow-hidden rounded-xl border border-gray-200 bg-gray-50/80 px-2.5 py-2 text-xs font-semibold text-gray-800 transition-all hover:border-brand-300 hover:bg-brand-50/50 sm:px-3 dark:border-gray-800 dark:bg-gray-800/80 dark:text-gray-200 dark:hover:border-brand-700 dark:hover:bg-brand-950/30"
           >
-            <Building2 className="h-4 w-4 text-brand-500" />
-            <span className="hidden sm:inline font-bold">{activeUnit.nama_unit}</span>
-            <span className="sm:hidden font-bold">{activeUnit.nama_unit.slice(0, 12)}...</span>
-            <span className="rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-extrabold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+            <Building2 className="h-4 w-4 shrink-0 text-brand-500" />
+            <span className="hidden truncate sm:inline">{activeUnit.nama_unit}</span>
+            <span className="truncate sm:hidden">{activeUnit.nama_unit}</span>
+            <span className="shrink-0 rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-extrabold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
               {activeUnit.kd_unit}
             </span>
           </Link>
         </div>
 
         {/* Right Section: Time, Theme Toggle, Network Status, Offline Drafts */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {/* Clock Display */}
           <div className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
             <Calendar className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
@@ -118,16 +118,22 @@ export const AppHeader: React.FC = () => {
 
           {/* Network Status Badge */}
           {isOnline ? (
-            <div className="flex items-center gap-1.5 rounded-full border border-success-200 bg-success-50 px-2.5 py-1 text-[11px] font-bold text-success-700 dark:border-success-800/50 dark:bg-success-950/40 dark:text-success-400">
+            <div
+              title="Koneksi online"
+              className="flex items-center gap-1.5 rounded-full border border-success-200 bg-success-50 px-2 py-1 text-[11px] font-bold text-success-700 sm:px-2.5 dark:border-success-800/50 dark:bg-success-950/40 dark:text-success-400"
+            >
               <span className="h-2 w-2 rounded-full bg-success-500 animate-pulse" />
               <Wifi className="h-3.5 w-3.5 hidden sm:inline" />
-              <span>Online</span>
+              <span className="hidden sm:inline">Online</span>
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 rounded-full border border-error-200 bg-error-50 px-2.5 py-1 text-[11px] font-bold text-error-700 dark:border-error-800/50 dark:bg-error-950/40 dark:text-error-400">
+            <div
+              title="Koneksi offline"
+              className="flex items-center gap-1.5 rounded-full border border-error-200 bg-error-50 px-2 py-1 text-[11px] font-bold text-error-700 sm:px-2.5 dark:border-error-800/50 dark:bg-error-950/40 dark:text-error-400"
+            >
               <span className="h-2 w-2 rounded-full bg-error-500" />
               <WifiOff className="h-3.5 w-3.5 hidden sm:inline" />
-              <span>Offline</span>
+              <span className="hidden sm:inline">Offline</span>
             </div>
           )}
 

@@ -124,13 +124,13 @@ export default function PilihUnitPage() {
                 className="group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition-all hover:border-brand-500/50 hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
               >
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="shrink-0 rounded-md bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
                       KODE: {u.kd_unit}
                     </span>
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-gray-400">
-                      <MapPin className="h-3 w-3 text-gray-400" />
-                      {u.nama_area || "KAL-3"}
+                    <span className="flex min-w-0 items-center gap-1 truncate text-[10px] font-bold text-gray-400">
+                      <MapPin className="h-3 w-3 shrink-0 text-gray-400" />
+                      <span className="truncate">{u.nama_area || "KAL-3"}</span>
                     </span>
                   </div>
 
@@ -144,7 +144,7 @@ export default function PilihUnitPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between gap-2 border-t border-gray-100 pt-3.5 dark:border-gray-800">
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3.5 dark:border-gray-800">
                   <button
                     onClick={() => handleSelectUnit(u)}
                     className="rounded-lg bg-brand-50 px-2.5 py-1.5 text-[11px] font-bold text-brand-600 transition-colors hover:bg-brand-100 dark:bg-brand-500/15 dark:text-brand-400 dark:hover:bg-brand-500/25"

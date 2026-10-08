@@ -38,6 +38,7 @@ interface MasterCrudProps {
     form: Record<string, string>
   ) => Record<string, string> | void;
   mapRow?: (row: Record<string, unknown>) => Record<string, string>;
+  tableMinWidth?: string;
 }
 
 export function MasterCrud({
@@ -54,6 +55,7 @@ export function MasterCrud({
   emptyText = "Belum ada data.",
   onFieldChange,
   mapRow,
+  tableMinWidth = "min-w-[820px]",
 }: MasterCrudProps) {
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,7 +196,7 @@ export function MasterCrud({
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={fetchRows}
             title="Muat ulang data"
@@ -237,19 +239,21 @@ export function MasterCrud({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800">
+          <table
+            className={`${tableMinWidth} divide-y divide-gray-100 dark:divide-gray-800`}
+          >
             <thead className="bg-gray-50 dark:bg-gray-800/50">
               <tr>
                 {columns.map((c) => (
                   <th
                     key={c.key}
-                    className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                    className="whitespace-nowrap px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
                   >
                     {c.label}
                   </th>
                 ))}
                 {!readOnly && (
-                  <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <th className="whitespace-nowrap px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     Aksi
                   </th>
                 )}
@@ -327,10 +331,10 @@ export function MasterCrud({
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-sm">
           <form
             onSubmit={handleSave}
-            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-gray-200 bg-white p-4 shadow-theme-lg sm:p-6 dark:border-gray-800 dark:bg-gray-900"
           >
-            <div className="mb-5 flex items-start justify-between">
-              <div>
+            <div className="mb-5 flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <h3 className="text-base font-bold text-gray-900 dark:text-white">
                   {editingId ? "Ubah" : "Tambah"} {title.replace(/^Data\s+/i, "")}
                 </h3>
@@ -341,7 +345,7 @@ export function MasterCrud({
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800"
               >
                 <X className="h-4 w-4" />
               </button>

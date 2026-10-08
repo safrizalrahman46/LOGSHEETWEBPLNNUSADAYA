@@ -358,12 +358,12 @@ export default function PresensiPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Leaflet Map Area */}
           <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 lg:col-span-2">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-gray-800 dark:text-gray-200">
-                <MapPin className="h-4 w-4 text-brand-500" />
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex min-w-0 items-center gap-2 text-xs font-bold text-gray-800 dark:text-gray-200">
+                <MapPin className="h-4 w-4 shrink-0 text-brand-500" />
                 <span>Peta Interaktif Geofencing Site PLTD</span>
               </div>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500">
+              <div className="hidden items-center gap-4 text-[11px] text-gray-500 sm:flex">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-brand-500" />
                   <span>Titik Site PLTD</span>
@@ -503,14 +503,14 @@ export default function PresensiPage() {
 
         {/* Recent Attendance History Table */}
         <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
-          <div className="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/20">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-              <History className="h-4 w-4 text-brand-500" />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 p-5 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/20">
+            <h3 className="flex min-w-0 items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+              <History className="h-4 w-4 shrink-0 text-brand-500" />
               Riwayat Presensi Shift Lapangan
             </h3>
             <button
               onClick={loadHistory}
-              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loadingHistory ? "animate-spin" : ""}`} />
               <span>Muat Ulang</span>
@@ -518,16 +518,16 @@ export default function PresensiPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="min-w-[820px] w-full text-left text-xs">
               <thead className="border-b border-gray-200 bg-gray-50/75 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
                 <tr>
-                  <th className="py-3 px-5">Waktu</th>
-                  <th className="py-3 px-5">Nama Personel</th>
-                  <th className="py-3 px-5">Role</th>
-                  <th className="py-3 px-5">Unit Layanan</th>
-                  <th className="py-3 px-5">Shift</th>
-                  <th className="py-3 px-5">Jarak ke Site</th>
-                  <th className="py-3 px-5 text-center">Status</th>
+                  <th className="whitespace-nowrap py-3 px-5">Waktu</th>
+                  <th className="whitespace-nowrap py-3 px-5">Nama Personel</th>
+                  <th className="whitespace-nowrap py-3 px-5">Role</th>
+                  <th className="whitespace-nowrap py-3 px-5">Unit Layanan</th>
+                  <th className="whitespace-nowrap py-3 px-5">Shift</th>
+                  <th className="whitespace-nowrap py-3 px-5">Jarak ke Site</th>
+                  <th className="whitespace-nowrap py-3 px-5 text-center">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">

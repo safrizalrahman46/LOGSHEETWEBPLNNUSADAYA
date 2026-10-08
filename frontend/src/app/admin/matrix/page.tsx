@@ -142,21 +142,21 @@ export default function AdminMatrixPage() {
 
           <div className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
             <div className="border-b border-gray-100 px-5 py-4 dark:border-gray-800">
-              <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
-                <Table2 className="h-4 w-4 text-brand-500" />
+              <h3 className="flex flex-wrap items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+                <Table2 className="h-4 w-4 shrink-0 text-brand-500" />
                 Rekap {units.length > 0 ? `${units.length} Unit` : "Logsheet"} —{" "}
                 {tanggal}
               </h3>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-800">
+              <table className="min-w-[880px] divide-y divide-gray-100 dark:divide-gray-800">
                 <thead className="bg-gray-50 dark:bg-gray-800/50">
                   <tr>
                     {["Jam", "Unit", "Mesin", "Status", "Beban (kW)", "Operator", "Approval"].map(
                       (h) => (
                         <th
                           key={h}
-                          className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
+                          className="whitespace-nowrap px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400"
                         >
                           {h}
                         </th>

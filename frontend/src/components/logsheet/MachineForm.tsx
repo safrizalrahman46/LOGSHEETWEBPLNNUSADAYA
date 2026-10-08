@@ -91,20 +91,20 @@ export function MachineForm({
           </div>
 
           {/* Toggle Status Mesin Mutlak */}
-          <div className="flex items-center gap-2">
-            <span className="mr-1 text-xs font-semibold text-gray-600 dark:text-gray-300">Status Mesin:</span>
-            <div className="inline-flex rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Status Mesin:</span>
+            <div className="grid w-full grid-cols-3 gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 sm:inline-flex sm:w-auto sm:gap-0 dark:border-gray-700 dark:bg-gray-800">
               <button
                 type="button"
                 onClick={() => onChange(activeTab, { status_mesin: "OPERASI" })}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-extrabold transition-all ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
                   current.status_mesin === "OPERASI"
                     ? "bg-success-600 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
-                <Activity className="h-3.5 w-3.5" />
-                <span>OPERASI</span>
+                <Activity className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">OPERASI</span>
               </button>
               <button
                 type="button"
@@ -122,14 +122,14 @@ export function MachineForm({
                     cos_phi: 0,
                   })
                 }
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-extrabold transition-all ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
                   current.status_mesin === "STANDBY"
                     ? "bg-warning-500 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
-                <PauseCircle className="h-3.5 w-3.5" />
-                <span>STANDBY</span>
+                <PauseCircle className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">STANDBY</span>
               </button>
               <button
                 type="button"
@@ -147,14 +147,14 @@ export function MachineForm({
                     cos_phi: 0,
                   })
                 }
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-extrabold transition-all ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
                   current.status_mesin === "GANGGUAN"
                     ? "bg-error-600 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
-                <ShieldAlert className="h-3.5 w-3.5" />
-                <span>GANGGUAN</span>
+                <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">GANGGUAN</span>
               </button>
             </div>
           </div>

@@ -175,7 +175,7 @@ export default function AdminArticlesPage() {
           {/* Table of Articles */}
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="min-w-[760px] w-full text-left text-xs">
                 <thead className="border-b border-gray-200 bg-gray-50/75 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
                   <tr>
                     <th className="py-3.5 px-5">Artikel</th>
@@ -285,7 +285,7 @@ export default function AdminArticlesPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="mb-1 block font-semibold text-gray-700 dark:text-gray-300">Kategori</label>
                       <select

@@ -118,6 +118,7 @@ export default function AdminMachinesPage() {
           columns={columns}
           fields={fields}
           createLabel="Tambah Mesin"
+          tableMinWidth="min-w-[960px]"
         />
       </AppLayout>
     </RoleGuard>

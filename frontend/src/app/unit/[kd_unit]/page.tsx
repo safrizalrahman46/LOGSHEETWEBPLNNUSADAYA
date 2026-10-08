@@ -288,7 +288,7 @@ export default function UnitDetailPage() {
                     <Icon className="h-4.5 w-4.5" />
                   </div>
                 </div>
-                <p className="mt-3 truncate text-lg font-bold text-gray-900 dark:text-white">
+                <p className="mt-3 text-sm font-bold leading-tight break-words text-gray-900 sm:text-lg dark:text-white" title={c.value}>
                   {c.value}
                 </p>
               </div>
