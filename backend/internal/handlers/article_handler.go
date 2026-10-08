@@ -143,7 +143,7 @@ func (h *ArticleHandler) CreateArticle(c *fiber.Ctx) error {
 		Category: category,
 		Excerpt:  req.Excerpt,
 		Content:  req.Content,
-		ImageURL: req.ImageURL,
+		ImageURL: resolveArticleImage(req.ImageURL),
 		Status:   status,
 		Author:   authorName,
 	}
@@ -195,7 +195,7 @@ func (h *ArticleHandler) UpdateArticle(c *fiber.Ctx) error {
 		article.Content = req.Content
 	}
 	if req.ImageURL != "" {
-		article.ImageURL = req.ImageURL
+		article.ImageURL = resolveArticleImage(req.ImageURL)
 	}
 	if req.Status != "" {
 		article.Status = req.Status
@@ -237,4 +237,20 @@ func generateSlug(title string) string {
 	reg := regexp.MustCompile("[^a-z0-9]+")
 	slug := reg.ReplaceAllString(lower, "-")
 	return strings.Trim(slug, "-")
+}
+
+// resolveArticleImage mengubah gambar data URL (base64) menjadi file di
+// uploads/articles dan mengembalikan URL publiknya; URL biasa diteruskan apa adanya.
+func resolveArticleImage(imageURL string) string {
+	imageURL = strings.TrimSpace(imageURL)
+	if imageURL == "" {
+		return ""
+	}
+	if strings.HasPrefix(imageURL, "data:") {
+		if u, err := SaveDataURL("articles", imageURL); err == nil {
+			return u
+		}
+		return ""
+	}
+	return imageURL
 }

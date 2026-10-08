@@ -240,7 +240,7 @@ export function MasterCrud({
 
         <div className="overflow-x-auto">
           <table
-            className={`${tableMinWidth} divide-y divide-gray-100 dark:divide-gray-800`}
+            className={`${tableMinWidth} divide-y divide-gray-100 [&_td]:whitespace-nowrap dark:divide-gray-800`}
           >
             <thead className="bg-gray-50 dark:bg-gray-800/50">
               <tr>

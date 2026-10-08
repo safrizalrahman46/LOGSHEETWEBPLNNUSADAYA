@@ -2,6 +2,7 @@
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -117,7 +118,31 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 	}
 	statusSummary = fmt.Sprintf("%d Operasi, %d Standby, %d Gangguan", opCount, stCount, ggCount)
 
-	// 4. Save to PostgreSQL database
+	// 4. Simpan lampiran foto (data URL base64 -> file) seperti versi mobile
+	persistPhoto := func(raw string) string {
+		raw = strings.TrimSpace(raw)
+		if raw == "" {
+			return ""
+		}
+		if strings.HasPrefix(raw, "data:") {
+			u, err := SaveDataURL("logsheet", raw)
+			if err != nil {
+				return ""
+			}
+			return u
+		}
+		return raw
+	}
+	req.SelfieURL = persistPhoto(req.SelfieURL)
+	req.FotoMesinURL = persistPhoto(req.FotoMesinURL)
+	savedFotoURLs := make([]string, 0, len(req.FotoURLs))
+	for _, f := range req.FotoURLs {
+		if u := persistPhoto(f); u != "" {
+			savedFotoURLs = append(savedFotoURLs, u)
+		}
+	}
+
+	// 5. Save to PostgreSQL database
 	wacbIDStr := ""
 	if wacbResp.Data != nil {
 		wacbIDStr = fmt.Sprintf("%d", wacbResp.Data.ID)
@@ -136,8 +161,16 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 		StatusMesinSummary: statusSummary,
 		SyncStatus:         "SYNCED",
 		WACBID:             wacbIDStr,
+		SelfieURL:          req.SelfieURL,
+		FotoMesinURL:       req.FotoMesinURL,
+		FotoURLs:           strings.Join(savedFotoURLs, ","),
 		CreatedAt:          time.Now(),
 		UpdatedAt:          time.Now(),
+	}
+	if req.Location != nil {
+		localRecord.LocationLat = req.Location.Lat
+		localRecord.LocationLng = req.Location.Lng
+		localRecord.LocationAccuracy = req.Location.Accuracy
 	}
 	h.db.Create(&localRecord)
 

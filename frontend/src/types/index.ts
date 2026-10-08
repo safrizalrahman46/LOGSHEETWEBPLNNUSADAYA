@@ -129,6 +129,12 @@ export interface MachineFormEntry {
   keterangan: string;
 }
 
+export interface LogsheetLocation {
+  lat: number;
+  lng: number;
+  accuracy: number;
+}
+
 export interface BatchLogsheetRequest {
   local_id: string;
   kd_region: string;
@@ -138,6 +144,33 @@ export interface BatchLogsheetRequest {
   jam: string;
   operator_name: string;
   machines: MachineFormEntry[];
+  selfie_url?: string;
+  foto_mesin_url?: string;
+  foto_urls?: string[];
+  location?: LogsheetLocation | null;
+}
+
+export interface LogsheetHistoryItem {
+  id: number;
+  local_id: string;
+  kd_region: string;
+  kd_unit: string;
+  nama_unit: string;
+  tanggal: string;
+  jam: string;
+  operator_name: string;
+  machine_count: number;
+  message_text: string;
+  status_mesin_summary: string;
+  sync_status: string;
+  wacb_id: string;
+  selfie_url: string;
+  foto_mesin_url: string;
+  foto_urls: string;
+  location_lat: number;
+  location_lng: number;
+  location_accuracy: number;
+  created_at: string;
 }
 
 export interface OfflineDraft {

@@ -303,7 +303,7 @@ export default function GuestDashboardPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-[720px] w-full text-left text-xs">
+            <table className="min-w-[720px] w-full text-left text-xs [&_td]:whitespace-nowrap">
               <thead className="border-b border-gray-200 bg-gray-50/75 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
                 <tr>
                   <th className="py-3 px-5">Kode</th>

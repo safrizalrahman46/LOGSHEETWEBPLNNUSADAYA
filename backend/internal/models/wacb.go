@@ -146,6 +146,20 @@ type BatchLogsheetRequest struct {
 	Jam          string             `json:"jam"`
 	OperatorName string             `json:"operator_name"`
 	Machines     []MachineFormEntry `json:"machines"`
+
+	// Lampiran seperti versi mobile: selfie absen petugas & foto mesin
+	// (boleh berupa URL publik atau data URL base64 yang akan disimpan backend)
+	SelfieURL    string   `json:"selfie_url"`
+	FotoMesinURL string   `json:"foto_mesin_url"`
+	FotoURLs     []string `json:"foto_urls"`
+	Location     *GeoFix  `json:"location"`
+}
+
+// GeoFix adalah titik GPS lokasi unit saat logsheet diisi.
+type GeoFix struct {
+	Lat      float64 `json:"lat"`
+	Lng      float64 `json:"lng"`
+	Accuracy float64 `json:"accuracy"`
 }
 
 type MachineFormEntry struct {

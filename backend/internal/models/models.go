@@ -47,6 +47,12 @@ type LogsheetRecord struct {
 	StatusMesinSummary string         `json:"status_mesin_summary"`
 	SyncStatus         string         `gorm:"default:'SYNCED'" json:"sync_status"` // SYNCED, PENDING, FAILED
 	WACBID             string         `json:"wacb_id"`
+	SelfieURL          string         `json:"selfie_url"`
+	FotoMesinURL       string         `json:"foto_mesin_url"`
+	FotoURLs           string         `gorm:"type:text" json:"foto_urls"` // dipisah koma
+	LocationLat        float64        `json:"location_lat"`
+	LocationLng        float64        `json:"location_lng"`
+	LocationAccuracy   float64        `json:"location_accuracy"`
 	CreatedAt          time.Time      `json:"created_at"`
 	UpdatedAt          time.Time      `json:"updated_at"`
 	DeletedAt          gorm.DeletedAt `gorm:"index" json:"-"`

@@ -10,7 +10,7 @@ const Backdrop: React.FC = () => {
 
   return (
     <div
-      className="fixed inset-0 z-40 bg-gray-950/60 backdrop-blur-xs xl:hidden transition-opacity"
+      className="fixed inset-0 z-40 bg-gray-950/60 backdrop-blur-xs transition-opacity lg:hidden"
       onClick={toggleMobileSidebar}
       aria-hidden="true"
     />

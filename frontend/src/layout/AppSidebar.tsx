@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   Cpu,
   Table2,
+  X,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -39,7 +40,8 @@ type NavItem = {
 };
 
 export const AppSidebar: React.FC = () => {
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleSidebar } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleSidebar, toggleMobileSidebar } =
+    useSidebar();
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -213,38 +215,47 @@ export const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
+      onMouseEnter={() => !isExpanded && !isMobileOpen && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
         "fixed top-0 bottom-0 left-0 z-50 flex flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 select-none",
-        isMobileOpen ? "translate-x-0 w-[290px]" : "-translate-x-full xl:translate-x-0",
-        isExpanded || isHovered ? "w-[290px]" : "w-[90px]"
+        isWide ? "w-[290px]" : "w-[90px]",
+        isMobileOpen ? "translate-x-0 shadow-2xl lg:shadow-none" : "-translate-x-full lg:translate-x-0"
       )}
     >
       {/* Brand Header */}
       <div className="flex h-18 items-center px-4 sm:px-5 border-b border-gray-200 dark:border-gray-800 justify-between">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3 min-w-0">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 border border-gray-100 dark:border-gray-800 dark:bg-gray-800 shadow-theme-xs">
             <img src="/images/logo/LOGO-PLN.png" alt="PLN Logo" className="h-8 w-auto object-contain" />
           </div>
           {isWide && (
             <div className="overflow-hidden">
-              <h1 className="text-sm font-black tracking-wider text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-sm font-black tracking-wider text-gray-900 dark:text-white leading-tight whitespace-nowrap">
                 PLN NUSA DAYA
               </h1>
-              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
                 WACB Kalimantan 3
               </p>
             </div>
           )}
         </Link>
-        {isWide && (
+        {isMobileOpen && (
+          <button
+            onClick={toggleMobileSidebar}
+            aria-label="Tutup menu sidebar"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors lg:hidden"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+        {isWide && !isMobileOpen && (
           <button
             onClick={toggleSidebar}
             title={isExpanded ? "Perkecil Sidebar (Minimize)" : "Perbesar Sidebar"}
-            className="hidden xl:flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors"
+            className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white transition-colors lg:flex"
           >
-            <ChevronLeft className="h-4 w-4" />
+            {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </button>
         )}
       </div>

@@ -46,6 +46,7 @@ func main() {
 	masterHandler := handlers.NewMasterHandler(db)
 	statsHandler := handlers.NewStatsHandler(db)
 	publicContentHandler := handlers.NewPublicContentHandler(db)
+	uploadHandler := handlers.NewUploadHandler()
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -100,6 +101,7 @@ func main() {
 	protected.Put("/auth/profile", authHandler.UpdateProfile)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
 	protected.Post("/auth/avatar", authHandler.UploadAvatar)
+	protected.Post("/upload/image", uploadHandler.UploadImage)
 	adminOnly := middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin)
 	protected.Get("/admin/users", adminOnly, authHandler.GetUsers)
 	protected.Post("/admin/users", adminOnly, authHandler.CreateUser)

@@ -1,7 +1,23 @@
 import axios from "axios";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+// Base URL API:
+// - Bisa dioverride lewat env NEXT_PUBLIC_API_URL
+// - Saat frontend dibuka lewat IP LAN (http://192.168.x.x:3000) otomatis
+//   memakai host yang sama port 8080, supaya login & data jalan di HP/tablet.
+function resolveApiBase(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL;
+  if (fromEnv) return fromEnv;
+  if (typeof window !== "undefined") {
+    const { protocol, hostname } = window.location;
+    const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+    if (!isLocal && protocol === "http:") {
+      return `http://${hostname}:8080/api`;
+    }
+  }
+  return "http://localhost:8080/api";
+}
+
+export const API_BASE_URL = resolveApiBase();
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

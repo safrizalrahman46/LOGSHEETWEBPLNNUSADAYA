@@ -11,11 +11,10 @@ import { cn } from "@/utils";
 export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "xl:ml-[290px]"
-    : "xl:ml-[90px]";
+  // Sidebar permanen mulai breakpoint lg (1024px / iPad landscape);
+  // di bawah lg sidebar berupa drawer (off-canvas) sehingga konten tetap ml-0.
+  const mainContentMargin =
+    isExpanded || isHovered || isMobileOpen ? "lg:ml-[290px]" : "lg:ml-[90px]";
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100">
@@ -23,7 +22,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       <Backdrop />
       <div
         className={cn(
-          "flex min-h-screen flex-col transition-all duration-300 ease-in-out",
+          "flex min-h-screen min-w-0 flex-col transition-all duration-300 ease-in-out",
           mainContentMargin
         )}
       >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Bell,
@@ -261,12 +262,13 @@ export default function NotificationDropdown() {
         </div>
       </Dropdown>
 
-      {/* Popup detail notifikasi */}
-      {detail && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm"
-          onClick={() => setDetail(null)}
-        >
+      {/* Popup detail notifikasi — di-portal ke <body> agar selalu center di tengah layar */}
+      {detail &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm"
+            onClick={() => setDetail(null)}
+          >
           <div
             role="dialog"
             aria-modal="true"
@@ -389,8 +391,9 @@ export default function NotificationDropdown() {
               </Link>
             </div>
           </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
