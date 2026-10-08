@@ -39,6 +39,8 @@ interface SummaryData {
   total_units: number;
   total_machines: number;
   eaf_reliability_pct: number;
+  peak_time?: string;
+  source?: string;
 }
 
 interface MachineDonut {
@@ -102,7 +104,7 @@ export default function GuestDashboardPage() {
         {/* Header & Refresh Action */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="rounded-md bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold uppercase text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">
                 PUBLIC MONITORING
               </span>
@@ -135,7 +137,7 @@ export default function GuestDashboardPage() {
               Daya Mampu Pasok (DMP)
             </span>
             <h3 className="mt-2 text-2xl font-bold text-warning-600 dark:text-warning-400">
-              {summary ? summary.total_dmp_mw : "42.3"} <span className="text-xs font-medium text-gray-400">MW</span>
+              {summary ? summary.total_dmp_mw : "—"} <span className="text-xs font-medium text-gray-400">MW</span>
             </h3>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               Daya Terpasang: {summary?.total_dmn_mw || 48.5} MW
@@ -147,10 +149,10 @@ export default function GuestDashboardPage() {
               Beban Puncak (Peak)
             </span>
             <h3 className="mt-2 text-2xl font-bold text-brand-600 dark:text-brand-400">
-              {summary ? summary.peak_load_mw : "34.8"} <span className="text-xs font-medium text-gray-400">MW</span>
+              {summary ? summary.peak_load_mw : "—"} <span className="text-xs font-medium text-gray-400">MW</span>
             </h3>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Puncak Malam 19:30 WITA
+              {summary?.peak_time ? `Puncak Pukul ${summary.peak_time}` : "Memuat data beban puncak..."}
             </p>
           </div>
 
@@ -159,10 +161,10 @@ export default function GuestDashboardPage() {
               Cadangan Daya (Reserve)
             </span>
             <h3 className="mt-2 text-2xl font-bold text-success-600 dark:text-success-400">
-              {summary ? summary.reserve_margin_mw : "7.5"} <span className="text-xs font-medium text-gray-400">MW</span>
+              {summary ? summary.reserve_margin_mw : "—"} <span className="text-xs font-medium text-gray-400">MW</span>
             </h3>
             <p className="mt-1 text-xs text-success-600 dark:text-success-400 font-medium">
-              Margin Cadangan: {summary?.reserve_percent || 17.7}% (Aman)
+              Margin Cadangan: {summary ? `${summary.reserve_percent}%` : "— %"} ({summary && summary.reserve_percent >= 15 ? "Aman" : "Dipantau"})
             </p>
           </div>
 
@@ -171,10 +173,10 @@ export default function GuestDashboardPage() {
               Kesiapan Mesin (EAF)
             </span>
             <h3 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-              {summary ? summary.eaf_reliability_pct : "99.4"} <span className="text-xs font-medium text-brand-500">%</span>
+              {summary ? summary.eaf_reliability_pct : "—"} <span className="text-xs font-medium text-brand-500">%</span>
             </h3>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {summary?.total_units || 24} Unit • {summary?.total_machines || 86} Mesin
+              {summary ? `${summary.total_units} Unit • ${summary.total_machines} Mesin` : "Memuat aset..."}
             </p>
           </div>
         </div>
@@ -301,7 +303,7 @@ export default function GuestDashboardPage() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="min-w-[720px] w-full text-left text-xs">
               <thead className="border-b border-gray-200 bg-gray-50/75 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
                 <tr>
                   <th className="py-3 px-5">Kode</th>

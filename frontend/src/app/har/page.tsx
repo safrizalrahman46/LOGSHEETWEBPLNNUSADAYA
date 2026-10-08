@@ -16,11 +16,50 @@ import { RoleGuard } from "@/components/common/RoleGuard";
 import { apiClient } from "@/lib/api";
 import { HARTicket } from "@/types";
 
+const DEFAULT_CATEGORIES = [
+  "Sistem Bahan Bakar",
+  "Sistem Pelumasan",
+  "Sistem Pendingin",
+  "Sistem Udara & Gas Buang",
+  "Sistem Elektrikal & Proteksi",
+  "Sistem Mekanikal & Transmisi",
+];
+
+const DEFAULT_MAINTENANCE = [
+  "PREVENTIVE (P1 - P6)",
+  "CORRECTIVE",
+  "TOP OVERHAUL (TO)",
+  "SEMI OVERHAUL (SO)",
+  "MAJOR OVERHAUL (MO)",
+  "GENERAL OVERHAUL (GO)",
+];
+
+const FALLBACK_UNITS = [{ kd_unit: "0264", nama_unit: "ULD BATU AMPAR" }];
+
+function mergeOptions(defaults: string[], fromApi: string[] = []): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const v of [...defaults, ...fromApi]) {
+    const t = (v || "").trim();
+    if (t && !seen.has(t)) {
+      seen.add(t);
+      out.push(t);
+    }
+  }
+  return out;
+}
+
 export default function HarModulePage() {
   const [tickets, setTickets] = useState<HARTicket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<string>("TEKNISI");
+
+  // Opsi dinamis dari API (unit WACB, mesin unit, taksonomi HAR)
+  const [unitOptions, setUnitOptions] = useState<{ kd_unit: string; nama_unit: string }[]>([]);
+  const [machineOptions, setMachineOptions] = useState<{ id_mesin: string; nama_mesin: string }[]>([]);
+  const [categories, setCategories] = useState<string[]>(DEFAULT_CATEGORIES);
+  const [maintenanceTypes, setMaintenanceTypes] = useState<string[]>(DEFAULT_MAINTENANCE);
 
   // New Ticket Form State
   const [newTicket, setNewTicket] = useState<Partial<HARTicket>>({
@@ -38,23 +77,31 @@ export default function HarModulePage() {
     teknisi_name: "Teknisi Pemeliharaan",
   });
 
-  const categories = [
-    "Sistem Bahan Bakar",
-    "Sistem Pelumasan",
-    "Sistem Pendingin",
-    "Sistem Udara & Gas Buang",
-    "Sistem Elektrikal & Proteksi",
-    "Sistem Mekanikal & Transmisi",
-  ];
+  const unitList = unitOptions.length > 0 ? unitOptions : FALLBACK_UNITS;
 
-  const maintenanceTypes = [
-    "PREVENTIVE (P1 - P6)",
-    "CORRECTIVE",
-    "TOP OVERHAUL (TO)",
-    "SEMI OVERHAUL (SO)",
-    "MAJOR OVERHAUL (MO)",
-    "GENERAL OVERHAUL (GO)",
-  ];
+  const loadMachines = async (kdUnit: string, namaUnit?: string) => {
+    try {
+      const res = await apiClient.get("/wacb/format", {
+        params: { kd_region: "05", kd_unit: kdUnit },
+      });
+      const mesin: { id_mesin: string; nama_mesin: string }[] =
+        res.data?.format?.mesin || [];
+      setMachineOptions(mesin);
+      if (mesin.length > 0) {
+        setNewTicket((prev) => ({
+          ...prev,
+          kd_unit: kdUnit,
+          nama_unit: namaUnit || prev.nama_unit,
+          id_mesin: mesin[0].id_mesin,
+          nama_mesin: mesin[0].nama_mesin,
+        }));
+      } else {
+        setNewTicket((prev) => ({ ...prev, kd_unit: kdUnit, nama_unit: namaUnit || prev.nama_unit }));
+      }
+    } catch {
+      setMachineOptions([]);
+    }
+  };
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -80,6 +127,31 @@ export default function HarModulePage() {
       } catch {}
     }
     fetchTickets();
+
+    // Taksonomi dinamis (gabungan database + default)
+    apiClient
+      .get<{ success: boolean; categories?: string[]; maintenance_types?: string[] }>("/har/taxonomy")
+      .then((res) => {
+        if (res.data?.success) {
+          setCategories(mergeOptions(DEFAULT_CATEGORIES, res.data.categories));
+          setMaintenanceTypes(mergeOptions(DEFAULT_MAINTENANCE, res.data.maintenance_types));
+        }
+      })
+      .catch(() => {});
+
+    // Daftar unit PLTD dari WACB (fallback unit bawaan bila API gagal)
+    apiClient
+      .get<{ units?: { kd_unit: string; nama_unit: string }[] }>("/wacb/units", {
+        params: { kd_region: "05" },
+      })
+      .then((res) => {
+        const units = res.data?.units || [];
+        if (units.length > 0) {
+          setUnitOptions(units);
+          loadMachines(units[0].kd_unit, units[0].nama_unit);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleCreateTicket = async (e: React.FormEvent) => {
@@ -131,12 +203,12 @@ export default function HarModulePage() {
 
           {/* Ticket Table Card */}
           <div className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/20">
-              <span className="flex items-center gap-2 text-sm font-bold text-gray-800 dark:text-gray-200">
-                <Wrench className="h-4 w-4 text-brand-500" />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 px-5 py-4 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/20">
+              <span className="flex min-w-0 items-center gap-2 text-sm font-bold text-gray-800 dark:text-gray-200">
+                <Wrench className="h-4 w-4 shrink-0 text-brand-500" />
                 Daftar Pekerjaan & Riwayat Gangguan Mesin
               </span>
-              <span className="text-xs font-semibold text-gray-400">
+              <span className="shrink-0 text-xs font-semibold text-gray-400">
                 Total: {tickets.length} Tiket
               </span>
             </div>
@@ -151,17 +223,17 @@ export default function HarModulePage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="min-w-[900px] w-full text-left text-xs">
                   <thead className="border-b border-gray-200 bg-gray-50/75 text-[11px] font-bold uppercase tracking-wider text-gray-600 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
                     <tr>
-                      <th className="px-5 py-3.5">No Tiket</th>
-                      <th className="px-5 py-3.5">Mesin</th>
-                      <th className="px-5 py-3.5">Kategori Gangguan</th>
-                      <th className="px-5 py-3.5">Tipe Pemeliharaan</th>
-                      <th className="px-5 py-3.5">JKM</th>
-                      <th className="px-5 py-3.5">Teknisi</th>
-                      <th className="px-5 py-3.5">Status</th>
-                      <th className="px-5 py-3.5 text-right">Aksi</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">No Tiket</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">Mesin</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">Kategori Gangguan</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">Tipe Pemeliharaan</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">JKM</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">Teknisi</th>
+                      <th className="whitespace-nowrap px-5 py-3.5">Status</th>
+                      <th className="whitespace-nowrap px-5 py-3.5 text-right">Aksi</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -214,36 +286,78 @@ export default function HarModulePage() {
           {/* Create Ticket Modal */}
           {modalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 backdrop-blur-xs p-4">
-              <div className="w-full max-w-xl rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-800 dark:bg-gray-900 space-y-4">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
-                  <h3 className="flex items-center gap-2 text-base font-bold text-gray-900 dark:text-white">
-                    <Wrench className="h-5 w-5 text-brand-500" />
+              <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl sm:p-6 dark:border-gray-800 dark:bg-gray-900 space-y-4">
+                <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-3 dark:border-gray-800">
+                  <h3 className="flex min-w-0 items-center gap-2 text-base font-bold text-gray-900 dark:text-white">
+                    <Wrench className="h-5 w-5 shrink-0 text-brand-500" />
                     Buat Tiket Pemeliharaan (HAR) & Gangguan
                   </h3>
                   <button
                     onClick={() => setModalOpen(false)}
-                    className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                    className="shrink-0 rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                   >
                     <X className="h-5 w-5" />
                   </button>
                 </div>
 
                 <form onSubmit={handleCreateTicket} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        Nama Mesin PLTD
+                        Unit PLTD
                       </label>
-                      <input
-                        type="text"
-                        required
-                        value={newTicket.nama_mesin}
-                        onChange={(e) =>
-                          setNewTicket({ ...newTicket, nama_mesin: e.target.value })
-                        }
-                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
-                      />
+                      <select
+                        value={newTicket.kd_unit}
+                        onChange={(e) => {
+                          const kd = e.target.value;
+                          const unit = unitList.find((u) => u.kd_unit === kd);
+                          loadMachines(kd, unit?.nama_unit);
+                        }}
+                        className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-bold text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
+                      >
+                        {unitList.map((u) => (
+                          <option key={u.kd_unit} value={u.kd_unit}>
+                            {u.nama_unit} ({u.kd_unit})
+                          </option>
+                        ))}
+                      </select>
                     </div>
+
+                    <div>
+                      <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        Mesin PLTD
+                      </label>
+                      {machineOptions.length > 0 ? (
+                        <select
+                          required
+                          value={newTicket.id_mesin}
+                          onChange={(e) => {
+                            const m = machineOptions.find((x) => x.id_mesin === e.target.value);
+                            if (m) {
+                              setNewTicket({ ...newTicket, id_mesin: m.id_mesin, nama_mesin: m.nama_mesin });
+                            }
+                          }}
+                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
+                        >
+                          {machineOptions.map((m) => (
+                            <option key={m.id_mesin} value={m.id_mesin}>
+                              {m.nama_mesin}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          required
+                          value={newTicket.nama_mesin}
+                          onChange={(e) =>
+                            setNewTicket({ ...newTicket, nama_mesin: e.target.value })
+                          }
+                          className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
+                        />
+                      )}
+                    </div>
+
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
                         Running Hours (JKM)
@@ -263,7 +377,7 @@ export default function HarModulePage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
                         Taksonomi Kerusakan (AMC)

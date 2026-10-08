@@ -45,6 +45,7 @@ func main() {
 	machineHandler := handlers.NewMachineHandler(db)
 	masterHandler := handlers.NewMasterHandler(db)
 	statsHandler := handlers.NewStatsHandler(db)
+	publicContentHandler := handlers.NewPublicContentHandler(db)
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -83,6 +84,8 @@ func main() {
 	// Public Routes (No Auth Required)
 	api.Post("/auth/login", authHandler.Login)
 	api.Get("/public/guest/summary", guestHandler.GetPublicSummary)
+	api.Get("/public/corporate-stats", publicContentHandler.GetCorporateStats)
+	api.Get("/public/article-categories", publicContentHandler.GetArticleCategories)
 	api.Get("/public/articles", articleHandler.GetPublicArticles)
 	api.Get("/public/articles/:slug", articleHandler.GetPublicArticleDetail)
 	api.Get("/public/unit-locations", attendanceHandler.GetUnitLocations)
@@ -149,6 +152,7 @@ func main() {
 	// HAR Module
 	har := protected.Group("/har")
 	har.Get("/tickets", harHandler.GetTickets)
+	har.Get("/taxonomy", harHandler.GetTaxonomy)
 	har.Post("/tickets", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateTicket)
 	har.Put("/tickets/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor), harHandler.UpdateTicketStatus)
 	har.Put("/tickets/:id/approve", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.ApproveTicket)

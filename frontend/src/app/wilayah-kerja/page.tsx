@@ -358,8 +358,8 @@ export default function WilayahKerjaPage() {
                 />
                 
                 {/* Floating caption badge */}
-                <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-xs text-[11px] font-bold text-slate-600 flex items-center gap-1.5">
-                  <Navigation className="w-3.5 h-3.5 text-blue-500" />
+                <div className="absolute bottom-4 right-4 left-4 sm:left-auto max-w-[calc(100%-32px)] bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-xs text-[11px] font-bold text-slate-600 flex flex-wrap items-center gap-1.5">
+                  <Navigation className="w-3.5 h-3.5 shrink-0 text-blue-500" />
                   <span>Cakupan 9 Unit Pelaksana &amp; Kantor Pusat</span>
                 </div>
               </div>
@@ -515,7 +515,7 @@ export default function WilayahKerjaPage() {
 
       {/* Footer */}
       <footer className="mt-20 border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500">
-        <p>© Copyright 2026 <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+        <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
       </footer>
 
     </div>

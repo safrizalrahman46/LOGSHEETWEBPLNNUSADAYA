@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -139,5 +141,38 @@ func (h *HARHandler) ApproveTicket(c *fiber.Ctx) error {
 		"success": true,
 		"message": "Tiket HAR berhasil disetujui oleh Supervisor",
 		"data":    ticket,
+	})
+}
+
+// GetTaxonomy mengembalikan kategori kerusakan & tipe pemeliharaan hasil
+// gabungan nilai unik dari tabel har_tickets dengan default bawaan.
+// GET /api/har/taxonomy
+func (h *HARHandler) GetTaxonomy(c *fiber.Ctx) error {
+	defaultCategories := []string{"Bahan Bakar", "Pelumasan", "Pendingin", "Udara", "Elektrikal", "Mekanikal"}
+	defaultTypes := []string{"PREVENTIVE", "CORRECTIVE", "OVERHAUL"}
+
+	merge := func(dbValues []string, defaults []string) []string {
+		seen := map[string]bool{}
+		out := make([]string, 0, len(dbValues)+len(defaults))
+		for _, v := range append(append([]string{}, dbValues...), defaults...) {
+			v = strings.TrimSpace(v)
+			if v == "" || seen[v] {
+				continue
+			}
+			seen[v] = true
+			out = append(out, v)
+		}
+		sort.Strings(out)
+		return out
+	}
+
+	var dbCategories, dbTypes []string
+	h.db.Model(&models.HARTicket{}).Distinct().Pluck("category", &dbCategories)
+	h.db.Model(&models.HARTicket{}).Distinct().Pluck("maintenance_type", &dbTypes)
+
+	return c.JSON(fiber.Map{
+		"success":           true,
+		"categories":        merge(dbCategories, defaultCategories),
+		"maintenance_types": merge(dbTypes, defaultTypes),
 	})
 }

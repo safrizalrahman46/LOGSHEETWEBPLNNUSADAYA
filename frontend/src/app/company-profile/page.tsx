@@ -342,7 +342,7 @@ export default function CompanyProfilePage() {
 
       {/* Footer */}
       <footer className="mt-16 border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
-        <p>© Copyright 2026 <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+        <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
       </footer>
 
     </div>

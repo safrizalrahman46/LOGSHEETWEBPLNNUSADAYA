@@ -24,7 +24,24 @@ export default function BeritaPage() {
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const categories = ["Semua", "Operasional", "Pemeliharaan", "K3 & Lingkungan", "Corporate News"];
+  // Kategori diambil dari database (fallback ke daftar bawaan bila API kosong)
+  const [categories, setCategories] = useState<string[]>([
+    "Semua",
+    "Operasional",
+    "Pemeliharaan",
+    "K3 & Lingkungan",
+    "Corporate News",
+  ]);
+
+  useEffect(() => {
+    apiClient
+      .get<{ success: boolean; categories?: string[] }>("/public/article-categories")
+      .then((res) => {
+        const cats = (res.data?.categories || []).filter(Boolean);
+        if (cats.length > 0) setCategories(["Semua", ...cats]);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     setLoading(true);

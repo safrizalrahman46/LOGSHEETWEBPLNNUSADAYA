@@ -11,6 +11,21 @@ import { apiClient } from "@/lib/api";
    Pixel-perfect replica matching https://plnnusadaya.co.id
    ============================================================ */
 
+// Nilai default counter (dipakai bila API statistik belum siap/ gagal)
+const DEFAULT_STATS_TARGETS = {
+  projects: 335,
+  workers: 25547,
+  units: 9,
+  years: 22,
+};
+
+interface CorpStats {
+  logsheet_total: number;
+  user_count: number;
+  total_units: number;
+  years_active: number;
+}
+
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState("home");
   const [scrollTopVisible, setScrollTopVisible] = useState(false);
@@ -88,10 +103,17 @@ export default function HomePage() {
 
   const [newsList, setNewsList] = useState<any[]>(defaultNews);
 
-  // Stats counters
+  // Stats counters — angka diambil dari database lewat /public/corporate-stats
   const [counted, setCounted] = useState(false);
   const [counts, setCounts] = useState({ projects: 0, workers: 0, units: 0, years: 0 });
+  const [statsTargets, setStatsTargets] = useState(DEFAULT_STATS_TARGETS);
+  const targetsRef = useRef(DEFAULT_STATS_TARGETS);
   const statsRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    targetsRef.current = statsTargets;
+    if (counted) setCounts(statsTargets);
+  }, [statsTargets, counted]);
 
   /* ---- Scroll effects & Scroll Reveal ---- */
   useEffect(() => {
@@ -149,12 +171,32 @@ export default function HomePage() {
             href: `/berita/${a.slug || a.id}`,
             isCustom: true,
           }));
-          // Prepend admin articles so they appear right at the top
-          setNewsList([...apiArticles, ...defaultNews]);
+          // Data dari database menjadi daftar utama; berita contoh hanya cadangan
+          setNewsList(apiArticles);
         }
       })
       .catch((err) => {
         console.log("Memuat default artikel PLN:", err.message);
+      });
+  }, []);
+
+  /* ---- Statistik korporat dari database (landing dinamis) ---- */
+  useEffect(() => {
+    apiClient
+      .get<{ success: boolean; stats?: CorpStats }>("/public/corporate-stats")
+      .then((res) => {
+        const s = res.data?.stats;
+        if (res.data?.success && s) {
+          setStatsTargets({
+            projects: s.logsheet_total || DEFAULT_STATS_TARGETS.projects,
+            workers: s.user_count || DEFAULT_STATS_TARGETS.workers,
+            units: s.total_units || DEFAULT_STATS_TARGETS.units,
+            years: s.years_active || DEFAULT_STATS_TARGETS.years,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log("Memuat statistik korporat:", err.message);
       });
   }, []);
 
@@ -176,13 +218,13 @@ export default function HomePage() {
   }, [counted]);
 
   function animateCounters() {
-    const targets = { projects: 335, workers: 25547, units: 9, years: 22 };
     const duration = 2000;
     const steps = 80;
     let step = 0;
     const timer = setInterval(() => {
       step++;
       const progress = 1 - Math.pow(1 - step / steps, 3);
+      const targets = targetsRef.current;
       setCounts({
         projects: Math.round(progress * targets.projects),
         workers: Math.round(progress * targets.workers),
@@ -191,7 +233,7 @@ export default function HomePage() {
       });
       if (step >= steps) {
         clearInterval(timer);
-        setCounts(targets);
+        setCounts(targetsRef.current);
       }
     }, duration / steps);
   }
@@ -211,6 +253,35 @@ export default function HomePage() {
     return () => window.removeEventListener("resize", update);
   }, []);
 
+  /* ---- Langkah carousel & jumlah kartu terlihat (diukur dari DOM, responsif) ---- */
+  const [serviceStep, setServiceStep] = useState(311);
+  const [newsStep, setNewsStep] = useState(384);
+  const [newsVisible, setNewsVisible] = useState(3);
+
+  useEffect(() => {
+    const measure = (
+      sel: string,
+      gap: number,
+      setStep: (n: number) => void,
+      setVisible?: (n: number) => void
+    ) => {
+      const card = document.querySelector<HTMLElement>(sel);
+      const track = card?.parentElement;
+      if (!card || !track || card.offsetWidth === 0) return;
+      setStep(card.offsetWidth + gap);
+      if (setVisible) {
+        setVisible(Math.max(1, Math.round((track.offsetWidth + gap) / (card.offsetWidth + gap))));
+      }
+    };
+    const update = () => {
+      measure(".service-card-corp", 26, setServiceStep);
+      measure(".news-card-corp", 24, setNewsStep, setNewsVisible);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   useEffect(() => {
     setServiceIdx((prev) => Math.min(prev, maxServiceIdx));
     const t = setInterval(() => {
@@ -220,8 +291,9 @@ export default function HomePage() {
   }, [maxServiceIdx]);
 
   /* ---- News Carousel Autoplay ---- */
-  const maxNewsIdx = Math.max(0, newsList.length - 3);
+  const maxNewsIdx = Math.max(0, newsList.length - newsVisible);
   useEffect(() => {
+    setNewsIdx((prev) => Math.min(prev, maxNewsIdx));
     const t = setInterval(() => {
       setNewsIdx((prev) => (prev >= maxNewsIdx ? 0 : prev + 1));
     }, 5500);
@@ -633,7 +705,7 @@ export default function HomePage() {
 
         /* Trademark Section Title */
         .section-header-corp { text-align: center; margin-bottom: 50px; }
-        .section-title-wrapper-corp { display: inline-flex; align-items: center; gap: 16px; }
+        .section-title-wrapper-corp { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 16px; }
         .section-line-corp { display: block; width: 38px; height: 2px; background: #1a9de1; border-radius: 2px; }
         .section-title-corp { font-size: 26px; font-weight: 800; color: #1a1a2e; letter-spacing: 1.5px; text-transform: uppercase; }
 
@@ -832,8 +904,8 @@ export default function HomePage() {
           transform: translateY(-50%) scale(1.1);
           box-shadow: 0 8px 24px rgba(26, 157, 225, 0.35);
         }
-        .carousel-prev-corp { left: -14px; }
-        .carousel-next-corp { right: -14px; }
+        .carousel-prev-corp { left: 6px; }
+        .carousel-next-corp { right: 6px; }
 
         /* News — Expanded Readable Cards with Meta & Badges */
         .news-section-corp { padding: 80px 0 90px; background: #ffffff; }
@@ -1041,8 +1113,8 @@ export default function HomePage() {
           z-index: 20; box-shadow: 0 4px 14px rgba(26,157,225,0.4); transition: all .25s ease;
         }
         .carousel-btn-corp:hover { background: #1178b5; transform: translateY(-50%) scale(1.08); }
-        .carousel-prev-corp { left: -10px; }
-        .carousel-next-corp { right: -10px; }
+        .carousel-prev-corp { left: 6px; }
+        .carousel-next-corp { right: 6px; }
 
         @media (max-width: 1024px) {
           .hero-container, .hero-container-corp { grid-template-columns: 1fr; text-align: center; }
@@ -1050,18 +1122,20 @@ export default function HomePage() {
           .hero-actions { justify-content: center; }
           .about-container-corp { grid-template-columns: 1fr; }
           .stats-container-corp { grid-template-columns: 1fr; }
-          .service-card-corp { flex: 0 0 calc(50% - 12px); }
-          .news-card-corp { flex: 0 0 calc(50% - 12px); }
+          .service-card-corp { flex: 0 0 calc(50% - 12px); min-width: 0; }
+          .news-card-corp { flex: 0 0 calc(50% - 12px); min-width: 0; }
           .portfolio-grid-corp { grid-template-columns: repeat(2, 1fr); }
           .direksi-grid-corp { grid-template-columns: repeat(2, 1fr); }
           .contact-container-corp { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-          .service-card-corp { flex: 0 0 100%; }
-          .news-card-corp { flex: 0 0 100%; }
+          .service-card-corp { flex: 0 0 100%; min-width: 0; }
+          .news-card-corp { flex: 0 0 100%; min-width: 0; }
           .portfolio-grid-corp { grid-template-columns: 1fr; }
           .direksi-grid-corp { grid-template-columns: 1fr; }
           .stats-grid-corp { grid-template-columns: 1fr; }
+          .section-title-corp { font-size: clamp(18px, 5vw, 26px); }
+          .section-line-corp { width: 26px; }
         }
       `}</style>
 
@@ -1151,7 +1225,7 @@ export default function HomePage() {
               </div>
               <div>
                 <div className="stat-number-corp">{counts.projects.toLocaleString("id-ID")}</div>
-                <div className="stat-label-corp">Total Proyek</div>
+                <div className="stat-label-corp">Rekap Logsheet</div>
               </div>
             </div>
 
@@ -1161,7 +1235,7 @@ export default function HomePage() {
               </div>
               <div>
                 <div className="stat-number-corp">{counts.workers.toLocaleString("id-ID")}</div>
-                <div className="stat-label-corp">Tenaga Kerja</div>
+                <div className="stat-label-corp">Pengguna Sistem</div>
               </div>
             </div>
 
@@ -1171,7 +1245,7 @@ export default function HomePage() {
               </div>
               <div>
                 <div className="stat-number-corp">{counts.units.toLocaleString("id-ID")}</div>
-                <div className="stat-label-corp">Kantor Unit Pelaksana</div>
+                <div className="stat-label-corp">Unit Pembangkit</div>
               </div>
             </div>
 
@@ -1181,7 +1255,7 @@ export default function HomePage() {
               </div>
               <div>
                 <div className="stat-number-corp">{counts.years.toLocaleString("id-ID")}</div>
-                <div className="stat-label-corp">Years of Experience</div>
+                <div className="stat-label-corp">Tahun Pengalaman</div>
               </div>
             </div>
           </div>
@@ -1218,7 +1292,7 @@ export default function HomePage() {
                 display: "flex",
                 gap: 26,
                 transition: "transform .45s cubic-bezier(.4,0,.2,1)",
-                transform: `translateX(-${serviceIdx * 311}px)`,
+                transform: `translateX(-${serviceIdx * serviceStep}px)`,
               }}
             >
               {services.map((s, idx) => (
@@ -1348,7 +1422,7 @@ export default function HomePage() {
                 display: "flex",
                 gap: 24,
                 transition: "transform .45s cubic-bezier(.4,0,.2,1)",
-                transform: `translateX(-${newsIdx * 384}px)`,
+                transform: `translateX(-${newsIdx * newsStep}px)`,
               }}
             >
               {newsList.map((item, idx) => (
@@ -1709,7 +1783,7 @@ export default function HomePage() {
 
         {/* Footer copyright */}
         <div style={{ borderTop: "1px solid #f1f5f9", marginTop: 60, paddingTop: 28, textAlign: "center", fontSize: 13.5, color: "#64748b" }}>
-          <p>© Copyright 2026 <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+          <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
         </div>
       </section>
 
@@ -1862,7 +1936,17 @@ export default function HomePage() {
                 {selectedArticle.content || selectedArticle.excerpt}
               </div>
 
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 12,
+                  paddingTop: 16,
+                  borderTop: "1px solid #f1f5f9",
+                }}
+              >
                 {selectedArticle.href && selectedArticle.href.startsWith("http") ? (
                   <a
                     href={selectedArticle.href}

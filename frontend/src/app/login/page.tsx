@@ -295,7 +295,7 @@ export default function LoginPage() {
             {/* Footer Copyright inside card */}
             <div className="mt-6 text-center">
               <p className="text-[10.5px] text-slate-400">
-                © 2026 PLN Nusa Daya. All rights reserved.
+                © {new Date().getFullYear()} PLN Nusa Daya. All rights reserved.
               </p>
             </div>
           </div>
