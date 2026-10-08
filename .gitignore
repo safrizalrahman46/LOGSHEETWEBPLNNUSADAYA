@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Backend build artifacts
+*.exe
+*.exe~
+
+# Logs & environment
+*.log
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+
+# Referensi lokal (tidak di-track)
+free-nextjs-admin-dashboard-main/
+free-nextjs-admin-dashboard-main.zip
+landing-page/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
