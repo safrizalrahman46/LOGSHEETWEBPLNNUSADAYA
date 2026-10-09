@@ -35,7 +35,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     return (
       <button
         type="button"
-        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs font-semibold ${className}`}
+        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 text-xs font-semibold ${className}`}
       >
         <Sun className="w-4 h-4 text-amber-500" />
         <span>Light Mode</span>

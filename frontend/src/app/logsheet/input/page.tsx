@@ -253,7 +253,7 @@ function LogsheetList({ onAdd, refreshToken }: { onAdd: () => void; refreshToken
       <div className="rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-3 py-16">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500" />
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-brand-500 dark:border-gray-700 dark:border-t-brand-400" />
             <p className="text-xs font-semibold text-gray-400">Memuat daftar logsheet...</p>
           </div>
         ) : error ? (
@@ -393,7 +393,7 @@ function LogsheetList({ onAdd, refreshToken }: { onAdd: () => void; refreshToken
               <button
                 type="button"
                 onClick={() => setDetail(null)}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
               >
                 <X className="h-4 w-4" />
               </button>

@@ -284,7 +284,7 @@ export default function MatrixPage() {
 
         {/* Ringkasan singkat */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className={`${chipBase} border-gray-200 bg-white`}>
+          <div className={`${chipBase} border-gray-200 bg-white dark:border-gray-800`}>
             <p className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Total Baris</p>
             <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{cells.length}</p>
           </div>
