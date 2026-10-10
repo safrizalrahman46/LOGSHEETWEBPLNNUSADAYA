@@ -32,6 +32,7 @@ import {
   Activity,
   FolderSync,
   Radio,
+  ShieldAlert,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -163,6 +164,14 @@ export const AppSidebar: React.FC = () => {
     {
       groupTitle: "DATA MASTER & ADMIN",
       items: [
+        {
+          title: "Pusat Kontrol Admin",
+          href: "/admin",
+          icon: ShieldAlert,
+          roles: ["SUPERADMIN", "ADMIN"],
+          badge: "HUB",
+          badgeColor: "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300",
+        },
         {
           title: "Manajemen Pengguna",
           href: "/admin/users",
