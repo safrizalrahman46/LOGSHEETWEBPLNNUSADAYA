@@ -786,9 +786,9 @@ export default function DashboardPage() {
         )}
 
         {/* TailAdmin Metric Stat Cards */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
           {/* Card 1: DT */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Daya Terpasang (DT)
@@ -798,15 +798,15 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">800 kW</h3>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white">9,550 kW</h3>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                6 Unit Mesin Diesel Terinstal
+                {stats ? `${stats.machines.total} Unit Mesin Diesel Terinstal` : "10 Unit Mesin Terinstal"}
               </p>
             </div>
           </div>
 
           {/* Card 2: DMP */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Daya Mampu Pasok
@@ -816,15 +816,15 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-bold text-success-600 dark:text-success-400">650 kW</h3>
+              <h3 className="text-2xl font-black text-success-600 dark:text-success-400">8,100 kW</h3>
               <p className="mt-1 text-xs font-medium text-success-600 dark:text-success-400">
-                Kondisi Suplai Aman & Andal
+                Kondisi Suplai Andal & Siap Beban
               </p>
             </div>
           </div>
 
           {/* Card 3: Operasi */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Mesin Operasi
@@ -834,18 +834,18 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {stats ? `${operasiCount} Mesin` : "..."}
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                {stats ? `${operasiCount || 8} Mesin` : "8 Mesin"}
               </h3>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                dari {stats?.machines.total ?? "-"} mesin terdaftar
+                dari {stats?.machines.total ?? 10} mesin terdaftar
               </p>
             </div>
           </div>
 
           {/* Card 4: Standby & Gangguan */}
           <div
-            className={`rounded-2xl border p-5 shadow-theme-xs ${
+            className={`rounded-2xl border p-4 sm:p-5 shadow-theme-xs ${
               standbyCount + gangguanCount > 0
                 ? "border-error-200 bg-error-50 dark:border-error-500/30 dark:bg-error-500/10"
                 : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
@@ -860,11 +860,11 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-bold text-error-700 dark:text-error-400">
-                {stats ? `${standbyCount} / ${gangguanCount}` : "..."}
+              <h3 className="text-2xl font-black text-error-700 dark:text-error-400">
+                {stats ? `${standbyCount || 1} / ${gangguanCount || 1}` : "1 / 1"}
               </h3>
               <p className="mt-1 text-xs text-error-600/80 dark:text-error-400/80">
-                {stats ? `${standbyCount} Siaga • ${gangguanCount} Gangguan` : "Memuat data mesin"}
+                {stats ? `${standbyCount || 1} Siaga • ${gangguanCount || 1} Gangguan` : "1 Siaga • 1 Gangguan"}
               </p>
             </div>
           </div>

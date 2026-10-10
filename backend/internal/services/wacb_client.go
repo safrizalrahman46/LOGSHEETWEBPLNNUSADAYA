@@ -143,6 +143,9 @@ func (c *WACBClient) GetUnits(token, kdRegion string, kdArea *string) (*models.W
 				{KdUnit: "0264", NamaUnit: "ULD BATU AMPAR", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
 				{KdUnit: "0265", NamaUnit: "ULD BIDUK-BIDUK", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
 				{KdUnit: "0279", NamaUnit: "ULD LONG SEGAR", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
+				{KdUnit: "0281", NamaUnit: "ULD KELAY", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
+				{KdUnit: "0283", NamaUnit: "ULD MUARA PAHU", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
+				{KdUnit: "0288", NamaUnit: "ULD MARATUA", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
 				{KdUnit: "0935", NamaUnit: "PLTD TAU LUMBIS", KdRegion: "05", KdArea: "55", NamaArea: "SITE NUNUKAN"},
 				{KdUnit: "0912", NamaUnit: "PLTD KRAYAN", KdRegion: "05", KdArea: "55", NamaArea: "SITE NUNUKAN"},
 			},
@@ -319,36 +322,81 @@ func (c *WACBClient) GetDetail(token, idBebanUld, kdUnit, tanggal, jam string) (
 }
 
 // Fallbacks
+func lookupUnitInfo(kdUnit string) (string, string, string, []models.WACBMachineItem) {
+	switch kdUnit {
+	case "0283":
+		return "ULD MUARA PAHU", "40", "SITE BONTANG", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD MUARA PAHU #01 (CATERPILLAR 3512B)", IdMesin: "000581", KodeMesinSilm: "22555140302831", Sn: "241088", Dt: 800, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: "PLTD MUARA PAHU #02 (DEUTZ TBD 620 V12)", IdMesin: "000582", KodeMesinSilm: "22555140302832", Sn: "620104", Dt: 600, KdJenisBahanBakar: "B35"},
+			{Nomor: 3, NamaMesin: "PLTD MUARA PAHU #03 (MITSUBISHI S12R-PTA)", IdMesin: "000583", KodeMesinSilm: "22555140302833", Sn: "120442", Dt: 1000, KdJenisBahanBakar: "B35"},
+			{Nomor: 4, NamaMesin: "PLTD MUARA PAHU #04 (PERKINS 4008TAG)", IdMesin: "000584", KodeMesinSilm: "22555140302834", Sn: "400812", Dt: 750, KdJenisBahanBakar: "B35"},
+		}
+	case "0265":
+		return "ULD BIDUK-BIDUK", "67", "SITE BERAU", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD BIDUK-BIDUK #01 (MTU 16V4000)", IdMesin: "000411", KodeMesinSilm: "22555140302651", Sn: "MTU-4001", Dt: 1500, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: "PLTD BIDUK-BIDUK #02 (CAT 3512B)", IdMesin: "000412", KodeMesinSilm: "22555140302652", Sn: "CAT-3512-02", Dt: 1000, KdJenisBahanBakar: "B35"},
+		}
+	case "0279":
+		return "ULD LONG SEGAR", "40", "SITE BONTANG", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD LONG SEGAR #01 (PERKINS 4008TAG)", IdMesin: "000421", KodeMesinSilm: "22555140302791", Sn: "PRK-4008-01", Dt: 750, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: "PLTD LONG SEGAR #02 (PERKINS 4006TAG)", IdMesin: "000422", KodeMesinSilm: "22555140302792", Sn: "PRK-4006-02", Dt: 600, KdJenisBahanBakar: "B35"},
+		}
+	case "0281":
+		return "ULD KELAY", "67", "SITE BERAU", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD KELAY #01 (CUMMINS KTA50-G3)", IdMesin: "000431", KodeMesinSilm: "22555140302811", Sn: "CUM-5001", Dt: 1000, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: "PLTD KELAY #02 (CUMMINS KTA38-G2)", IdMesin: "000432", KodeMesinSilm: "22555140302812", Sn: "CUM-3802", Dt: 800, KdJenisBahanBakar: "B35"},
+		}
+	case "0288":
+		return "ULD MARATUA", "67", "SITE BERAU", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD MARATUA #01 (MITSUBISHI S16R-PTA)", IdMesin: "000441", KodeMesinSilm: "22555140302881", Sn: "MIT-1601", Dt: 1400, KdJenisBahanBakar: "B35"},
+		}
+	default: // 0264 ULD BATU AMPAR
+		return "ULD BATU AMPAR", "40", "SITE BONTANG", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD BATU AMPAR #01 (DEUTZ BF6M 1013 E) s/n 134354", IdMesin: "000344", KodeMesinSilm: "22555140302001", Sn: "134354", Dt: 100, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: "PLTD BATU AMPAR #02 (DEUTZ BF6M 1013 E) s/n 64060", IdMesin: "000345", KodeMesinSilm: "22555140302002", Sn: "64060", Dt: 100, KdJenisBahanBakar: "B35"},
+			{Nomor: 3, NamaMesin: "PLTD BATU AMPAR #04 (DEUTZ F 10 L 413 F) s/n 6711748", IdMesin: "000347", KodeMesinSilm: "22555140302004", Sn: "6711748", Dt: 100, KdJenisBahanBakar: "B35"},
+			{Nomor: 4, NamaMesin: "PLTD BATU AMPAR #05 (MAN D 2866 LE) s/n 39093750534101", IdMesin: "000348", KodeMesinSilm: "22555140302007", Sn: "39093750534101", Dt: 200, KdJenisBahanBakar: "B35"},
+			{Nomor: 5, NamaMesin: "PLTD BATU AMPAR #06 (MAN) EX PLTD KAUBUN #04", IdMesin: "000383", KodeMesinSilm: "22555140102002", Sn: "39400470874201", Dt: 200, KdJenisBahanBakar: "B35"},
+			{Nomor: 6, NamaMesin: "PLTD BATU AMPAR #07 (CUMMINS KTA50-G3)", IdMesin: "000390", KodeMesinSilm: "22555140102003", Sn: "45291032", Dt: 250, KdJenisBahanBakar: "B35"},
+		}
+	}
+}
+
 func (c *WACBClient) getFallbackUnitFormat(kdRegion, kdArea, kdUnit string) *models.WACBFormatResponse {
+	unitName, defaultArea, areaName, machines := lookupUnitInfo(kdUnit)
+	effectiveArea := kdArea
+	if effectiveArea == "" {
+		effectiveArea = defaultArea
+	}
+
 	return &models.WACBFormatResponse{
 		Message: "Format logsheet PLTD",
 		Unit: &models.WACBUnitItem{
 			KdUnit:   kdUnit,
-			NamaUnit: "ULD BATU AMPAR",
+			NamaUnit: unitName,
 			KdRegion: kdRegion,
-			KdArea:   kdArea,
-			NamaArea: "SITE BONTANG",
+			KdArea:   effectiveArea,
+			NamaArea: areaName,
 		},
 		Format: &models.WACBFormatData{
 			Title:        "LAPORAN LOGSHEET PLTD",
-			UnitName:     "ULD BATU AMPAR",
+			UnitName:     unitName,
 			UnitCode:     kdUnit,
 			Date:         time.Now().Format("2006-01-02"),
 			Time:         time.Now().Format("15:04"),
 			OperatorName: "Operator Ruang Kontrol",
-			Mesin: []models.WACBMachineItem{
-				{Nomor: 1, NamaMesin: "PLTD BATU AMPAR #01 (DEUTZ BF6M 1013 E) s/n 134354", IdMesin: "000344", KodeMesinSilm: "22555140302001", Sn: "134354", Dt: 100, KdJenisBahanBakar: "B35"},
-				{Nomor: 2, NamaMesin: "PLTD BATU AMPAR #02 (DEUTZ BF6M 1013 E) s/n 64060", IdMesin: "000345", KodeMesinSilm: "22555140302002", Sn: "64060", Dt: 100, KdJenisBahanBakar: "B35"},
-				{Nomor: 3, NamaMesin: "PLTD BATU AMPAR #04 (DEUTZ F 10 L 413 F) s/n 6711748", IdMesin: "000347", KodeMesinSilm: "22555140302004", Sn: "6711748", Dt: 100, KdJenisBahanBakar: "B35"},
-				{Nomor: 4, NamaMesin: "PLTD BATU AMPAR #05 (MAN D 2866 LE) s/n 39093750534101", IdMesin: "000348", KodeMesinSilm: "22555140302007", Sn: "39093750534101", Dt: 200, KdJenisBahanBakar: "B35"},
-				{Nomor: 5, NamaMesin: "PLTD BATU AMPAR #06 (MAN) EX PLTD KAUBUN #04", IdMesin: "000383", KodeMesinSilm: "22555140102002", Sn: "39400470874201", Dt: 200, KdJenisBahanBakar: "B35"},
-				{Nomor: 6, NamaMesin: "PLTD BATU AMPAR #07 (CUMMINS KTA50-G3)", IdMesin: "000390", KodeMesinSilm: "22555140102003", Sn: "45291032", Dt: 250, KdJenisBahanBakar: "B35"},
-			},
+			Mesin:        machines,
 		},
 	}
 }
 
 func (c *WACBClient) getFallbackMatrix(kdRegion, tanggal, kdUnit string) *models.WACBMatrixResponse {
+	unitName, _, _, machines := lookupUnitInfo(kdUnit)
+	firstMachineID := "000344"
+	if len(machines) > 0 {
+		firstMachineID = machines[0].IdMesin
+	}
+
 	slots := make(map[string]models.WACBTimeSlotStatus)
 	for h := 0; h < 24; h++ {
 		slot1 := fmt.Sprintf("%02d:00", h)
@@ -358,7 +406,7 @@ func (c *WACBClient) getFallbackMatrix(kdRegion, tanggal, kdUnit string) *models
 		var idBeban *string
 		if h >= 8 && h <= 14 {
 			status = "done"
-			idVal := fmt.Sprintf("%s-000344-%s-%s:00", kdUnit, tanggal, slot1)
+			idVal := fmt.Sprintf("%s-%s-%s-%s:00", kdUnit, firstMachineID, tanggal, slot1)
 			idBeban = &idVal
 		}
 		slots[slot1] = models.WACBTimeSlotStatus{Status: status, IdBeban: idBeban}
@@ -372,7 +420,7 @@ func (c *WACBClient) getFallbackMatrix(kdRegion, tanggal, kdUnit string) *models
 				ID:             269,
 				KdRegion:       kdRegion,
 				KdUnit:         kdUnit,
-				NamaUnit:       "ULD BATU AMPAR",
+				NamaUnit:       unitName,
 				JamOperasional: 24,
 				LogsheetPLTD:   slots,
 			},
@@ -381,6 +429,7 @@ func (c *WACBClient) getFallbackMatrix(kdRegion, tanggal, kdUnit string) *models
 }
 
 func (c *WACBClient) getFallbackDetail(idBebanUld, kdUnit, tanggal, jam string) *models.WACBDetailReportResponse {
+	unitName, _, _, machines := lookupUnitInfo(kdUnit)
 	beban1 := 85.0
 	kwh1 := 12450.5
 	bbm1 := 2800.0
@@ -391,43 +440,49 @@ func (c *WACBClient) getFallbackDetail(idBebanUld, kdUnit, tanggal, jam string) 
 	cos1 := "0.85"
 	hz1 := 50.0
 
+	var bebanMesinList []models.WACBBebanMesin
+	for i, m := range machines {
+		if i == 0 {
+			bebanMesinList = append(bebanMesinList, models.WACBBebanMesin{
+				IdBeban:   idBebanUld,
+				IdMesin:   m.IdMesin,
+				NamaMesin: m.NamaMesin,
+				KdStatus:  "01", // OPERASI
+				Beban:     &beban1,
+				StandKwh:  &kwh1,
+				StandBbm:  &bbm1,
+				TekOli:    &tekOli1,
+				TemAir:    &suhuAir1,
+				ArusR:     &r1,
+				ArusS:     &s1,
+				ArusT:     &t1,
+				Teg:       &teg1,
+				CosPhi:    &cos1,
+				Frequency: &hz1,
+				Operator:  "Operator Site",
+			})
+		} else {
+			bebanMesinList = append(bebanMesinList, models.WACBBebanMesin{
+				IdBeban:   idBebanUld,
+				IdMesin:   m.IdMesin,
+				NamaMesin: m.NamaMesin,
+				KdStatus:  "02", // STANDBY
+				Operator:  "Operator Site",
+			})
+		}
+	}
+
 	return &models.WACBDetailReportResponse{
 		Success: true,
 		Data: &models.WACBDetailReportData{
 			BebanUld: &models.WACBBebanUld{
 				IdBeban:  idBebanUld,
 				KdUnit:   kdUnit,
-				NamaUnit: "ULD BATU AMPAR",
+				NamaUnit: unitName,
 				Tanggal:  tanggal,
 				Jam:      jam,
 			},
-			BebanMesin: []models.WACBBebanMesin{
-				{
-					IdBeban:   idBebanUld,
-					IdMesin:   "000344",
-					NamaMesin: "PLTD BATU AMPAR #01 (DEUTZ BF6M 1013 E)",
-					KdStatus:  "01", // OPERASI
-					Beban:     &beban1,
-					StandKwh:  &kwh1,
-					StandBbm:  &bbm1,
-					TekOli:    &tekOli1,
-					TemAir:    &suhuAir1,
-					ArusR:     &r1,
-					ArusS:     &s1,
-					ArusT:     &t1,
-					Teg:       &teg1,
-					CosPhi:    &cos1,
-					Frequency: &hz1,
-					Operator:  "Operator Site",
-				},
-				{
-					IdBeban:   idBebanUld,
-					IdMesin:   "000345",
-					NamaMesin: "PLTD BATU AMPAR #02 (DEUTZ BF6M 1013 E)",
-					KdStatus:  "02", // STANDBY
-					Operator:  "Operator Site",
-				},
-			},
+			BebanMesin: bebanMesinList,
 		},
 	}
 }

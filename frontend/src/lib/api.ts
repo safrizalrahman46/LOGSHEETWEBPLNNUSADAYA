@@ -14,7 +14,7 @@ function resolveApiBase(): string {
       return `http://${hostname}:8080/api`;
     }
   }
-  return "http://localhost:8080/api";
+  return "http://127.0.0.1:8080/api";
 }
 
 export const API_BASE_URL = resolveApiBase();

@@ -257,50 +257,50 @@ export default function DataIOPage() {
         {/* ================= TAB 1: EXPORT DATA ================= */}
         {activeTab === "export" && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
               {EXPORT_LIST.map((item) => {
                 const Icon = item.icon;
                 const isDownloading = downloadingId === item.id;
                 return (
                   <div
                     key={item.id}
-                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs transition-all hover:border-brand-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
+                    className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs transition-all hover:border-brand-500 hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
                   >
                     <div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-2">
                         <div
-                          className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-sm`}
+                          className={`flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${item.color} text-white shadow-sm`}
                         >
-                          <Icon className="h-6 w-6" />
+                          <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </div>
-                        <span className="rounded-md bg-gray-100 px-2 py-1 text-[11px] font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+                        <span className="shrink-0 rounded-md bg-gray-100 px-2 py-1 text-[11px] font-bold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                           {item.format}
                         </span>
                       </div>
 
-                      <h3 className="mt-4 text-base font-extrabold text-gray-900 dark:text-white">
+                      <h3 className="mt-3.5 text-sm sm:text-base font-extrabold text-gray-900 dark:text-white leading-snug">
                         {item.title}
                       </h3>
-                      <p className="mt-2 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                      <p className="mt-1.5 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800">
+                    <div className="mt-5 pt-3.5 border-t border-gray-100 dark:border-gray-800">
                       <button
                         onClick={() => handleDownloadExport(item)}
                         disabled={isDownloading}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-xs font-bold text-white shadow-theme-xs transition-all hover:bg-brand-600 active:scale-98 disabled:opacity-60"
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-500 px-3 py-2.5 text-xs font-bold text-white shadow-theme-xs transition-all hover:bg-brand-600 active:scale-98 disabled:opacity-60"
                       >
                         {isDownloading ? (
                           <>
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            <span>Mengunduh File...</span>
+                            <RefreshCw className="h-4 w-4 animate-spin shrink-0" />
+                            <span>Mengunduh...</span>
                           </>
                         ) : (
                           <>
-                            <Download className="h-4 w-4" />
-                            <span>Download Excel (.xlsx)</span>
+                            <Download className="h-4 w-4 shrink-0" />
+                            <span>Unduh Excel (.xlsx)</span>
                           </>
                         )}
                       </button>
