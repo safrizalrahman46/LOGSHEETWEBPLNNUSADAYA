@@ -7,15 +7,17 @@ import { ExternalLink } from "lucide-react";
 export const AppFooter: React.FC = () => {
   const [apiOnline, setApiOnline] = useState<boolean>(true);
 
+  const healthUrl = "http://127.0.0.1:8080/health";
+
   useEffect(() => {
-    // Health check ping to Go backend
-    fetch("http://localhost:8080/health")
+    // Health check ping to Go backend (IPv4 127.0.0.1 avoids Windows ::1 CORS conflict)
+    fetch(healthUrl)
       .then((res) => {
         if (res.ok) setApiOnline(true);
         else setApiOnline(false);
       })
       .catch(() => setApiOnline(false));
-  }, []);
+  }, [healthUrl]);
 
   return (
     <footer className="border-t border-gray-200 bg-white px-4 py-5 transition-colors sm:px-6 lg:px-8 dark:border-gray-800 dark:bg-gray-900 select-none">
@@ -69,7 +71,7 @@ export const AppFooter: React.FC = () => {
             Berita
           </Link>
           <a
-            href="http://localhost:8080/health"
+            href="http://127.0.0.1:8080/health"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] font-semibold text-gray-700 hover:border-brand-300 hover:bg-brand-50/50 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-700"
