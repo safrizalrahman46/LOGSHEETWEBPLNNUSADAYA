@@ -29,6 +29,9 @@ import {
   AlertTriangle,
   UserCheck,
   X,
+  Activity,
+  FolderSync,
+  Radio,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -67,10 +70,10 @@ export const AppSidebar: React.FC = () => {
 
   const navGroups: { groupTitle: string; items: NavItem[] }[] = [
     {
-      groupTitle: "OPERASIONAL",
+      groupTitle: "OPERASIONAL & MONITORING",
       items: [
         {
-          title: "Dashboard",
+          title: "Dashboard Utama",
           href: "/dashboard",
           icon: LayoutDashboard,
           roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
@@ -99,10 +102,45 @@ export const AppSidebar: React.FC = () => {
           badge: "Excel",
           badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
         },
+        {
+          title: "Ganti Unit PLTD",
+          href: "/pilih-unit",
+          icon: Building2,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "6 Unit",
+          badgeColor: "bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
+        },
       ],
     },
     {
-      groupTitle: "PEMELIHARAAN & SISTEM",
+      groupTitle: "INTEGRASI & MULTI-APP",
+      items: [
+        {
+          title: "Status Integrasi 3 App",
+          href: "/admin/integrasi",
+          icon: Activity,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "3-APP LIVE",
+          badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+        },
+        {
+          title: "Pusat Export & Import",
+          href: "/admin/data-io",
+          icon: FolderSync,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "Excel & CSV",
+          badgeColor: "bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400",
+        },
+        {
+          title: "Antrean Offline & Sync",
+          href: "/sync",
+          icon: CloudUpload,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+        },
+      ],
+    },
+    {
+      groupTitle: "PEMELIHARAAN HAR & AMC",
       items: [
         {
           title: "Modul HAR Mesin",
@@ -120,68 +158,13 @@ export const AppSidebar: React.FC = () => {
           badge: "KIT 2026",
           badgeColor: "bg-rose-50 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400",
         },
-        {
-          title: "Antrean Offline",
-          href: "/sync",
-          icon: CloudUpload,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
-        {
-          title: "Ganti Unit PLTD",
-          href: "/pilih-unit",
-          icon: Building2,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
       ],
     },
     {
-      groupTitle: "LAYANAN & PUBLIK",
+      groupTitle: "DATA MASTER & ADMIN",
       items: [
         {
-          title: "Web Publik & Landing",
-          href: "/",
-          icon: Globe,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
-        {
-          title: "Statistik Publik",
-          href: "/guest",
-          icon: BarChart3,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
-        {
-          title: "Presensi GPS",
-          href: "/presensi",
-          icon: MapPin,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-          badge: "250m",
-          badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
-        },
-        {
-          title: "Rekap Presensi",
-          href: "/presensi/riwayat",
-          icon: UserCheck,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
-        {
-          title: "Berita & Edukasi",
-          href: "/berita",
-          icon: FileText,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-        },
-        {
-          title: "Kelola Artikel",
-          href: "/admin/articles",
-          icon: Edit3,
-          roles: ["SUPERADMIN", "ADMIN"],
-        },
-      ],
-    },
-    {
-      groupTitle: "DATA MASTER",
-      items: [
-        {
-          title: "Pengguna",
+          title: "Manajemen Pengguna",
           href: "/admin/users",
           icon: Users,
           roles: ["SUPERADMIN", "ADMIN"],
@@ -193,30 +176,65 @@ export const AppSidebar: React.FC = () => {
           roles: ["SUPERADMIN", "ADMIN"],
         },
         {
-          title: "Master Mesin",
+          title: "Master Mesin & Kapasitas",
           href: "/admin/machines",
           icon: Cpu,
           roles: ["SUPERADMIN", "ADMIN"],
         },
         {
-          title: "Master Logsheet",
+          title: "Master Form Logsheet",
           href: "/admin/logsheets",
           icon: FileSpreadsheet,
           roles: ["SUPERADMIN", "ADMIN"],
         },
         {
-          title: "Matriks Master",
+          title: "Matriks Parameter Master",
           href: "/admin/matrix",
           icon: Table2,
           roles: ["SUPERADMIN", "ADMIN"],
         },
         {
-          title: "Export & Import Data",
-          href: "/admin/data-io",
-          icon: FileSpreadsheet,
+          title: "Kelola Artikel & Berita",
+          href: "/admin/articles",
+          icon: Edit3,
+          roles: ["SUPERADMIN", "ADMIN"],
+        },
+      ],
+    },
+    {
+      groupTitle: "LAYANAN & PUBLIK",
+      items: [
+        {
+          title: "Presensi GPS Karyawan",
+          href: "/presensi",
+          icon: MapPin,
           roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-          badge: "Excel & CSV",
+          badge: "250m",
           badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+        },
+        {
+          title: "Rekap Presensi & Log",
+          href: "/presensi/riwayat",
+          icon: UserCheck,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+        },
+        {
+          title: "Statistik Publik",
+          href: "/guest",
+          icon: BarChart3,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+        },
+        {
+          title: "Portal Landing Page",
+          href: "/",
+          icon: Globe,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+        },
+        {
+          title: "Berita & Edukasi",
+          href: "/berita",
+          icon: FileText,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
         },
       ],
     },
