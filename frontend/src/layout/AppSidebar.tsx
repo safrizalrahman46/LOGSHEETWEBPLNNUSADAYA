@@ -26,6 +26,8 @@ import {
   ShieldCheck,
   Cpu,
   Table2,
+  AlertTriangle,
+  UserCheck,
   X,
 } from "lucide-react";
 import { User } from "@/types";
@@ -89,18 +91,34 @@ export const AppSidebar: React.FC = () => {
           badge: "Batch 1-6",
           badgeColor: "bg-success-50 text-success-600 dark:bg-success-500/20 dark:text-success-400",
         },
+        {
+          title: "Riwayat Logsheet",
+          href: "/logsheet/riwayat",
+          icon: FileText,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "Excel",
+          badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+        },
       ],
     },
     {
       groupTitle: "PEMELIHARAAN & SISTEM",
       items: [
         {
-          title: "Modul HAR & AMC",
+          title: "Modul HAR Mesin",
           href: "/har",
           icon: Wrench,
-          roles: ["SUPERADMIN", "ADMIN", "SUPERVISOR", "TEKNISI"],
-          badge: "Preventive",
+          roles: ["SUPERADMIN", "ADMIN", "SUPERVISOR", "TEKNISI", "OPERATOR", "MANAGER"],
+          badge: "P1 - P6",
           badgeColor: "bg-warning-50 text-warning-600 dark:bg-warning-500/20 dark:text-warning-400",
+        },
+        {
+          title: "Gangguan AMC 2026",
+          href: "/har/amc",
+          icon: AlertTriangle,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI"],
+          badge: "KIT 2026",
+          badgeColor: "bg-rose-50 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400",
         },
         {
           title: "Antrean Offline",
@@ -138,6 +156,12 @@ export const AppSidebar: React.FC = () => {
           roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
           badge: "250m",
           badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
+        },
+        {
+          title: "Rekap Presensi",
+          href: "/presensi/riwayat",
+          icon: UserCheck,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
         },
         {
           title: "Berita & Edukasi",
@@ -185,6 +209,14 @@ export const AppSidebar: React.FC = () => {
           href: "/admin/matrix",
           icon: Table2,
           roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Export & Import Data",
+          href: "/admin/data-io",
+          icon: FileSpreadsheet,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "Excel & CSV",
+          badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
         },
       ],
     },

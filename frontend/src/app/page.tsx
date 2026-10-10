@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import CorpNavbar from "@/components/corp/CorpNavbar";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { apiClient } from "@/lib/api";
 
 /* ============================================================
@@ -1116,6 +1117,206 @@ export default function HomePage() {
         .carousel-prev-corp { left: 6px; }
         .carousel-next-corp { right: 6px; }
 
+        /* ============ DARK / LIGHT THEME VARS (inline styles landing) ============ */
+        :root {
+          --corp-card: #ffffff;
+          --corp-surface2: #f8fafc;
+          --corp-surface: #f1f5f9;
+          --corp-heading: #1a1a2e;
+          --corp-strong: #0f172a;
+          --corp-body: #334155;
+          --corp-body2: #475569;
+          --corp-muted: #64748b;
+          --corp-meta: #94a3b8;
+          --corp-border: #cbd5e1;
+          --corp-border-line: #e2e8f0;
+          --corp-border2: #f1f5f9;
+          --corp-icon-bg: #e8f6fd;
+          --corp-icon-border: #bae6fd;
+          --corp-badge-bg: #e0f2fe;
+          --corp-accent: #0284c7;
+          --corp-dot: #cbd5e1;
+          --corp-input-bg: #ffffff;
+        }
+        .dark {
+          --primary-lt: rgba(26, 157, 225, 0.12);
+          --text: #cbd5e1;
+          --text-light: #94a3b8;
+          --bg: #0c111d;
+          --corp-card: #0f172a;
+          --corp-surface2: #111827;
+          --corp-surface: #1e293b;
+          --corp-heading: #f1f5f9;
+          --corp-strong: #f8fafc;
+          --corp-body: #cbd5e1;
+          --corp-body2: #94a3b8;
+          --corp-muted: #94a3b8;
+          --corp-meta: #94a3b8;
+          --corp-border: #334155;
+          --corp-border-line: #1e293b;
+          --corp-border2: #1e293b;
+          --corp-icon-bg: rgba(26, 157, 225, 0.14);
+          --corp-icon-border: rgba(26, 157, 225, 0.4);
+          --corp-badge-bg: rgba(56, 189, 248, 0.15);
+          --corp-accent: #38bdf8;
+          --corp-dot: #475569;
+          --corp-input-bg: #0f172a;
+        }
+
+        /* ============ DARK MODE — LANDING ============ */
+        .dark body { background: #0c111d; color: #cbd5e1; }
+
+        /* Hero */
+        .dark .hero, .dark .hero-corp { background: #0c111d; }
+        .dark .hero-overlay {
+          background: linear-gradient(
+            to top,
+            rgba(12, 17, 29, 1.0) 0%,
+            rgba(12, 17, 29, 0.85) 18%,
+            rgba(12, 17, 29, 0.45) 42%,
+            rgba(12, 17, 29, 0.12) 65%,
+            rgba(12, 17, 29, 0.0) 85%,
+            rgba(12, 17, 29, 0.0) 100%
+          ) !important;
+        }
+        .dark .hero-title {
+          color: #f1f5f9 !important;
+          text-shadow: 0 1px 12px rgba(0, 0, 0, 0.65), 0 0 2px rgba(0, 0, 0, 0.5) !important;
+        }
+        .dark .hero-subtitle {
+          color: #cbd5e1 !important;
+          text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6) !important;
+        }
+        .dark .btn-hero-outline {
+          background: rgba(12, 17, 29, 0.72);
+          color: #7dd3fc;
+          border-color: #38bdf8;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+        }
+        .dark .btn-hero-outline:hover {
+          background: var(--primary);
+          color: #ffffff;
+          border-color: var(--primary);
+        }
+
+        /* Section shells */
+        .dark .about-section-corp, .dark .stats-section-corp, .dark .services-section-corp,
+        .dark .news-section-corp, .dark .portfolio-section-corp, .dark .direksi-section-corp,
+        .dark .contact-section-corp { background: #0c111d; }
+        .dark .section-title-corp { color: #f1f5f9; }
+        .dark .section-subtitle-corp { color: #94a3b8; }
+
+        /* About + Stats */
+        .dark .about-text-corp { color: #94a3b8; }
+        .dark .stat-icon-corp { background: rgba(26, 157, 225, 0.14); }
+        .dark .stat-number-corp { color: #f1f5f9; }
+        .dark .stat-label-corp { color: #94a3b8; }
+
+        /* Services */
+        .dark .service-card-corp {
+          background: #0f172a; border-color: #1e293b;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+        .dark .service-card-corp:hover {
+          border-color: #334155;
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+        }
+        .dark .service-badge-corp { color: #94a3b8; background: #1e293b; border-color: #334155; }
+        .dark .service-icon-box-corp { background: rgba(26, 157, 225, 0.14); }
+        .dark .service-title-corp { color: #f1f5f9; }
+        .dark .service-desc-corp { color: #94a3b8; }
+        .dark .service-features-corp { border-top-color: #1e293b; }
+        .dark .service-feature-item-corp { color: #cbd5e1; }
+        .dark .service-check-icon-corp { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .dark .service-action-link-corp { color: #38bdf8; }
+        .dark .service-card-corp:hover .service-action-link-corp { color: #7dd3fc; }
+
+        /* News */
+        .dark .news-card-corp {
+          background: #0f172a; border-color: #1e293b;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+        }
+        .dark .news-card-corp:hover {
+          border-color: #334155;
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+        }
+        .dark .news-img-wrapper-corp { background: #111827; }
+        .dark .news-badge-corp { color: #38bdf8; background: rgba(56, 189, 248, 0.15); }
+        .dark .news-title-corp { color: #f1f5f9; }
+        .dark .news-excerpt-corp { color: #94a3b8; }
+        .dark .news-read-btn-corp { color: #38bdf8; }
+        .dark .news-read-btn-corp:hover { color: #7dd3fc; }
+
+        /* Portfolio */
+        .dark .filter-btn-corp {
+          background: #111827; border-color: #334155; color: #94a3b8; box-shadow: none;
+        }
+        .dark .filter-btn-corp:hover {
+          color: #38bdf8; border-color: #0ea5e9; background: rgba(56, 189, 248, 0.08);
+        }
+        .dark .filter-btn-corp.active {
+          background: #0284c7; color: #ffffff; border-color: #0284c7;
+          box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+        }
+        .dark .portfolio-item-corp {
+          border-color: #1e293b;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+        .dark .portfolio-lightbox-card {
+          background: #0f172a; border-color: #1e293b;
+          box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7);
+        }
+        .dark .portfolio-lightbox-close:hover { background: #334155; }
+
+        /* Direksi */
+        .dark .direksi-card-corp {
+          background: #0f172a; border-color: #1e293b;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+        }
+        .dark .direksi-card-corp:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
+        .dark .direksi-photo-wrapper-corp { background: #111827; }
+
+        /* Contact + social */
+        .dark .social-link-corp { border-color: #38bdf8; color: #38bdf8; }
+        .dark .social-link-corp:hover { background: var(--primary); color: #ffffff; }
+
+        /* Navbar (style tag ini hanya terpasang selama landing ter-mount) */
+        .dark .navbar-corp {
+          background: linear-gradient(to bottom, rgba(12, 17, 29, 0.94) 0%, rgba(12, 17, 29, 0.72) 65%, rgba(12, 17, 29, 0.35) 100%);
+          border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+        .dark .navbar-corp.scrolled {
+          background: rgba(12, 17, 29, 0.97);
+          border-bottom-color: rgba(30, 41, 59, 0.9);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+        }
+        .dark .navbar-corp .nav-link-corp { color: #cbd5e1; }
+        .dark .navbar-corp .nav-link-corp:hover,
+        .dark .navbar-corp .nav-item-corp.active .nav-link-corp { color: #38bdf8; }
+        .dark .navbar-corp .dropdown-corp {
+          background: #0f172a; border-color: #1e293b;
+          box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+        }
+        .dark .navbar-corp .dropdown-corp li a,
+        .dark .navbar-corp .dropdown-corp li span { color: #cbd5e1; }
+        .dark .navbar-corp .dropdown-corp li a:hover,
+        .dark .navbar-corp .dropdown-corp li span:hover {
+          background: rgba(26, 157, 225, 0.14); color: #38bdf8;
+        }
+
+        /* Floating theme toggle */
+        .landing-theme-fab {
+          position: fixed; right: 22px; bottom: 22px; z-index: 950;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.28);
+        }
+
+        /* Logo Danantara (teks hitam) → plate putih agar terbaca di navbar gelap */
+        .dark .navbar-corp .logo-danantara-corp {
+          background: #ffffff;
+          padding: 4px 10px;
+          border-radius: 8px;
+        }
+
         @media (max-width: 1024px) {
           .hero-container, .hero-container-corp { grid-template-columns: 1fr; text-align: center; }
           .hero-content { margin: 0 auto; }
@@ -1138,6 +1339,8 @@ export default function HomePage() {
           .section-line-corp { width: 26px; }
         }
       `}</style>
+
+      <ThemeToggleButton className="landing-theme-fab" />
 
       {/* ================================================================
           NAVBAR (shared component: nav-container-corp)
@@ -1343,7 +1546,7 @@ export default function HomePage() {
                 width: serviceIdx === i ? 28 : 10,
                 height: 10,
                 borderRadius: 9999,
-                background: serviceIdx === i ? "#1a9de1" : "#cbd5e1",
+                background: serviceIdx === i ? "#1a9de1" : "var(--corp-dot)",
                 cursor: "pointer",
                 transition: "all .3s ease",
               }}
@@ -1376,9 +1579,9 @@ export default function HomePage() {
                 borderRadius: 9999,
                 fontSize: 13,
                 fontWeight: 600,
-                background: "#e8f6fd",
+                background: "var(--corp-icon-bg)",
                 color: "#1a9de1",
-                border: "1.5px solid #bae6fd",
+                border: "1.5px solid var(--corp-icon-border)",
                 textDecoration: "none",
                 transition: "all .2s ease",
               }}
@@ -1395,9 +1598,9 @@ export default function HomePage() {
                 borderRadius: 9999,
                 fontSize: 13,
                 fontWeight: 600,
-                background: "#f8fafc",
-                color: "#475569",
-                border: "1.5px solid #e2e8f0",
+                background: "var(--corp-surface2)",
+                color: "var(--corp-body2)",
+                border: "1.5px solid var(--corp-border-line)",
                 textDecoration: "none",
                 transition: "all .2s ease",
               }}
@@ -1468,7 +1671,7 @@ export default function HomePage() {
                     <p className="news-excerpt-corp">
                       {item.excerpt}
                     </p>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", paddingTop: 14, borderTop: "1px solid #f1f5f9" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto", paddingTop: 14, borderTop: "1px solid var(--corp-border2)" }}>
                       <button
                         onClick={() => setSelectedArticle(item)}
                         className="news-read-btn-corp"
@@ -1480,7 +1683,7 @@ export default function HomePage() {
                           href={item.href}
                           target="_blank"
                           rel="noreferrer"
-                          style={{ fontSize: 12, color: "#94a3b8", textDecoration: "none" }}
+                          style={{ fontSize: 12, color: "var(--corp-meta)", textDecoration: "none" }}
                           title="Buka sumber resmi PLN Nusa Daya"
                         >
                           🌐 Sumber
@@ -1642,9 +1845,9 @@ export default function HomePage() {
                   }}
                 />
               </div>
-              <div style={{ padding: "22px 18px 24px", textAlign: "center", background: "#ffffff", flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <h3 style={{ fontSize: 18, fontWeight: 800, color: "#1a1a2e", marginBottom: 6 }}>{d.name}</h3>
-                <p style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b", letterSpacing: 0.5, lineHeight: 1.5, textTransform: "uppercase" }}>
+              <div style={{ padding: "22px 18px 24px", textAlign: "center", background: "var(--corp-card)", flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 800, color: "var(--corp-heading)", marginBottom: 6 }}>{d.name}</h3>
+                <p style={{ fontSize: 11.5, fontWeight: 600, color: "var(--corp-muted)", letterSpacing: 0.5, lineHeight: 1.5, textTransform: "uppercase" }}>
                   {d.title}
                 </p>
               </div>
@@ -1668,10 +1871,10 @@ export default function HomePage() {
         <div className="contact-container-corp">
           {/* Column 1: Info & Socials */}
           <div>
-            <h3 style={{ fontSize: 22, fontWeight: 800, color: "#1a1a2e", lineHeight: 1.3, marginBottom: 14 }}>
+            <h3 style={{ fontSize: 22, fontWeight: 800, color: "var(--corp-heading)", lineHeight: 1.3, marginBottom: 14 }}>
               PT Pelayanan Listrik<br />Nasional Nusa Daya
             </h3>
-            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.7, marginBottom: 24 }}>
+            <p style={{ fontSize: 14, color: "var(--corp-muted)", lineHeight: 1.7, marginBottom: 24 }}>
               Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia dan tumbuh berkelanjutan
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -1692,8 +1895,8 @@ export default function HomePage() {
 
           {/* Column 2: Details */}
           <div>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20, fontSize: 14, color: "#334155", lineHeight: 1.6 }}>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#e8f6fd", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 20, fontSize: 14, color: "var(--corp-body)", lineHeight: 1.6 }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--corp-icon-bg)", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>
               </div>
               <div>
@@ -1703,15 +1906,15 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, fontSize: 14, color: "#334155" }}>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#e8f6fd", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, fontSize: 14, color: "var(--corp-body)" }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--corp-icon-bg)", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
               </div>
               <p>plnnd@plnnusadaya.co.id</p>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14, color: "#334155" }}>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#e8f6fd", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14, color: "var(--corp-body)" }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--corp-icon-bg)", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14h-3.08z" /></svg>
               </div>
               <p>Telp (0542) 8975052</p>
@@ -1728,7 +1931,7 @@ export default function HomePage() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: "100%", padding: "12px 16px", border: "1px solid #cbd5e1", borderRadius: 8, fontSize: 14 }}
+                  style={{ width: "100%", padding: "12px 16px", border: "1px solid var(--corp-border)", borderRadius: 8, fontSize: 14, background: "var(--corp-input-bg)", color: "var(--corp-body)" }}
                 />
                 <input
                   type="email"
@@ -1736,7 +1939,7 @@ export default function HomePage() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{ width: "100%", padding: "12px 16px", border: "1px solid #cbd5e1", borderRadius: 8, fontSize: 14 }}
+                  style={{ width: "100%", padding: "12px 16px", border: "1px solid var(--corp-border)", borderRadius: 8, fontSize: 14, background: "var(--corp-input-bg)", color: "var(--corp-body)" }}
                 />
                 <input
                   type="text"
@@ -1744,7 +1947,7 @@ export default function HomePage() {
                   required
                   value={formData.subject}
                   onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  style={{ width: "100%", padding: "12px 16px", border: "1px solid #cbd5e1", borderRadius: 8, fontSize: 14 }}
+                  style={{ width: "100%", padding: "12px 16px", border: "1px solid var(--corp-border)", borderRadius: 8, fontSize: 14, background: "var(--corp-input-bg)", color: "var(--corp-body)" }}
                 />
                 <textarea
                   placeholder="Message"
@@ -1752,7 +1955,7 @@ export default function HomePage() {
                   required
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  style={{ width: "100%", padding: "12px 16px", border: "1px solid #cbd5e1", borderRadius: 8, fontSize: 14 }}
+                  style={{ width: "100%", padding: "12px 16px", border: "1px solid var(--corp-border)", borderRadius: 8, fontSize: 14, background: "var(--corp-input-bg)", color: "var(--corp-body)" }}
                 />
                 <button
                   type="submit"
@@ -1782,7 +1985,7 @@ export default function HomePage() {
         </div>
 
         {/* Footer copyright */}
-        <div style={{ borderTop: "1px solid #f1f5f9", marginTop: 60, paddingTop: 28, textAlign: "center", fontSize: 13.5, color: "#64748b" }}>
+        <div style={{ borderTop: "1px solid var(--corp-border2)", marginTop: 60, paddingTop: 28, textAlign: "center", fontSize: 13.5, color: "var(--corp-muted)" }}>
           <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
         </div>
       </section>
@@ -1838,20 +2041,20 @@ export default function HomePage() {
         >
           <div
             style={{
-              background: "#ffffff",
+              background: "var(--corp-card)",
               borderRadius: "18px",
               maxWidth: "760px",
               width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
               boxShadow: "0 25px 60px rgba(0, 0, 0, 0.25)",
-              border: "1px solid #e2e8f0",
+              border: "1px solid var(--corp-border-line)",
               padding: "0 0 32px 0",
               position: "relative",
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ position: "relative", width: "100%", height: "280px", overflow: "hidden", borderTopLeftRadius: "18px", borderTopRightRadius: "18px", background: "#f1f5f9" }}>
+            <div style={{ position: "relative", width: "100%", height: "280px", overflow: "hidden", borderTopLeftRadius: "18px", borderTopRightRadius: "18px", background: "var(--corp-surface)" }}>
               <img
                 src={selectedArticle.img}
                 alt={selectedArticle.title}
@@ -1890,8 +2093,8 @@ export default function HomePage() {
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
                 <span
                   style={{
-                    background: "#e0f2fe",
-                    color: "#0284c7",
+                    background: "var(--corp-badge-bg)",
+                    color: "var(--corp-accent)",
                     fontSize: "11px",
                     fontWeight: 700,
                     padding: "4px 10px",
@@ -1902,10 +2105,10 @@ export default function HomePage() {
                 >
                   {selectedArticle.category || "BERITA"}
                 </span>
-                <span style={{ fontSize: "12.5px", color: "#64748b" }}>
+                <span style={{ fontSize: "12.5px", color: "var(--corp-muted)" }}>
                   📅 {selectedArticle.date}
                 </span>
-                <span style={{ fontSize: "12.5px", color: "#64748b" }}>
+                <span style={{ fontSize: "12.5px", color: "var(--corp-muted)" }}>
                   ✍️ {selectedArticle.author || "Redaksi PLN Nusa Daya"}
                 </span>
               </div>
@@ -1914,7 +2117,7 @@ export default function HomePage() {
                 style={{
                   fontSize: "24px",
                   fontWeight: 800,
-                  color: "#0f172a",
+                  color: "var(--corp-strong)",
                   lineHeight: 1.35,
                   marginBottom: 18,
                 }}
@@ -1925,11 +2128,11 @@ export default function HomePage() {
               <div
                 style={{
                   fontSize: "15px",
-                  color: "#334155",
+                  color: "var(--corp-body)",
                   lineHeight: 1.8,
                   whiteSpace: "pre-line",
                   marginBottom: 28,
-                  borderTop: "1px solid #f1f5f9",
+                  borderTop: "1px solid var(--corp-border2)",
                   paddingTop: 18,
                 }}
               >
@@ -1944,7 +2147,7 @@ export default function HomePage() {
                   flexWrap: "wrap",
                   gap: 12,
                   paddingTop: 16,
-                  borderTop: "1px solid #f1f5f9",
+                  borderTop: "1px solid var(--corp-border2)",
                 }}
               >
                 {selectedArticle.href && selectedArticle.href.startsWith("http") ? (
@@ -1962,7 +2165,7 @@ export default function HomePage() {
                     Buka Halaman Resmi plnnusadaya.co.id ↗
                   </a>
                 ) : (
-                  <span style={{ fontSize: "12.5px", color: "#94a3b8" }}>
+                  <span style={{ fontSize: "12.5px", color: "var(--corp-meta)" }}>
                     Publikasi Resmi PLN Nusa Daya
                   </span>
                 )}
@@ -2030,32 +2233,32 @@ export default function HomePage() {
 
             <div style={{ padding: "28px 30px" }}>
               <div style={{ marginBottom: 20 }}>
-                <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, color: "#0284c7", marginBottom: 8 }}>
+                <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1, color: "var(--corp-accent)", marginBottom: 8 }}>
                   KETERANGAN OPERASIONAL &amp; CAKUPAN KERJA:
                 </h4>
-                <p style={{ fontSize: 14.5, color: "#334155", lineHeight: 1.8 }}>
+                <p style={{ fontSize: 14.5, color: "var(--corp-body)", lineHeight: 1.8 }}>
                   {selectedPortfolio.desc}
                 </p>
               </div>
 
               {selectedPortfolio.specs && (
-                <div style={{ marginBottom: 24, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 14, padding: "16px 20px" }}>
-                  <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, color: "#475569", marginBottom: 12 }}>
+                <div style={{ marginBottom: 24, background: "var(--corp-surface2)", border: "1px solid var(--corp-border-line)", borderRadius: 14, padding: "16px 20px" }}>
+                  <h4 style={{ fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--corp-body2)", marginBottom: 12 }}>
                     SPESIFIKASI &amp; INDIKATOR KINERJA:
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
                     {selectedPortfolio.specs.map((sp: any, i: number) => (
-                      <div key={i} style={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px" }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", display: "block" }}>{sp.label}</span>
-                        <strong style={{ fontSize: 13.5, color: "#0f172a", marginTop: 2, display: "block" }}>{sp.val}</strong>
+                      <div key={i} style={{ background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "10px 14px" }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "var(--corp-muted)", textTransform: "uppercase", display: "block" }}>{sp.label}</span>
+                        <strong style={{ fontSize: 13.5, color: "var(--corp-strong)", marginTop: 2, display: "block" }}>{sp.val}</strong>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
-                <span style={{ fontSize: 12, color: "#64748b" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, paddingTop: 16, borderTop: "1px solid var(--corp-border2)" }}>
+                <span style={{ fontSize: 12, color: "var(--corp-muted)" }}>
                   &#128274; Portofolio Operasional Resmi PT PLN Nusa Daya
                 </span>
                 <button

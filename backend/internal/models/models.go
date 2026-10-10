@@ -68,14 +68,50 @@ type HARTicket struct {
 	Category           string         `json:"category"`         // Bahan Bakar, Pelumasan, Pendingin, Udara, Elektrikal, Mekanikal
 	MaintenanceType    string         `json:"maintenance_type"` // PREVENTIVE, CORRECTIVE, OVERHAUL
 	RunningHours       float64        `json:"running_hours"`    // JKM
+	Priority           string         `gorm:"default:'NORMAL'" json:"priority"` // LOW, NORMAL, HIGH, CRITICAL
+	StartTime          string         `json:"start_time"`
+	EndTime            string         `json:"end_time"`
 	FaultDescription   string         `gorm:"type:text" json:"fault_description"`
 	ActionTaken        string         `gorm:"type:text" json:"action_taken"`
-	Status             string         `gorm:"default:'DRAFT'" json:"status"` // DRAFT, SUBMITTED, IN_PROGRESS, RESOLVED, APPROVED
+	FinalResult        string         `json:"final_result"`
+	PhotoBefore        string         `gorm:"type:text" json:"photo_before"`
+	PhotoProcess       string         `gorm:"type:text" json:"photo_process"`
+	PhotoAfter         string         `gorm:"type:text" json:"photo_after"`
+	ChecklistData      string         `gorm:"type:text" json:"checklist_data"` // JSON array string
+	Status             string         `gorm:"default:'DRAFT'" json:"status"`   // DRAFT, SUBMITTED, IN_PROGRESS, RESOLVED, APPROVED
 	TeknisiName        string         `json:"teknisi_name"`
 	SupervisorApproval string         `json:"supervisor_approval"`
 	CreatedAt          time.Time      `json:"created_at"`
 	UpdatedAt          time.Time      `json:"updated_at"`
 	DeletedAt          gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// AMCReport merepresentasikan Laporan Gangguan AMC KIT KALTIMRA 2026
+type AMCReport struct {
+	ID                  uint           `gorm:"primaryKey" json:"id"`
+	Periode             string         `gorm:"default:'Setelah AMC'" json:"periode"`
+	UP3                 string         `gorm:"index" json:"up3"`
+	Sentral             string         `gorm:"index" json:"sentral"`
+	UnitPembangkit      string         `gorm:"index" json:"unit_pembangkit"`
+	Merk                string         `json:"merk"`
+	Tipe                string         `json:"tipe"`
+	SerialNumber        string         `json:"serial_number"`
+	DTP                 float64        `json:"dtp"` // Daya Terpasang kW
+	DMP                 float64        `json:"dmp"` // Daya Mampu Pasok kW
+	Prioritas           string         `gorm:"index" json:"prioritas"` // PRIORITAS 1, PRIORITAS 2, PRIORITAS 3
+	IndikasiGangguan    string         `gorm:"type:text" json:"indikasi_gangguan"`
+	DampakMesin         string         `gorm:"type:text" json:"dampak_mesin"`
+	WaktuKejadian       time.Time      `json:"waktu_kejadian"`
+	RencanaTindakLanjut string         `gorm:"type:text" json:"rencana_tindak_lanjut"`
+	ListMaterial        string         `gorm:"type:text" json:"list_material"`
+	Progres             string         `gorm:"type:text" json:"progres"`
+	PIC                 string         `json:"pic"`
+	WaktuSelesai        *time.Time     `json:"waktu_selesai"`
+	LamaGangguanJam     float64        `json:"lama_gangguan_jam"`
+	Status              string         `gorm:"default:'OPEN'" json:"status"` // OPEN, IN_PROGRESS, CLOSE
+	CreatedAt           time.Time      `json:"created_at"`
+	UpdatedAt           time.Time      `json:"updated_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 type SystemAuditLog struct {

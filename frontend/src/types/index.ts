@@ -1,4 +1,4 @@
-﻿export type Role =
+export type Role =
   | "SUPERADMIN"
   | "ADMIN"
   | "MANAGER"
@@ -198,12 +198,67 @@ export interface HARTicket {
   category: string;
   maintenance_type: string;
   running_hours: number;
+  priority?: "LOW" | "NORMAL" | "HIGH" | "CRITICAL";
+  start_time?: string;
+  end_time?: string;
   fault_description: string;
   action_taken: string;
+  final_result?: string;
+  photo_before?: string;
+  photo_process?: string;
+  photo_after?: string;
+  checklist_data?: string;
   status: "DRAFT" | "SUBMITTED" | "IN_PROGRESS" | "RESOLVED" | "APPROVED";
   teknisi_name: string;
   supervisor_approval?: string;
   created_at?: string;
+  updated_at?: string;
+}
+
+export interface AMCReport {
+  id: number;
+  periode: string;
+  up3: string;
+  sentral: string;
+  unit_pembangkit: string;
+  merk: string;
+  tipe: string;
+  serial_number: string;
+  dtp: number;
+  dmp: number;
+  prioritas: "PRIORITAS 1" | "PRIORITAS 2" | "PRIORITAS 3" | string;
+  indikasi_gangguan: string;
+  dampak_mesin: string;
+  waktu_kejadian: string;
+  rencana_tindak_lanjut: string;
+  list_material: string;
+  progres: string;
+  pic: string;
+  waktu_selesai?: string | null;
+  lama_gangguan_jam: number;
+  status: "OPEN" | "IN_PROGRESS" | "CLOSE" | string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AttendanceItem {
+  id: number;
+  user_id: number;
+  username: string;
+  name: string;
+  role: string;
+  kd_unit: string;
+  nama_unit: string;
+  shift: string;
+  latitude: number;
+  longitude: number;
+  accuracy_meter: number;
+  distance_meter: number;
+  is_within_geofence: boolean;
+  status: "VALID" | "ANOMALY";
+  remarks: string;
+  photo_url: string;
+  created_at: string;
 }
 
 export interface AppNotification {

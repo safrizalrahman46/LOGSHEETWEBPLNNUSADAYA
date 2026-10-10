@@ -39,6 +39,7 @@ func main() {
 	logsheetHandler := handlers.NewLogsheetHandler(db, wacbClient, messageBuilder)
 	harHandler := handlers.NewHARHandler(db)
 	exportHandler := handlers.NewExportHandler(db, excelService)
+	importExportHandler := handlers.NewImportExportHandler(db, excelService)
 	attendanceHandler := handlers.NewAttendanceHandler(db, geofenceService)
 	articleHandler := handlers.NewArticleHandler(db)
 	guestHandler := handlers.NewGuestHandler(db)
@@ -155,13 +156,31 @@ func main() {
 	// HAR Module
 	har := protected.Group("/har")
 	har.Get("/tickets", harHandler.GetTickets)
+	har.Get("/tickets/:id", harHandler.GetTicketDetail)
 	har.Get("/taxonomy", harHandler.GetTaxonomy)
 	har.Post("/tickets", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateTicket)
 	har.Put("/tickets/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor), harHandler.UpdateTicketStatus)
 	har.Put("/tickets/:id/approve", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.ApproveTicket)
 
-	// Excel Export
+	// AMC Gangguan KIT KALTIMRA 2026
+	har.Get("/amc", harHandler.GetAMCReports)
+	har.Get("/amc/stats", harHandler.GetAMCStats)
+	har.Post("/amc", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateAMCReport)
+	har.Put("/amc/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.UpdateAMCReport)
+	har.Delete("/amc/:id", middleware.RequireRoles(models.RoleAdmin, models.RoleSuperadmin), harHandler.DeleteAMCReport)
+
+	// Excel Export & Data Import / Export Suite
 	protected.Get("/export/excel", exportHandler.ExportExcel)
+	protected.Get("/export/amc/excel", importExportHandler.ExportAMCExcel)
+	protected.Get("/export/har/excel", importExportHandler.ExportHARTicketsExcel)
+	protected.Get("/export/attendance/excel", importExportHandler.ExportAttendanceExcel)
+	protected.Get("/export/machines/excel", importExportHandler.ExportMachinesExcel)
+
+	// Template Downloader & Data Import
+	protected.Get("/import/template/:type", importExportHandler.DownloadTemplate)
+	protected.Post("/import/amc", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), importExportHandler.ImportAMC)
+	protected.Post("/import/machines", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), importExportHandler.ImportMachines)
+	protected.Post("/import/logsheets", middleware.RequireRoles(models.RoleOperator, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), importExportHandler.ImportLogsheets)
 
 	// Start Server
 	wacbWatcher := handlers.NewWACBWatcher(db, wacbClient,
