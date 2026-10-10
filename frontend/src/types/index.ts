@@ -270,8 +270,12 @@ export interface AppNotification {
   type: string;
   target_type: string;
   is_read: boolean;
-  user_id: string;
-  unit_id: string;
+  user_id?: string;
+  unit_id?: string;
+  source?: string;
+  source_name?: string;
+  badge_color?: string;
+  action_url?: string;
   created_at?: string;
 }
 

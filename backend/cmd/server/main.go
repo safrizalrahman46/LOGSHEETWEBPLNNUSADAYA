@@ -49,6 +49,7 @@ func main() {
 	statsHandler := handlers.NewStatsHandler(db)
 	publicContentHandler := handlers.NewPublicContentHandler(db)
 	uploadHandler := handlers.NewUploadHandler()
+	integrationHandler := handlers.NewIntegrationHandler(db)
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -94,6 +95,11 @@ func main() {
 	api.Get("/public/unit-locations", attendanceHandler.GetUnitLocations)
 	api.Get("/attendance/units", attendanceHandler.GetUnitLocations)
 	api.Get("/attendance/units-location", attendanceHandler.GetUnitLocations)
+
+	// Multi-App Interconnection & Notification Hub (3-App Gateway)
+	api.Get("/integration/summary", integrationHandler.GetSummary)
+	api.Get("/integration/notifications", integrationHandler.GetNotifications)
+	api.Post("/integration/notifications/push", integrationHandler.PushNotification)
 
 	// Protected Routes (with JWT Auth)
 	protected := api.Group("/", middleware.JWTAuth(cfg))

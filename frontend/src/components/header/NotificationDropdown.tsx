@@ -108,15 +108,25 @@ export default function NotificationDropdown() {
   const fetchNotifications = useCallback(async () => {
     if (!localStorage.getItem("pln_token")) return;
     try {
-      const res = await apiClient.get("/notifications", {
-        params: { limit: 15 },
+      const res = await apiClient.get("/integration/notifications", {
+        params: { limit: 20 },
       });
       if (res.data?.success) {
         setItems(res.data.notifications || []);
-        setUnread(res.data.unread || 0);
+        setUnread(res.data.unread_count || res.data.unread || 0);
       }
     } catch {
-      // diamkan; dropdown tetap memakai data terakhir
+      try {
+        const fallbackRes = await apiClient.get("/notifications", {
+          params: { limit: 15 },
+        });
+        if (fallbackRes.data?.success) {
+          setItems(fallbackRes.data.notifications || []);
+          setUnread(fallbackRes.data.unread || 0);
+        }
+      } catch {
+        // diamkan; dropdown tetap memakai data terakhir
+      }
     }
   }, []);
 
@@ -238,8 +248,25 @@ export default function NotificationDropdown() {
                     <Icon className="h-4 w-4" />
                   </div>
                   <div className="flex-1 overflow-hidden">
-                    <div className="flex items-center gap-2">
-                      <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {n.source && (
+                        <span
+                          className={`rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase border ${
+                            n.source === "PLN_HAR"
+                              ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300"
+                              : n.source === "PLN_NUSA_DAYA_APPS"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                : "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300"
+                          }`}
+                        >
+                          {n.source === "PLN_HAR"
+                            ? "PLN HAR"
+                            : n.source === "PLN_NUSA_DAYA_APPS"
+                              ? "MOBILE"
+                              : "WEB"}
+                        </span>
+                      )}
+                      <p className="truncate text-xs font-bold text-gray-900 dark:text-white flex-1 min-w-0">
                         {n.title}
                       </p>
                       {!n.is_read && (
