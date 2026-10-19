@@ -1,0 +1,21 @@
+{
+  "appName": "PLN Nusa Daya Mobile (WACB & HAR)",
+  "packageName": "com.plnnusadaya.logsheet",
+  "version": "v1.0.0",
+  "buildNumber": "1",
+  "fileUrl": "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk",
+  "fileName": "pln-nusadaya-mobile-v1.0.0.apk",
+  "fileSize": "64.3 MB",
+  "fileSizeBytes": 67461867,
+  "releaseDate": "19 Oktober 2026",
+  "minAndroid": "Android 8.0 (Oreo) atau lebih tinggi",
+  "isActive": true,
+  "developer": "Tim Developer PT PLN Nusa Daya",
+  "changelog": [
+    "Pencatatan Logsheet Mesin Pembangkit 48-slot secara real-time dan terverifikasi",
+    "Monitoring tiket gangguan HAR (Pemeliharaan) dan pelaporan AMC terpadu",
+    "Presensi kehadiran berbasis GPS Geofence radius 250 meter lokasi unit kerja",
+    "Sinkronisasi data offline otomatis ketika koneksi internet stabil"
+  ],
+  "downloadCount": 142
+}

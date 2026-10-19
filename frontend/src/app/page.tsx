@@ -43,6 +43,39 @@ export default function HomePage() {
   // Full article viewer (Latest News reading modal)
   const [selectedArticle, setSelectedArticle] = useState<any | null>(null);
 
+  // APK Mobile Release Data (Official Developer Release)
+  const [apkInfo, setApkInfo] = useState<any>({
+    appName: "PLN Nusa Daya Mobile (WACB & HAR)",
+    version: "v1.0.0",
+    buildNumber: "1",
+    fileUrl: "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk",
+    fileName: "pln-nusadaya-mobile-v1.0.0.apk",
+    fileSize: "64.3 MB",
+    releaseDate: "19 Oktober 2026",
+    minAndroid: "Android 8.0 (Oreo) ke atas",
+    isActive: true,
+    changelog: [
+      "Pencatatan Logsheet Mesin Pembangkit 48-slot secara real-time dan terverifikasi",
+      "Monitoring tiket gangguan HAR (Pemeliharaan) dan pelaporan AMC terpadu",
+      "Presensi kehadiran berbasis GPS Geofence radius 250 meter lokasi unit kerja",
+      "Sinkronisasi data offline otomatis ketika koneksi internet stabil",
+    ],
+    downloadCount: 142,
+  });
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [apkCopied, setApkCopied] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/apk")
+      .then((res) => res.json())
+      .then((res) => {
+        if (res?.success && res?.data) {
+          setApkInfo(res.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Default Curated News Items
   const defaultNews = [
     {
@@ -121,7 +154,7 @@ export default function HomePage() {
     const onScroll = () => {
       setScrollTopVisible(window.scrollY > 400);
 
-      const sections = ["home", "about", "stats", "services", "news", "portfolio", "direksi", "contact"];
+      const sections = ["home", "about", "stats", "services", "news", "portfolio", "direksi", "mobile-app", "contact"];
       let current = "home";
       sections.forEach((id) => {
         const el = document.getElementById(id);
@@ -957,13 +990,13 @@ export default function HomePage() {
         }
         .portfolio-item-corp {
           position: relative; border-radius: 20px; overflow: hidden; height: 380px; min-height: 380px;
-          background: #0f172a; border: 1px solid #e2e8f0;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.08); cursor: pointer;
+          background: #ffffff; border: 1px solid #e2e8f0;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.06); cursor: pointer;
           transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .4s cubic-bezier(0.16, 1, 0.3, 1), border-color .4s ease;
         }
         .portfolio-item-corp:hover {
           transform: translateY(-8px);
-          box-shadow: 0 22px 50px rgba(2, 132, 199, 0.2), 0 8px 24px rgba(0,0,0,0.12);
+          box-shadow: 0 20px 45px rgba(2, 132, 199, 0.16), 0 4px 14px rgba(0,0,0,0.06);
           border-color: #38bdf8;
         }
         .portfolio-img-bg {
@@ -971,15 +1004,20 @@ export default function HomePage() {
           transition: transform .7s cubic-bezier(0.16, 1, 0.3, 1), filter .7s ease;
         }
         .portfolio-item-corp:hover .portfolio-img-bg {
-          transform: scale(1.1);
-          filter: brightness(0.75);
+          transform: scale(1.08);
+          filter: blur(1.5px) brightness(0.96);
         }
-        /* Bottom resting preview bar */
+        /* Bottom resting preview bar — Clean Modern Light Glass Card */
         .portfolio-bottom-bar-corp {
-          position: absolute; bottom: 0; left: 0; right: 0;
-          background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.7) 65%, transparent 100%);
-          padding: 28px 22px 18px;
-          display: flex; flex-direction: column; gap: 6px;
+          position: absolute; bottom: 14px; left: 14px; right: 14px;
+          background: rgba(255, 255, 255, 0.94);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 14px;
+          padding: 14px 18px;
+          box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+          display: flex; flex-direction: column; gap: 5px;
           transition: opacity .35s ease, transform .35s ease;
           z-index: 2;
         }
@@ -991,22 +1029,27 @@ export default function HomePage() {
           color: #ffffff; padding: 3px 10px; border-radius: 9999px; text-transform: uppercase;
           letter-spacing: 0.6px; align-self: flex-start;
         }
+        .portfolio-badge-secondary {
+          font-size: 10.5px; font-weight: 700; color: #0284c7;
+          background: #e0f2fe; border: 1px solid #bae6fd;
+          padding: 2px 8px; border-radius: 5px;
+        }
         .portfolio-title-rest {
-          font-size: 17px; font-weight: 800; color: #ffffff; line-height: 1.35;
+          font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.35;
         }
         .portfolio-hint-rest {
-          font-size: 11.5px; color: #94a3b8; display: flex; align-items: center; gap: 4px;
+          font-size: 11.5px; color: #0284c7; font-weight: 600; display: flex; align-items: center; gap: 4px;
         }
 
-        /* Hover Overlay — Smooth sliding information and full description */
+        /* Hover Overlay — Elegant Light-Mode Corporate Glass Overlay */
         .portfolio-overlay-corp {
           position: absolute; inset: 0;
-          background: linear-gradient(180deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.96) 90%);
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          padding: 26px 24px;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.98) 78%);
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
+          padding: 24px 22px;
           display: flex; flex-direction: column; justify-content: flex-end;
-          opacity: 0; transform: translateY(14px);
+          opacity: 0; transform: translateY(12px);
           transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1);
           z-index: 3;
         }
@@ -1014,32 +1057,32 @@ export default function HomePage() {
           opacity: 1; transform: translateY(0);
         }
         .portfolio-overlay-title {
-          font-size: 18px; font-weight: 800; color: #ffffff; line-height: 1.35; margin-bottom: 3px;
+          font-size: 18px; font-weight: 800; color: #0f172a; line-height: 1.35; margin-bottom: 3px;
         }
         .portfolio-overlay-sub {
-          font-size: 11.5px; font-weight: 700; color: #38bdf8; text-transform: uppercase;
+          font-size: 11.5px; font-weight: 700; color: #0284c7; text-transform: uppercase;
           letter-spacing: 0.5px; margin-bottom: 8px;
         }
         .portfolio-overlay-desc {
-          font-size: 12.5px; color: #e2e8f0; line-height: 1.6; margin-bottom: 12px;
+          font-size: 12.5px; color: #475569; line-height: 1.6; margin-bottom: 12px;
           display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
         }
         .portfolio-specs-row {
           display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
         }
         .portfolio-spec-chip {
-          background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16);
-          border-radius: 6px; padding: 3px 8px; font-size: 10.5px; color: #cbd5e1;
+          background: #f8fafc; border: 1px solid #e2e8f0;
+          border-radius: 6px; padding: 4px 9px; font-size: 11px; color: #64748b;
         }
-        .portfolio-spec-chip strong { color: #ffffff; margin-right: 4px; }
+        .portfolio-spec-chip strong { color: #0f172a; margin-right: 4px; }
         .portfolio-action-btn {
           display: inline-flex; align-items: center; justify-content: center; gap: 8px;
           background: #0284c7; color: #ffffff; padding: 9px 18px; border-radius: 10px;
           font-size: 12px; font-weight: 700; border: none; cursor: pointer;
-          transition: all .2s ease; box-shadow: 0 4px 12px rgba(2,132,199,0.3);
+          transition: all .2s ease; box-shadow: 0 4px 12px rgba(2,132,199,0.25);
           align-self: flex-start;
         }
-        .portfolio-action-btn:hover { background: #0ea5e9; transform: translateY(-2px); }
+        .portfolio-action-btn:hover { background: #0369a1; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(2,132,199,0.35); }
 
         /* Lightbox Preview Modal */
         .portfolio-lightbox-overlay {
@@ -1090,7 +1133,71 @@ export default function HomePage() {
         .direksi-card-corp:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
         .direksi-photo-wrapper-corp { position: relative; width: 100%; aspect-ratio: 4/5; background: #f8fafc; overflow: hidden; }
         .direksi-photo-corp { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .5s ease; }
-        .direksi-card-corp:hover .direksi-photo-corp { transform: scale(1.04); }
+        /* Mobile App Official Release Section */
+        .mobile-app-section-corp {
+          padding: 90px 0 100px;
+          background: linear-gradient(180deg, #ffffff 0%, #f0f7fc 50%, #ffffff 100%);
+          border-top: 1px solid #e2e8f0;
+          border-bottom: 1px solid #e2e8f0;
+          position: relative;
+        }
+        .mobile-app-container-corp {
+          max-width: 1280px; margin: 0 auto; padding: 0 32px;
+          display: grid; grid-template-columns: 1.25fr 1fr; gap: 52px; align-items: center;
+        }
+        .mobile-app-badge-corp {
+          display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800;
+          color: #0284c7; background: #e0f2fe; padding: 5px 14px; border-radius: 9999px;
+          text-transform: uppercase; letter-spacing: 0.8px; border: 1px solid #bae6fd; margin-bottom: 16px;
+        }
+        .mobile-app-title-corp {
+          font-size: clamp(26px, 3.2vw, 36px); font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 14px;
+        }
+        .mobile-app-desc-corp {
+          font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;
+        }
+        .mobile-app-features-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px;
+        }
+        .mobile-app-feat-item {
+          display: flex; align-items: flex-start; gap: 12px; background: #ffffff;
+          padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all .25s ease;
+        }
+        .mobile-app-feat-item:hover {
+          border-color: #38bdf8; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1);
+        }
+        .mobile-app-feat-icon {
+          width: 36px; height: 36px; border-radius: 10px; background: #e0f2fe;
+          color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .mobile-app-actions {
+          display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .btn-download-apk {
+          display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px;
+          border-radius: 9999px; background: linear-gradient(135deg, #0284c7, #004581);
+          color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;
+          box-shadow: 0 8px 24px rgba(2, 132, 199, 0.35); transition: all .25s ease;
+        }
+        .btn-download-apk:hover {
+          transform: translateY(-2px); box-shadow: 0 12px 30px rgba(2, 132, 199, 0.5);
+          background: linear-gradient(135deg, #0369a1, #003366);
+        }
+        .btn-guide-apk {
+          display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px;
+          border-radius: 9999px; background: #ffffff; border: 1.5px solid #cbd5e1;
+          color: #334155; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer;
+          transition: all .25s ease;
+        }
+        .btn-guide-apk:hover {
+          border-color: #0284c7; color: #0284c7; background: #f0f9ff;
+        }
+        .mobile-app-qr-card {
+          background: #ffffff; border-radius: 24px; padding: 32px 28px;
+          border: 1px solid #e2e8f0; box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+          text-align: center;
+        }
 
         /* Contact */
         .contact-section-corp { padding: 80px 0 40px; background: #ffffff; }
@@ -1259,8 +1366,49 @@ export default function HomePage() {
           box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
         }
         .dark .portfolio-item-corp {
+          background: #0f172a;
           border-color: #1e293b;
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+        .dark .portfolio-item-corp:hover {
+          border-color: #38bdf8;
+          box-shadow: 0 22px 50px rgba(2, 132, 199, 0.25), 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+        .dark .portfolio-bottom-bar-corp {
+          background: rgba(15, 23, 42, 0.92);
+          border-color: rgba(30, 41, 59, 0.85);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .dark .portfolio-title-rest {
+          color: #f1f5f9;
+        }
+        .dark .portfolio-hint-rest {
+          color: #38bdf8;
+        }
+        .dark .portfolio-overlay-corp {
+          background: linear-gradient(180deg, rgba(15, 23, 42, 0.82) 0%, rgba(15, 23, 42, 0.97) 85%);
+        }
+        .dark .portfolio-overlay-title {
+          color: #f1f5f9;
+        }
+        .dark .portfolio-overlay-sub {
+          color: #38bdf8;
+        }
+        .dark .portfolio-overlay-desc {
+          color: #cbd5e1;
+        }
+        .dark .portfolio-badge-secondary {
+          color: #38bdf8;
+          background: rgba(56, 189, 248, 0.15);
+          border-color: rgba(56, 189, 248, 0.3);
+        }
+        .dark .portfolio-spec-chip {
+          background: rgba(30, 41, 59, 0.7);
+          border-color: #334155;
+          color: #94a3b8;
+        }
+        .dark .portfolio-spec-chip strong {
+          color: #f1f5f9;
         }
         .dark .portfolio-lightbox-card {
           background: #0f172a; border-color: #1e293b;
@@ -1274,7 +1422,18 @@ export default function HomePage() {
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
         }
         .dark .direksi-card-corp:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
-        .dark .direksi-photo-wrapper-corp { background: #111827; }
+        /* Mobile App (Dark Mode) */
+        .dark .mobile-app-section-corp {
+          background: linear-gradient(180deg, #0c111d 0%, #0f172a 50%, #0c111d 100%);
+          border-color: #1e293b;
+        }
+        .dark .mobile-app-title-corp { color: #f1f5f9; }
+        .dark .mobile-app-desc-corp { color: #94a3b8; }
+        .dark .mobile-app-feat-item { background: #0f172a; border-color: #1e293b; }
+        .dark .mobile-app-feat-icon { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .dark .mobile-app-qr-card { background: #0f172a; border-color: #1e293b; }
+        .dark .btn-guide-apk { background: #111827; border-color: #334155; color: #cbd5e1; }
+        .dark .btn-guide-apk:hover { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
 
         /* Contact + social */
         .dark .social-link-corp { border-color: #38bdf8; color: #38bdf8; }
@@ -1763,7 +1922,7 @@ export default function HomePage() {
                     {item.categoryName || "PROYEK"}
                   </span>
                   {item.badges && item.badges.slice(0, 2).map((b: string, bIdx: number) => (
-                    <span key={bIdx} style={{ fontSize: 10, fontWeight: 700, color: "#38bdf8", background: "rgba(56,189,248,0.15)", padding: "2px 8px", borderRadius: 4 }}>
+                    <span key={bIdx} className="portfolio-badge-secondary">
                       {b}
                     </span>
                   ))}
@@ -1855,6 +2014,263 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* ================================================================
+          APLIKASI MOBILE RESMI (OFFICIAL DEVELOPER APK DISTRIBUTION)
+      ================================================================ */}
+      <section className="mobile-app-section-corp" id="mobile-app">
+        <div className="section-header-corp">
+          <div className="section-title-wrapper-corp">
+            <span className="section-line-corp"></span>
+            <h2 className="section-title-corp">APLIKASI MOBILE RESMI</h2>
+            <span className="section-line-corp"></span>
+          </div>
+          <p className="section-subtitle-corp">
+            Solusi Digital Terpadu Operasional Pembangkit, Pemeliharaan HAR &amp; Presensi Kehadiran dalam Genggaman
+          </p>
+        </div>
+
+        <div className="mobile-app-container-corp">
+          {/* Left Column: Information & Download Action */}
+          <div className="scroll-reveal">
+            <div className="mobile-app-badge-corp">
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
+              DISTRIBUSI RESMI • ANDROID APK
+            </div>
+
+            <h3 className="mobile-app-title-corp">
+              {apkInfo?.appName || "PLN Nusa Daya Mobile"}
+            </h3>
+
+            <p className="mobile-app-desc-corp">
+              Aplikasi mobile Android resmi yang dirancang khusus untuk memfasilitasi petugas Pelayanan Teknik, operator mesin pembangkit, dan tim pemeliharaan (HAR) dalam pelaporan real-time, pengawasan beban 24 jam, serta integrasi presensi berbasis koordinat GPS.
+            </p>
+
+            {/* Badges / Chips */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 28 }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
+                <span style={{ color: "#0284c7", fontWeight: 800 }}>🏷️ Versi:</span>
+                <strong>{apkInfo?.version || "v1.0.0"}</strong>
+              </div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
+                <span style={{ color: "#0284c7", fontWeight: 800 }}>💾 Ukuran:</span>
+                <strong>{apkInfo?.fileSize || "64.3 MB"}</strong>
+              </div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
+                <span style={{ color: "#0284c7", fontWeight: 800 }}>📱 Sistem:</span>
+                <strong>{apkInfo?.minAndroid || "Android 8.0+"}</strong>
+              </div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
+                <span style={{ color: "#0284c7", fontWeight: 800 }}>📅 Rilis:</span>
+                <strong>{apkInfo?.releaseDate || "Terbaru"}</strong>
+              </div>
+            </div>
+
+            {/* Feature Cards Grid */}
+            <div className="mobile-app-features-grid">
+              <div className="mobile-app-feat-item">
+                <div className="mobile-app-feat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Logsheet Mesin 48-Slot</h4>
+                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Pencatatan parameter beban KW, tegangan, suhu &amp; frekuensi mesin real-time.</p>
+                </div>
+              </div>
+
+              <div className="mobile-app-feat-item">
+                <div className="mobile-app-feat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>HAR &amp; AMC Gangguan</h4>
+                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Pelaporan gangguan terintegrasi unit pembangkit dan approval berjenjang.</p>
+                </div>
+              </div>
+
+              <div className="mobile-app-feat-item">
+                <div className="mobile-app-feat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Presensi GPS 250m</h4>
+                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Validasi absensi kehadiran presisi radius geofence unit kerja PLTD.</p>
+                </div>
+              </div>
+
+              <div className="mobile-app-feat-item">
+                <div className="mobile-app-feat-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
+                </div>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Sinkronisasi Offline</h4>
+                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Tetap andal saat tanpa sinyal di area pembangkit remote / terdistribusi.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Download Buttons */}
+            <div className="mobile-app-actions">
+              <a
+                href={apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk"}
+                download
+                className="btn-download-apk"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Download APK Resmi ({apkInfo?.fileSize || "64.3 MB"})</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setShowInstallGuide(true)}
+                className="btn-guide-apk"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 17, height: 17 }}>
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span>Panduan Instalasi</span>
+              </button>
+            </div>
+
+            <p style={{ fontSize: 12, color: "var(--corp-muted)", display: "flex", alignItems: "center", gap: 6 }}>
+              <span>🔒 Diverifikasi Aman</span> • Bebas Malware &amp; Resmi Terbitan Tim Pengembang PT PLN Nusa Daya
+            </p>
+          </div>
+
+          {/* Right Column: Scan QR Code Card */}
+          <div className="scroll-reveal">
+            <div className="mobile-app-qr-card">
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "4px 12px", borderRadius: 9999, fontSize: 11, fontWeight: 700, color: "#166534", marginBottom: 12 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }}></span>
+                INSTALASI CEPAT DI SMARTPHONE
+              </div>
+
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: "var(--corp-heading)", marginBottom: 6 }}>
+                Pindai QR Code untuk Unduh
+              </h4>
+              <p style={{ fontSize: 12.5, color: "var(--corp-muted)", lineHeight: 1.6, marginBottom: 18 }}>
+                Arahkan kamera smartphone Android Anda ke kode QR di bawah ini untuk langsung mengunduh dan memasang aplikasi.
+              </p>
+
+              <div style={{ display: "inline-block", padding: 12, background: "#ffffff", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.08)", border: "1px solid #e2e8f0", marginBottom: 18 }}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                    typeof window !== "undefined" ? window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk") : ""
+                  )}&bgcolor=ffffff&color=004581&qzone=2`}
+                  alt="QR Code Unduh APK"
+                  style={{ width: 200, height: 200, display: "block", borderRadius: 12 }}
+                />
+              </div>
+
+              <div style={{ background: "var(--corp-surface2)", border: "1px solid var(--corp-border-line)", borderRadius: 12, padding: "12px 14px", textAlign: "left", fontSize: 12 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--corp-muted)", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
+                  Tautan File Langsung:
+                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <code style={{ fontSize: 11, color: "var(--corp-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexGrow: 1 }}>
+                    {typeof window !== "undefined" ? window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk") : ""}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        navigator.clipboard.writeText(window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk"));
+                        setApkCopied(true);
+                        setTimeout(() => setApkCopied(false), 2000);
+                      }
+                    }}
+                    style={{ padding: "4px 10px", borderRadius: 6, background: apkCopied ? "#10b981" : "#0284c7", color: "#ffffff", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}
+                  >
+                    {apkCopied ? "Tersalin" : "Salin"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          INSTALL GUIDE MODAL
+      ================================================================ */}
+      {showInstallGuide && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.75)", backdropFilter: "blur(6px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+          }}
+          onClick={() => setShowInstallGuide(false)}
+        >
+          <div
+            style={{
+              background: "#ffffff", borderRadius: 20, maxWidth: 580, width: "100%",
+              padding: "28px 30px", boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              border: "1px solid #e2e8f0", position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 24 }}>📱</span>
+                <div>
+                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Panduan Instalasi APK Android</h3>
+                  <p style={{ fontSize: 12, color: "#64748b" }}>Cara mudah memasang aplikasi di HP Android</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowInstallGuide(false)}
+                style={{ width: 32, height: 32, borderRadius: "50%", background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 16, fontWeight: 700, color: "#475569" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
+              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>1</span>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Unduh File APK</h4>
+                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Klik tombol <strong>Download APK</strong> atau scan QR Code di atas menggunakan browser ponsel Android Anda.</p>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>2</span>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Izinkan Sumber Tidak Dikenal</h4>
+                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Saat membuka file, jika muncul peringatan keamanan sistem Android, pilih <em>Pengaturan</em> &rarr; aktifkan <em>&quot;Izinkan penginstalan dari sumber ini&quot;</em>.</p>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>3</span>
+                <div>
+                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Buka &amp; Masuk</h4>
+                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Selesaikan proses instalasi, buka aplikasi <strong>PLN Nusa Daya Mobile</strong>, dan masuk dengan username akun Anda.</p>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => setShowInstallGuide(false)}
+                style={{ padding: "10px 24px", borderRadius: 9999, background: "#0284c7", color: "#ffffff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+              >
+                Saya Mengerti
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ================================================================
           CONTACT US

@@ -1,0 +1,4 @@
+server.exe
+backend_runner.exe
+*.log
+.git

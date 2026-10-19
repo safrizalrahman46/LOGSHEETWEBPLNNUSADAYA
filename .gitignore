@@ -8,6 +8,8 @@ out/
 # Backend build artifacts
 *.exe
 *.exe~
+server_linux
+backend/server_linux
 
 # Logs & environment
 *.log

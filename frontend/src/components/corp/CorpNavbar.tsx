@@ -153,6 +153,21 @@ export default function CorpNavbar({ activeSection = "" }: CorpNavbarProps) {
         .logo-akujago-corp { height: 38px; width: auto; object-fit: contain; }
         .logo-pln-corp { height: 42px; width: auto; object-fit: contain; }
 
+        .btn-apk-navbar-corp {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 8px 16px; border-radius: 999px;
+          font-size: 12.5px; font-weight: 700; letter-spacing: .2px;
+          color: #0284c7; background: #e0f2fe; border: 1.5px solid #bae6fd;
+          text-decoration: none; cursor: pointer; white-space: nowrap;
+          transition: all .2s ease;
+        }
+        .btn-apk-navbar-corp:hover {
+          background: #0284c7; color: #ffffff; border-color: #0284c7;
+          box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+          transform: translateY(-1px);
+        }
+        .btn-apk-navbar-corp svg { width: 14px; height: 14px; }
+
         .btn-login-corp {
           display: inline-flex; align-items: center; gap: 7px;
           padding: 10px 20px; border-radius: 999px;
@@ -232,7 +247,18 @@ export default function CorpNavbar({ activeSection = "" }: CorpNavbarProps) {
             </ul>
           </nav>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span
+              onClick={() => goSection("mobile-app")}
+              className="btn-apk-navbar-corp"
+              title="Unduh Aplikasi Mobile Resmi (APK Android)"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+              </svg>
+              <span>Download APK</span>
+            </span>
             <a href="https://plnnusadaya.co.id/aku-jago" target="_blank" rel="noreferrer" title="Aku Jago">
               <img src="/images/aku-jago.png" alt="Aku Jago" className="logo-akujago-corp" />
             </a>

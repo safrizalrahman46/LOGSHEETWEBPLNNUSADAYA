@@ -32,10 +32,14 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to PostgreSQL: %w", err)
 	}
 
+	// 2b. Pastikan extension dan custom enum PostgreSQL sudah dibuat sebelum AutoMigrate
+	ensurePostgresEnums(db)
+
 	// 3. Auto Migrate
 	err = db.AutoMigrate(
 		&models.User{},
 		&models.LogsheetRecord{},
+		&models.LogsheetDetail{},
 		&models.HARTicket{},
 		&models.AMCReport{},
 		&models.SystemAuditLog{},
@@ -98,6 +102,32 @@ func ensureDatabaseExists(cfg *config.Config) {
 			log.Printf("[DATABASE] Warning creating database %s: %v", cfg.DBName, err)
 		} else {
 			log.Printf("[DATABASE] Database %s created successfully.", cfg.DBName)
+		}
+	}
+}
+
+func ensurePostgresEnums(db *gorm.DB) {
+	db.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`)
+	enums := []struct {
+		name string
+		vals string
+	}{
+		{"notification_priority", "'tinggi', 'sedang', 'rendah'"},
+		{"notification_target", "'general', 'role', 'user', 'unit'"},
+		{"unit_status", "'active', 'inactive'"},
+		{"machine_status", "'operasi', 'standby', 'gangguan-rusak'"},
+		{"logsheet_sync_status", "'draft', 'pendingSync', 'pendingEdit', 'synced', 'failed'"},
+		{"logsheet_report_status", "'onTime', 'late', 'missing', 'abnormal'"},
+		{"logsheet_approval_status", "'pendingReview', 'approved', 'rejected'"},
+	}
+	for _, e := range enums {
+		query := fmt.Sprintf(`DO $$ BEGIN
+			IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '%s') THEN
+				CREATE TYPE %s AS ENUM (%s);
+			END IF;
+		END $$;`, e.name, e.name, e.vals)
+		if err := db.Exec(query).Error; err != nil {
+			log.Printf("[DATABASE] Warning creating enum %s: %v", e.name, err)
 		}
 	}
 }

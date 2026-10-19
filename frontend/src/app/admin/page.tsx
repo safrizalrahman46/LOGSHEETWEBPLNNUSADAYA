@@ -26,6 +26,7 @@ import {
   Radio,
   Clock,
   Layers,
+  Smartphone,
 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 
@@ -155,6 +156,15 @@ export default function AdminHubPage() {
       badge: "CMS Publik",
       badgeColor: "bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
       gradient: "from-slate-700 to-slate-900",
+    },
+    {
+      title: "Rilis & Upload APK Mobile",
+      description: "Kelola paket instalasi APK resmi, nomor versi, changelog update, dan aktivasi unduhan landing page.",
+      href: "/admin/apk",
+      icon: Smartphone,
+      badge: "Android Hub",
+      badgeColor: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+      gradient: "from-emerald-600 to-teal-700",
     },
   ];
 

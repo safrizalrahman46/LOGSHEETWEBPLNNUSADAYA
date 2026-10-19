@@ -33,6 +33,7 @@ import {
   FolderSync,
   Radio,
   ShieldAlert,
+  Smartphone,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -207,6 +208,14 @@ export const AppSidebar: React.FC = () => {
           href: "/admin/articles",
           icon: Edit3,
           roles: ["SUPERADMIN", "ADMIN"],
+        },
+        {
+          title: "Aplikasi Mobile (APK)",
+          href: "/admin/apk",
+          icon: Smartphone,
+          roles: ["SUPERADMIN", "ADMIN"],
+          badge: "APK",
+          badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
         },
       ],
     },

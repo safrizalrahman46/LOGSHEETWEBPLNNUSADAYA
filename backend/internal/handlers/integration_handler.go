@@ -49,19 +49,30 @@ type UnifiedNotification struct {
 	ActionURL   string    `json:"action_url"`
 }
 
-// pingService menguji latensi dan status service HTTP lain
-func pingService(url string, timeoutMs int) (bool, int64) {
-	client := http.Client{
-		Timeout: time.Duration(timeoutMs) * time.Millisecond,
+// pingService menguji latensi dan status service HTTP lain dengan fallback candidate URLs
+func pingService(primaryURL string, timeoutMs int) (bool, int64) {
+	candidates := []string{primaryURL}
+	if strings.Contains(primaryURL, "127.0.0.1") {
+		candidates = append(candidates, strings.Replace(primaryURL, "127.0.0.1", "host.docker.internal", 1))
+	} else if strings.Contains(primaryURL, "localhost") {
+		candidates = append(candidates, strings.Replace(primaryURL, "localhost", "host.docker.internal", 1))
 	}
-	start := time.Now()
-	resp, err := client.Get(url)
-	latency := time.Since(start).Milliseconds()
-	if err != nil {
-		return false, latency
+
+	for _, u := range candidates {
+		client := http.Client{
+			Timeout: time.Duration(timeoutMs) * time.Millisecond,
+		}
+		start := time.Now()
+		resp, err := client.Get(u)
+		latency := time.Since(start).Milliseconds()
+		if err == nil {
+			resp.Body.Close()
+			if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+				return true, latency
+			}
+		}
 	}
-	defer resp.Body.Close()
-	return resp.StatusCode >= 200 && resp.StatusCode < 400, latency
+	return false, 0
 }
 
 // GetSummary merangkum metrik eksekutif dari ketiga aplikasi

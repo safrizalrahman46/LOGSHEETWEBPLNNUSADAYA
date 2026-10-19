@@ -90,13 +90,19 @@ Frontend web akan aktif di: **`http://localhost:3000`**
 ---
 
 ## 🐳 Opsi 3: Menjalankan via Docker Compose
+
+Anda dapat langsung menjalankan skrip cepat:
+- **`docker_start.bat`** : Menjalankan semua container Docker di background (`up -d`).
+- **`docker_stop.bat`** : Menghentikan seluruh container Docker (`down`).
+
+Atau manual via terminal:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 Container yang dijalankan:
-- `pln-postgres`: Database PostgreSQL 16
-- `pln-backend`: Go Fiber API Server
-- `pln-frontend`: Next.js 15 Web Server
+- `pln_postgres`: Database PostgreSQL 16 (Port host: `5434`, internal: `5432`)
+- `pln_backend`: Go Fiber API Server (`http://localhost:8080`)
+- `pln_frontend`: Next.js 15 Web Server Standalone (`http://localhost:3000`)
 
 ---
 
