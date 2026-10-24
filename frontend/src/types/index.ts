@@ -4,7 +4,8 @@ export type Role =
   | "MANAGER"
   | "SUPERVISOR"
   | "TEKNISI"
-  | "OPERATOR";
+  | "OPERATOR"
+  | "GUEST";
 
 export interface User {
   id: string | number;

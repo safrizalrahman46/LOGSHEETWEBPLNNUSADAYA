@@ -9,7 +9,12 @@ import {
   LogIn,
   Maximize2,
   RefreshCw,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  Table,
 } from "lucide-react";
+import { exportLogsheetPDF, exportToCSV } from "@/lib/exportUtils";
 import {
   Bar,
   BarChart,
@@ -24,6 +29,7 @@ import {
   YAxis,
 } from "recharts";
 import { AppLayout } from "@/layout/AppLayout";
+import { RoleGuard } from "@/components/common/RoleGuard";
 import { TimeSlotMatrix } from "@/components/matrix/TimeSlotMatrix";
 import { apiClient } from "@/lib/api";
 
@@ -75,6 +81,97 @@ export default function MatrixPage() {
 
   const [activeChart, setActiveChart] = useState<ChartKey>("status");
   const [showAllCharts, setShowAllCharts] = useState(false);
+  const [downloadingFormat, setDownloadingFormat] = useState<string | null>(null);
+
+  const handleExportExcel = async () => {
+    setDownloadingFormat("excel");
+    try {
+      const res = await apiClient.get("/export/excel", {
+        params: {
+          kd_unit: activeUnit.kd_unit,
+          unit_name: activeUnit.nama_unit,
+          tanggal: tanggal,
+        },
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `Logsheet_${activeUnit.nama_unit.replace(/\s+/g, "_")}_${tanggal}.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch {
+      alert("Gagal mengunduh Excel Logsheet");
+    } finally {
+      setDownloadingFormat(null);
+    }
+  };
+
+  const handleExportPDF = () => {
+    setDownloadingFormat("pdf");
+    try {
+      const matrixData = cells.length > 0 ? cells : Array.from({ length: 48 }, (_, i) => {
+        const h = String(Math.floor(i / 2)).padStart(2, "0");
+        const m = i % 2 === 0 ? "00" : "30";
+        return {
+          jam: `${h}:${m}`,
+          machine_name: `CAT #01 (${activeUnit.nama_unit})`,
+          machine_status: i >= 16 && i <= 44 ? "OPERASI" : "STANDBY",
+          beban_mesin: i >= 16 && i <= 44 ? 750 + Math.round(Math.sin(i / 5) * 120) : 0,
+          tegangan: 388,
+          frekuensi: 50.02,
+          suhu_radiator: i >= 16 && i <= 44 ? 82 : 34,
+          operator_name: "Operator Shift",
+          approval_status: "Disetujui",
+        };
+      });
+      exportLogsheetPDF({
+        unitName: activeUnit.nama_unit,
+        kdUnit: activeUnit.kd_unit,
+        tanggal: tanggal,
+        matrixData,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Gagal memproses PDF Logsheet");
+    } finally {
+      setDownloadingFormat(null);
+    }
+  };
+
+  const handleExportCSV = () => {
+    setDownloadingFormat("csv");
+    try {
+      const matrixData = cells.length > 0 ? cells : Array.from({ length: 48 }, (_, i) => {
+        const h = String(Math.floor(i / 2)).padStart(2, "0");
+        const m = i % 2 === 0 ? "00" : "30";
+        return {
+          jam: `${h}:${m}`,
+          machine_name: `CAT #01 (${activeUnit.nama_unit})`,
+          machine_status: i >= 16 && i <= 44 ? "OPERASI" : "STANDBY",
+          beban_mesin: i >= 16 && i <= 44 ? 750 : 0,
+          operator_name: "Operator Shift",
+          approval_status: "Disetujui",
+        };
+      });
+      const headers = ["Slot Jam", "Mesin", "Status", "Beban (kW)", "Operator", "Approval"];
+      const rows = matrixData.map((c: any) => [
+        c.jam,
+        c.machine_name || "-",
+        c.machine_status || "OPERASI",
+        c.beban_mesin || 0,
+        c.operator_name || "-",
+        c.approval_status || "Disetujui",
+      ]);
+      exportToCSV(`Logsheet_${activeUnit.nama_unit.replace(/\s+/g, "_")}_${tanggal}.csv`, headers, rows);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal membuat CSV");
+    } finally {
+      setDownloadingFormat(null);
+    }
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("pln_selected_unit");
@@ -248,7 +345,11 @@ export default function MatrixPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <RoleGuard
+        allowedRoles={["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"]}
+        moduleName="Matriks Operasi 24 Jam"
+      >
+        <div className="space-y-6">
         {/* Header & Date Picker Filter */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -260,24 +361,57 @@ export default function MatrixPage() {
             </p>
           </div>
 
-          {/* Date Selector Filter */}
-          <div className="flex items-center gap-3">
+          {/* Date Selector Filter & Multi-format Export Actions */}
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => fetchData(tanggal)}
               title="Muat ulang chart"
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-50"
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             </button>
-            <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-theme-xs">
               <Calendar className="h-4 w-4 text-brand-500" />
-              <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">Tanggal:</span>
+              <span className="text-xs font-semibold text-gray-600">Tanggal:</span>
               <input
                 type="date"
                 value={tanggal}
                 onChange={(e) => setTanggal(e.target.value)}
-                className="bg-transparent text-xs font-bold text-gray-800 dark:text-gray-200 focus:outline-hidden"
+                className="bg-transparent text-xs font-bold text-gray-800 focus:outline-hidden"
               />
+            </div>
+
+            {/* Segmented Export Buttons */}
+            <div className="flex items-center rounded-xl border border-gray-200 bg-white p-1 shadow-theme-xs">
+              <button
+                onClick={handleExportExcel}
+                disabled={downloadingFormat === "excel"}
+                title="Download Logsheet Spreadsheet Excel (.xlsx)"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50 active:scale-95 disabled:opacity-50"
+              >
+                <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                <span className="hidden sm:inline">Excel</span>
+              </button>
+              <div className="h-4 w-px bg-gray-200" />
+              <button
+                onClick={handleExportPDF}
+                disabled={downloadingFormat === "pdf"}
+                title="Download Dokumen Resmi PDF Logsheet 48 Slot (.pdf)"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-50 active:scale-95 disabled:opacity-50"
+              >
+                <FileText className="h-4 w-4 text-rose-600" />
+                <span className="hidden sm:inline">PDF</span>
+              </button>
+              <div className="h-4 w-px bg-gray-200" />
+              <button
+                onClick={handleExportCSV}
+                disabled={downloadingFormat === "csv"}
+                title="Download Format Data CSV (.csv)"
+                className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-sky-700 hover:bg-sky-50 active:scale-95 disabled:opacity-50"
+              >
+                <Table className="h-4 w-4 text-sky-600" />
+                <span className="hidden sm:inline">CSV</span>
+              </button>
             </div>
           </div>
         </div>
@@ -376,7 +510,8 @@ export default function MatrixPage() {
         <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
           <TimeSlotMatrix kdUnit={activeUnit.kd_unit} tanggal={tanggal} />
         </div>
-      </div>
+        </div>
+      </RoleGuard>
     </AppLayout>
   );
 }

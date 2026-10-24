@@ -24,12 +24,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var t = localStorage.getItem('pln_theme');
-                if (t === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                localStorage.removeItem('pln_theme');
+                document.documentElement.classList.remove('dark');
               } catch (_) {}
 
               // Auto-recover from chunk load errors when bundles are updated
@@ -48,7 +44,7 @@ export default function RootLayout({
           }}
         />
       </head>
-        <body className="bg-white text-gray-900 antialiased min-h-screen dark:bg-gray-950 dark:text-gray-100">
+      <body className="bg-white text-gray-900 antialiased min-h-screen">
         <Providers>
           {children}
         </Providers>

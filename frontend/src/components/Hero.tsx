@@ -11,9 +11,9 @@ export default function Hero({ onGetStarted }: HeroProps) {
   return (
     <section
       id="home"
-      className="hero relative w-full overflow-hidden min-h-[90vh] md:min-h-[85vh] lg:min-h-screen flex items-center bg-white"
+      className="hero relative w-full overflow-hidden min-h-[90vh] md:min-h-[85vh] lg:min-h-screen flex items-center bg-white dark:bg-[#0c111d]"
     >
-      {/* 1. FULLSCREEN VIDEO BACKGROUND (Hardware-accelerated Crisp 1080p) */}
+      {/* 1. FULLSCREEN VIDEO BACKGROUND */}
       <video
         className="hero-bg-video absolute inset-0 h-full w-full object-cover z-0"
         autoPlay
@@ -33,37 +33,44 @@ export default function Hero({ onGetStarted }: HeroProps) {
         <source src="/images/GIF1.mp4" type="video/mp4" />
       </video>
 
-      {/* 2. VERTICAL GRADIENT OVERLAY (Bawah 100% ke Atas 0% Jernih - Kurangi Opacity) */}
+      {/* 2. SEAMLESS NATURAL DIRECTIONAL GRADIENT OVERLAY (No box, smooth left-to-right fade) */}
       <div
-        className="hero-overlay absolute inset-0 z-[1] pointer-events-none"
+        className="hero-overlay absolute inset-0 z-[1] pointer-events-none transition-all duration-300"
         style={{
           background:
-            "linear-gradient(to top, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 0.78) 18%, rgba(255, 255, 255, 0.35) 42%, rgba(255, 255, 255, 0.10) 65%, rgba(255, 255, 255, 0.0) 85%, rgba(255, 255, 255, 0.0) 100%)",
-          backdropFilter: "none",
-          WebkitBackdropFilter: "none",
+            "linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 32%, rgba(255, 255, 255, 0.60) 55%, rgba(255, 255, 255, 0.15) 75%, rgba(255, 255, 255, 0.0) 90%), linear-gradient(0deg, rgba(255, 255, 255, 1.0) 0%, rgba(255, 255, 255, 0.3) 15%, rgba(255, 255, 255, 0.0) 40%)",
+        }}
+      />
+      <div
+        className="hero-overlay-dark absolute inset-0 z-[1] pointer-events-none hidden dark:block transition-all duration-300"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(12, 17, 29, 0.97) 0%, rgba(12, 17, 29, 0.90) 32%, rgba(12, 17, 29, 0.60) 55%, rgba(12, 17, 29, 0.15) 75%, rgba(12, 17, 29, 0.0) 90%), linear-gradient(0deg, rgba(12, 17, 29, 1.0) 0%, rgba(12, 17, 29, 0.4) 15%, rgba(12, 17, 29, 0.0) 40%)",
         }}
       />
 
-      {/* 3. HERO CONTENT CONTAINER (Centered max-width, left-aligned typography) */}
-      <div className="hero-container relative z-10 mx-auto flex w-full max-w-[1280px] items-center px-6 sm:px-8 lg:px-12 pt-[90px] pb-14 min-h-[90vh] md:min-h-[85vh] lg:min-h-screen">
-        <div className="hero-content w-full max-w-[720px] lg:max-w-[55%] text-left">
-          {/* Main Title */}
-          <h1
-            className="hero-title text-[#17182D] text-[36px] sm:text-[46px] lg:text-[54px] xl:text-[60px] font-extrabold leading-[1.12] tracking-[-0.02em] mb-6 animate-hero-title"
-            style={{ textShadow: "0 1px 12px rgba(255, 255, 255, 0.85), 0 0 2px rgba(255, 255, 255, 0.9)" }}
-          >
-            PT Pelayanan Listrik<br />
-            Nasional Nusa Daya
+      {/* 3. HERO CONTENT CONTAINER (Natural left-aligned layout, NOT in a card box) */}
+      <div className="hero-container relative z-10 mx-auto flex w-full max-w-[1320px] items-center px-6 sm:px-10 lg:px-16 pt-[90px] pb-14 min-h-[90vh] md:min-h-[85vh] lg:min-h-screen">
+        <div className="hero-content relative w-full max-w-[680px] lg:max-w-[55%] text-left">
+          {/* Corporate Mini Badge */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/70 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 text-xs font-extrabold uppercase tracking-wider mb-6 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+            TRANSFORMASI ENERGI &amp; DIGITALISASI PEMBANGKIT
+          </div>
+
+          {/* Main Title - Solid, crisp colors without white text-shadow artifacts */}
+          <h1 className="hero-title text-[38px] sm:text-[48px] lg:text-[56px] xl:text-[62px] font-black leading-[1.12] tracking-[-0.03em] mb-6 animate-hero-title">
+            <span className="block text-[#002747] dark:text-white">
+              PT Pelayanan Listrik
+            </span>
+            <span className="block text-[#005daa] dark:text-[#38bdf8] mt-1">
+              Nasional Nusa Daya
+            </span>
           </h1>
 
-          {/* Subtitle Description */}
-          <p
-            className="hero-subtitle text-[#1e293b] text-[16px] sm:text-[17px] lg:text-[18px] leading-[1.72] mb-9 font-medium animate-hero-desc"
-            style={{ textShadow: "0 1px 8px rgba(255, 255, 255, 0.85)" }}
-          >
-            Perusahaan Pengelola Aset Ketenagalistrikan<br className="hidden sm:inline" />
-            Terkemuka di Wilayah Tengah dan Timur Indonesia dan<br className="hidden sm:inline" />
-            tumbuh berkelanjutan
+          {/* Subtitle Description - Clean readable slate */}
+          <p className="hero-subtitle text-[#334155] dark:text-[#cbd5e1] text-[16px] sm:text-[18px] lg:text-[19px] leading-[1.7] mb-9 font-normal animate-hero-desc max-w-[560px]">
+            Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia dan tumbuh berkelanjutan.
           </p>
 
           {/* CTA Action Buttons */}
@@ -76,7 +83,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
                   onGetStarted();
                 }
               }}
-              className="btn-hero-outline inline-flex items-center justify-center px-9 py-3.5 rounded-full border-2 border-[#1a9de1] text-[#1a9de1] bg-white/85 hover:bg-[#1a9de1] hover:text-white font-semibold text-[15px] tracking-wide transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[#1a9de1]/25 hover:-translate-y-0.5 cursor-pointer text-center"
+              className="btn-hero-outline inline-flex items-center justify-center px-8 py-3.5 rounded-full border-2 border-[#0284c7] text-[#0284c7] dark:text-[#38bdf8] bg-white/90 dark:bg-slate-900/80 hover:bg-[#0284c7] hover:text-white dark:hover:bg-[#0284c7] dark:hover:text-white font-bold text-[15px] tracking-wide transition-all duration-300 shadow-sm hover:shadow-md hover:shadow-sky-500/20 hover:-translate-y-0.5 cursor-pointer text-center"
               id="getStartedBtn"
             >
               Get Started
@@ -84,7 +91,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
 
             <Link
               href="/dashboard"
-              className="btn-hero-portal inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#1a9de1] to-[#005daa] hover:from-[#1588c4] hover:to-[#004a88] text-white font-semibold text-[15px] tracking-wide transition-all duration-300 shadow-lg shadow-[#1a9de1]/25 hover:shadow-xl hover:shadow-[#1a9de1]/40 hover:-translate-y-0.5 text-center"
+              className="btn-hero-portal inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#0284c7] to-[#004581] hover:from-[#0369a1] hover:to-[#003366] text-white font-bold text-[15px] tracking-wide transition-all duration-300 shadow-md shadow-sky-900/20 hover:shadow-lg hover:shadow-sky-900/30 hover:-translate-y-0.5 text-center"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-4 h-4">
                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
@@ -99,6 +106,11 @@ export default function Hero({ onGetStarted }: HeroProps) {
 
       {/* Component Styles & Animations */}
       <style jsx>{`
+        .hero-title,
+        .hero-title span,
+        .hero-subtitle {
+          text-shadow: none !important;
+        }
         @keyframes heroFadeUp {
           from {
             opacity: 0;

@@ -15,6 +15,7 @@ import {
   Building2 
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
+import { RoleGuard } from "@/components/common/RoleGuard";
 import { apiClient } from "@/lib/api";
 import "leaflet/dist/leaflet.css";
 
@@ -317,7 +318,11 @@ export default function PresensiPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <RoleGuard
+        allowedRoles={["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"]}
+        moduleName="Presensi GPS Karyawan"
+      >
+        <div className="space-y-6">
         {/* Title Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 transition-colors">
           <div>
@@ -571,7 +576,8 @@ export default function PresensiPage() {
             </table>
           </div>
         </div>
-      </div>
+        </div>
+      </RoleGuard>
     </AppLayout>
   );
 }

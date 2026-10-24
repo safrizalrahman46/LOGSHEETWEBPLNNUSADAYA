@@ -34,6 +34,9 @@ import {
   Radio,
   ShieldAlert,
   Smartphone,
+  Lock,
+  LogIn,
+  BookOpen,
 } from "lucide-react";
 import { User } from "@/types";
 
@@ -240,19 +243,27 @@ export const AppSidebar: React.FC = () => {
           title: "Statistik Publik",
           href: "/guest",
           icon: BarChart3,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR", "GUEST"],
         },
         {
           title: "Portal Landing Page",
           href: "/",
           icon: Globe,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR", "GUEST"],
         },
         {
           title: "Berita & Edukasi",
           href: "/berita",
           icon: FileText,
-          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR", "GUEST"],
+        },
+        {
+          title: "Buku Panduan (Manual)",
+          href: "/manual-book",
+          icon: BookOpen,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR", "GUEST"],
+          badge: "PANDUAN",
+          badgeColor: "bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
         },
       ],
     },
@@ -340,12 +351,15 @@ export const AppSidebar: React.FC = () => {
             <ul className="space-y-1">
               {group.items.map((item) => {
                 const isActive = pathname === item.href;
-                const isAllowed =
-                  !user ||
-                  user.role === "SUPERADMIN" ||
-                  item.roles.includes(user.role);
+                const isGuest = !user || user.role === "GUEST";
+                const isRoleAllowed =
+                  user?.role === "SUPERADMIN" || (user && item.roles.includes(user.role));
 
-                if (!isAllowed) return null;
+                // Jika user sudah login dengan role resmi tapi tidak punya hak akses ke modul ini -> sembunyikan
+                if (!isGuest && !isRoleAllowed) return null;
+
+                // Modul terkunci khusus untuk pengunjung / guest yang belum login
+                const isLockedForGuest = isGuest && !item.roles.includes("GUEST");
 
                 const Icon = item.icon;
 
@@ -354,34 +368,51 @@ export const AppSidebar: React.FC = () => {
                     <Link
                       href={item.href}
                       className={cn(
-                        "menu-item group",
+                        "menu-item group transition-all",
                         isActive ? "menu-item-active" : "menu-item-inactive",
+                        isLockedForGuest && "opacity-90 hover:opacity-100",
                         !isWide && "justify-center px-0"
                       )}
-                      title={!isWide ? item.title : undefined}
+                      title={!isWide ? `${item.title}${isLockedForGuest ? " (Mohon Login Terlebih Dahulu)" : ""}` : undefined}
                     >
-                      <Icon
-                        className={cn(
-                          "h-5 w-5 shrink-0 transition-colors",
-                          isActive
-                            ? "menu-item-icon-active"
-                            : "menu-item-icon group-hover:text-gray-700 dark:group-hover:text-gray-300"
+                      <div className="relative flex items-center justify-center shrink-0">
+                        <Icon
+                          className={cn(
+                            "h-5 w-5 shrink-0 transition-colors",
+                            isActive
+                              ? "menu-item-icon-active"
+                              : "menu-item-icon group-hover:text-gray-700 dark:group-hover:text-gray-300"
+                          )}
+                        />
+                        {isLockedForGuest && !isWide && (
+                          <span
+                            className="absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500 ring-2 ring-white dark:ring-gray-900"
+                            title="Memerlukan Login"
+                          >
+                            <Lock className="h-2 w-2 text-white stroke-[3]" />
+                          </span>
                         )}
-                      />
+                      </div>
+
                       {isWide && (
-                        <div className="flex flex-1 items-center justify-between">
-                          <span className="text-sm font-medium">{item.title}</span>
-                          {item.badge && (
+                        <div className="flex flex-1 items-center justify-between min-w-0">
+                          <span className="text-sm font-medium truncate">{item.title}</span>
+                          {isLockedForGuest ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-black uppercase text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                              <Lock className="h-2.5 w-2.5" />
+                              <span>Login</span>
+                            </span>
+                          ) : item.badge ? (
                             <span
                               className={cn(
-                                "menu-dropdown-badge",
+                                "menu-dropdown-badge shrink-0",
                                 item.badgeColor ||
                                   "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                               )}
                             >
                               {item.badge}
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       )}
                     </Link>
@@ -393,7 +424,7 @@ export const AppSidebar: React.FC = () => {
         ))}
       </div>
 
-      {/* User Card Widget & Logout */}
+      {/* User Card Widget & Login/Logout */}
       <div className="border-t border-gray-200 p-4 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/20">
         <div
           className={cn(
@@ -403,57 +434,100 @@ export const AppSidebar: React.FC = () => {
         >
           {isWide ? (
             <>
-              <div className="flex min-w-0 flex-1 items-center gap-2.5">
-                <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
-                  {user?.avatar ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={user.avatar}
-                      alt={user.name || "Avatar"}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <UserRound className="h-4 w-4 text-gray-400 dark:text-gray-500" />
-                  )}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
-                      {user?.name || "Guest"}
-                    </p>
-                  </div>
-                  <div className="mt-1 flex items-center gap-1.5 flex-wrap">
-                    <span
-                      className={cn(
-                        "rounded border px-1.5 py-0.5 text-[9px] font-extrabold uppercase",
-                        roleBadgeColors[user?.role || "GUEST"]
-                      )}
-                    >
-                      {user?.role || "GUEST"}
+              {(!user || user.role === "GUEST") ? (
+                // Guest Profile Card with Login CTA
+                <div className="flex items-center justify-between gap-2.5 w-full">
+                  <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                    <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-amber-50 border border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/60">
+                      <Lock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                     </span>
-                    <span className="truncate text-[10px] text-gray-500 dark:text-gray-400">
-                      {user?.nama_unit || "Kalimantan 3"}
-                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                        Tamu (Guest)
+                      </p>
+                      <div className="mt-0.5 flex items-center gap-1">
+                        <span className="rounded border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/50 px-1 py-0.2 text-[9px] font-extrabold uppercase text-amber-700 dark:text-amber-300">
+                          Akses Terbatas
+                        </span>
+                      </div>
+                    </div>
                   </div>
+                  <Link
+                    href="/login"
+                    title="Masuk ke Akun Resmi Petugas"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-theme-xs transition-all hover:scale-105 shrink-0"
+                  >
+                    <LogIn className="h-3.5 w-3.5" />
+                    <span>Login</span>
+                  </Link>
                 </div>
-              </div>
+              ) : (
+                // Logged-in Official Staff Profile Card
+                <>
+                  <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                    <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gray-100 ring-2 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700">
+                      {user?.avatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={user.avatar}
+                          alt={user.name || "Avatar"}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <UserRound className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                      )}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5">
+                        <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                          {user?.name || "Guest"}
+                        </p>
+                      </div>
+                      <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                        <span
+                          className={cn(
+                            "rounded border px-1.5 py-0.5 text-[9px] font-extrabold uppercase",
+                            roleBadgeColors[user?.role || "GUEST"]
+                          )}
+                        >
+                          {user?.role || "GUEST"}
+                        </span>
+                        <span className="truncate text-[10px] text-gray-500 dark:text-gray-400">
+                          {user?.nama_unit || "Kalimantan 3"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
+                  <button
+                    onClick={handleLogout}
+                    title="Keluar dari Sistem"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10 dark:hover:text-error-400"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </>
+              )}
+            </>
+          ) : (
+            // Collapsed sidebar widget
+            (!user || user.role === "GUEST") ? (
+              <Link
+                href="/login"
+                title="Masuk ke Akun (Login)"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
+              >
+                <LogIn className="h-4 w-4" />
+              </Link>
+            ) : (
               <button
                 onClick={handleLogout}
                 title="Keluar dari Sistem"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10 dark:hover:text-error-400"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10 dark:hover:text-error-400"
               >
                 <LogOut className="h-4 w-4" />
               </button>
-            </>
-          ) : (
-            <button
-              onClick={handleLogout}
-              title="Keluar dari Sistem"
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-error-50 hover:text-error-600 dark:hover:bg-error-500/10 dark:hover:text-error-400"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
+            )
           )}
         </div>
       </div>

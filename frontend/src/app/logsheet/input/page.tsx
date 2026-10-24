@@ -22,6 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
+import { RoleGuard } from "@/components/common/RoleGuard";
 import { MachineForm } from "@/components/logsheet/MachineForm";
 import { CameraCaptureModal } from "@/components/logsheet/CameraCaptureModal";
 import { apiClient } from "@/lib/api";
@@ -724,8 +725,7 @@ function InputLogsheetContent() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* Success Toast */}
         {successToast && (
           <div className="flex flex-wrap items-center gap-2 rounded-xl bg-success-600 px-4 py-3 text-xs font-bold text-white shadow-theme-md animate-bounce">
@@ -972,20 +972,26 @@ ${machines
           onClose={() => setCameraTarget(null)}
         />
       </div>
-    </AppLayout>
-  );
-}
+    );
+  }
 
 export default function InputLogsheetPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-gray-950">
-          <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-brand-500" />
-        </div>
-      }
-    >
-      <InputLogsheetContent />
-    </Suspense>
+    <AppLayout>
+      <RoleGuard
+        allowedRoles={["SUPERADMIN", "ADMIN", "SUPERVISOR", "OPERATOR"]}
+        moduleName="Input Logsheet Mesin PLTD"
+      >
+        <Suspense
+          fallback={
+            <div className="flex min-h-[400px] items-center justify-center">
+              <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-brand-500" />
+            </div>
+          }
+        >
+          <InputLogsheetContent />
+        </Suspense>
+      </RoleGuard>
+    </AppLayout>
   );
 }

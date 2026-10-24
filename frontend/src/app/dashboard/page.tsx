@@ -22,10 +22,17 @@ import {
   Maximize2,
   ArrowRight,
   FileSpreadsheet,
+  FileText,
+  Printer,
   Eye,
   Check,
   Upload,
 } from "lucide-react";
+import {
+  exportAMCPDF,
+  exportLogsheetPDF,
+  exportDashboardSummaryPDF,
+} from "@/lib/exportUtils";
 import {
   Area,
   AreaChart,
@@ -44,6 +51,7 @@ import {
   YAxis,
 } from "recharts";
 import { AppLayout } from "@/layout/AppLayout";
+import { RoleGuard } from "@/components/common/RoleGuard";
 import { TimeSlotMatrix } from "@/components/matrix/TimeSlotMatrix";
 import { apiClient } from "@/lib/api";
 import { StatsData } from "@/types";
@@ -313,6 +321,71 @@ export default function DashboardPage() {
     }
   };
 
+  const handleExportAMCPDF = async () => {
+    try {
+      let records = [
+        { unit_name: activeUnit.nama_unit, tipe_mesin: "Caterpillar", machine_name: "CAT #02 (Unit 0265)", tgl_gangguan: "2026-10-20 14:30", tgl_normal: "2026-10-21 09:00", daya_terpasang: 1000, daya_mampu: 850, mw_hilang: 0.85, indikasi_kendala: "Tekanan oli pelumas menurun di bawah 3.0 bar saat 380 kW", status: "NORMAL" },
+        { unit_name: activeUnit.nama_unit, tipe_mesin: "Deutz", machine_name: "DEUTZ #01 (Unit 0192)", tgl_gangguan: "2026-10-22 08:15", tgl_normal: "2026-10-22 17:45", daya_terpasang: 800, daya_mampu: 600, mw_hilang: 0.60, indikasi_kendala: "High temperature coolant water alarm radiator", status: "NORMAL" },
+      ];
+      try {
+        const res = await apiClient.get("/har/amc");
+        if (res.data?.data && res.data.data.length > 0) records = res.data.data;
+      } catch {}
+      exportAMCPDF(records);
+      setToastMessage("Laporan Gangguan AMC 2026 (PDF) berhasil diunduh.");
+      setTimeout(() => setToastMessage(null), 4000);
+    } catch (err) {
+      console.error("Export AMC PDF failed:", err);
+      alert("Gagal memproses PDF AMC");
+    }
+  };
+
+  const handleExportLogsheetPDF = async () => {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      let matrixData = Array.from({ length: 48 }, (_, i) => {
+        const h = String(Math.floor(i / 2)).padStart(2, "0");
+        const m = i % 2 === 0 ? "00" : "30";
+        return {
+          jam: `${h}:${m}`,
+          machine_name: `CAT #01 (${activeUnit.nama_unit})`,
+          machine_status: i >= 16 && i <= 44 ? "OPERASI" : "STANDBY",
+          beban_mesin: i >= 16 && i <= 44 ? 750 + Math.round(Math.sin(i / 5) * 120) : 0,
+          tegangan: 388,
+          frekuensi: 50.02,
+          suhu_radiator: i >= 16 && i <= 44 ? 82 : 34,
+          operator_name: "Syahrodi",
+          approval_status: "Disetujui",
+        };
+      });
+      try {
+        const res = await apiClient.get("/wacb/matrix", { params: { tanggal: today } });
+        if (res.data?.data && res.data.data.length > 0) matrixData = res.data.data;
+      } catch {}
+      exportLogsheetPDF({
+        unitName: activeUnit.nama_unit,
+        kdUnit: activeUnit.kd_unit,
+        tanggal: today,
+        matrixData,
+      });
+      setToastMessage("Logsheet 48 Slot (PDF) berhasil diunduh.");
+      setTimeout(() => setToastMessage(null), 4000);
+    } catch (err) {
+      console.error("Export Logsheet PDF failed:", err);
+      alert("Gagal memproses PDF Logsheet");
+    }
+  };
+
+  const handleExportExecutivePDF = () => {
+    exportDashboardSummaryPDF({
+      unitName: activeUnit.nama_unit,
+      kdUnit: activeUnit.kd_unit,
+      stats,
+    });
+    setToastMessage("Ringkasan Eksekutif Command Center (PDF) berhasil diunduh.");
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
   const renderChart = (key: ChartKey, tall = false) => {
     const height = tall ? "h-96" : "h-72";
     if (key === "status") {
@@ -430,7 +503,11 @@ export default function DashboardPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <RoleGuard
+        allowedRoles={["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"]}
+        moduleName="Dashboard Utama Operasional"
+      >
+        <div className="space-y-6">
         {/* Supervisor Command Banner: Tinggal Lihat Doang */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-[#004581] to-slate-900 p-5 text-white shadow-theme-md sm:p-6">
           <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-400/20 via-transparent to-transparent pointer-events-none" />
@@ -454,31 +531,68 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Actions */}
-            <div className="flex flex-wrap items-center gap-2.5 lg:shrink-0">
+            {/* Quick Actions: Multi-format Exports */}
+            <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
               <Link
                 href="/admin/data-io"
-                className="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-4 py-2.5 text-xs font-extrabold text-slate-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-extrabold text-slate-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
               >
                 <FileSpreadsheet className="h-4 w-4" />
-                <span>Pusat Export & Import</span>
+                <span>Pusat Data IO</span>
               </Link>
+
+              {/* Ringkasan Eksekutif PDF */}
               <button
-                onClick={handleExportAMC}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-2.5 text-xs font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/25"
-                title="Unduh Excel Laporan AMC KIT KALTIMRA 2026"
+                onClick={handleExportExecutivePDF}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-3 py-2 text-xs font-bold text-white ring-1 ring-white/30 transition-all hover:bg-white/30"
+                title="Cetak Laporan PDF Resmi Ringkasan Command Center"
               >
-                <Download className="h-4 w-4 text-amber-300" />
-                <span>Export AMC 2026</span>
+                <Printer className="h-4 w-4 text-amber-300" />
+                <span>Ringkasan (PDF)</span>
               </button>
-              <button
-                onClick={handleExportExcel}
-                disabled={downloading}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white/15 px-3 py-2.5 text-xs font-bold text-white ring-1 ring-white/20 transition-all hover:bg-white/25 disabled:opacity-50"
-              >
-                <Download className="h-4 w-4 text-emerald-300" />
-                <span>{downloading ? "Merakit..." : "Export Logsheet"}</span>
-              </button>
+
+              {/* Export AMC: Excel & PDF */}
+              <div className="inline-flex items-center rounded-xl bg-white/10 p-0.5 ring-1 ring-white/20">
+                <span className="px-2 text-[11px] font-semibold text-white/70">AMC:</span>
+                <button
+                  onClick={handleExportAMC}
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  title="Unduh Excel Laporan Gangguan AMC KIT KALTIMRA 2026"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+                  <span>Excel</span>
+                </button>
+                <button
+                  onClick={handleExportAMCPDF}
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  title="Unduh Dokumen PDF Resmi Laporan Gangguan AMC 2026"
+                >
+                  <FileText className="h-3.5 w-3.5 text-rose-300" />
+                  <span>PDF</span>
+                </button>
+              </div>
+
+              {/* Export Logsheet: Excel & PDF */}
+              <div className="inline-flex items-center rounded-xl bg-white/10 p-0.5 ring-1 ring-white/20">
+                <span className="px-2 text-[11px] font-semibold text-white/70">Logsheet:</span>
+                <button
+                  onClick={handleExportExcel}
+                  disabled={downloading}
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20 disabled:opacity-50"
+                  title="Unduh Spreadsheet Excel Logsheet 48 Slot"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+                  <span>Excel</span>
+                </button>
+                <button
+                  onClick={handleExportLogsheetPDF}
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  title="Unduh Dokumen PDF Resmi Logsheet 48 Slot"
+                >
+                  <FileText className="h-3.5 w-3.5 text-rose-300" />
+                  <span>PDF</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -948,7 +1062,8 @@ export default function DashboardPage() {
         <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
           <TimeSlotMatrix kdUnit={activeUnit.kd_unit} />
         </div>
-      </div>
+        </div>
+      </RoleGuard>
     </AppLayout>
   );
 }

@@ -100,6 +100,11 @@ func main() {
 	api.Get("/integration/summary", integrationHandler.GetSummary)
 	api.Get("/integration/notifications", integrationHandler.GetNotifications)
 	api.Post("/integration/notifications/push", integrationHandler.PushNotification)
+	api.Post("/integration/sync/all", integrationHandler.SyncAll)
+	api.Post("/integration/sync/har", integrationHandler.SyncHAR)
+	api.Post("/integration/sync/mobile", integrationHandler.SyncMobile)
+	api.Get("/integration/audit", integrationHandler.GetSyncAudit)
+	api.Get("/integration/data-preview", integrationHandler.GetDataPreview)
 
 	// Protected Routes (with JWT Auth)
 	protected := api.Group("/", middleware.JWTAuth(cfg))

@@ -113,9 +113,6 @@ export const AppHeader: React.FC = () => {
             <span>{currentTime}</span>
           </div>
 
-          {/* Theme Toggle Button (Light / Dark) */}
-          <ThemeToggleButton />
-
           {/* Network Status Badge */}
           {isOnline ? (
             <div

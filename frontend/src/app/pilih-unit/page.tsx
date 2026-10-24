@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Building2, MapPin, ArrowRight, Search } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
+import { RoleGuard } from "@/components/common/RoleGuard";
 import { apiClient } from "@/lib/api";
 import { WACBFormatResponse, WACBUnitItem } from "@/types";
 
@@ -59,7 +60,11 @@ export default function PilihUnitPage() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <RoleGuard
+        allowedRoles={["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"]}
+        moduleName="Pilih Unit Layanan PLTD"
+      >
+        <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -164,7 +169,8 @@ export default function PilihUnitPage() {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      </RoleGuard>
     </AppLayout>
   );
 }

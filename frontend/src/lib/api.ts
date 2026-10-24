@@ -51,7 +51,11 @@ apiClient.interceptors.response.use(
         const hadToken = Boolean(localStorage.getItem("pln_token"));
         localStorage.removeItem("pln_token");
         localStorage.removeItem("pln_user");
-        window.location.href = hadToken ? "/login?expired=1" : "/login";
+        // Hanya redirect jika user sebelumnya memiliki token (sesi kedaluwarsa).
+        // Untuk pengunjung (guest), jangan redirect otomatis agar halaman 'Mohon Login Terlebih Dahulu' (401/404 style) dapat tampil dengan jelas.
+        if (hadToken) {
+          window.location.href = "/login?expired=1";
+        }
       }
     }
     return Promise.reject(error);

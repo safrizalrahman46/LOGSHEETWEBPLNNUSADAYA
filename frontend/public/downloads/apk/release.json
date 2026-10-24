@@ -3,8 +3,8 @@
   "packageName": "com.plnnusadaya.logsheet",
   "version": "v1.0.0",
   "buildNumber": "1",
-  "fileUrl": "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk",
-  "fileName": "pln-nusadaya-mobile-v1.0.0.apk",
+  "fileUrl": "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk",
+  "fileName": "pln-logsheet-mobile-v1.0.0.apk",
   "fileSize": "64.3 MB",
   "fileSizeBytes": 67461867,
   "releaseDate": "19 Oktober 2026",
@@ -17,5 +17,53 @@
     "Presensi kehadiran berbasis GPS Geofence radius 250 meter lokasi unit kerja",
     "Sinkronisasi data offline otomatis ketika koneksi internet stabil"
   ],
-  "downloadCount": 142
+  "downloadCount": 286,
+  "apkList": [
+    {
+      "id": "logsheet",
+      "targetRole": "OPERATOR MESIN & OPERASIONAL KIT",
+      "roleBadge": "Khusus Operator PLTD",
+      "appName": "PLN Logsheet & Operasional PLTD (WACB Mobile)",
+      "badgeColor": "#0284c7",
+      "badgeBg": "#e0f2fe",
+      "themeGradient": "linear-gradient(135deg, #0284c7, #004581)",
+      "shortDesc": "Aplikasi khusus Operator Mesin Pembangkit untuk pencatatan logsheet beban per jam (48 slot), monitoring parameter mesin, dan presensi GPS geofence di lokasi unit PLTD.",
+      "version": "v1.0.0",
+      "fileSize": "64.3 MB",
+      "fileSizeBytes": 67461867,
+      "fileName": "pln-logsheet-mobile-v1.0.0.apk",
+      "fileUrl": "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk",
+      "minAndroid": "Android 8.0 (Oreo)+",
+      "releaseDate": "19 Oktober 2026",
+      "features": [
+        "Pencatatan Logsheet Mesin 48-Slot (Beban kW, Tegangan, Suhu, Hz)",
+        "Presensi GPS Geofence radius 250m lokasi unit PLTD",
+        "Penyimpanan & Sinkronisasi Offline Otomatis",
+        "Pengawasan Jam Operasi & Parameter Kritis Mesin"
+      ]
+    },
+    {
+      "id": "har",
+      "targetRole": "TIM PEMELIHARAAN (HAR) & TEKNISI AMC",
+      "roleBadge": "Khusus Tim Pemeliharaan / HAR",
+      "appName": "PLN Nusa Daya HAR (Pemeliharaan & Gangguan)",
+      "badgeColor": "#b45309",
+      "badgeBg": "#fef3c7",
+      "themeGradient": "linear-gradient(135deg, #d97706, #92400e)",
+      "shortDesc": "Aplikasi khusus Tim Pemeliharaan (HAR) dan Teknisi untuk pelaporan tiket gangguan pembangkit, penanganan inspeksi preventif, checklist pemeliharaan, dan approval AMC.",
+      "version": "v1.0.0",
+      "fileSize": "47.2 MB",
+      "fileSizeBytes": 49475892,
+      "fileName": "pln-har-mobile-v1.0.0.apk",
+      "fileUrl": "/downloads/apk/pln-har-mobile-v1.0.0.apk",
+      "minAndroid": "Android 8.0 (Oreo)+",
+      "releaseDate": "19 Oktober 2026",
+      "features": [
+        "Pelaporan & Monitoring Tiket Gangguan Pembangkit Real-Time",
+        "Manajemen Work Order (WO) Pemeliharaan Mesin & Trafo",
+        "Form Checklist HAR & Bukti Foto Lapangan",
+        "Validasi & Approval Berjenjang Tim AMC / Pemeliharaan"
+      ]
+    }
+  ]
 }

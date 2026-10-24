@@ -67,9 +67,6 @@ export function Topbar() {
           <span>{currentTime}</span>
         </div>
 
-        {/* Theme Switcher Toggle */}
-        <ThemeToggle />
-
         {/* Network & Offline Status */}
         <div className="flex items-center gap-2">
           {isOnline ? (

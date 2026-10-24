@@ -70,6 +70,12 @@ export const AppFooter: React.FC = () => {
           >
             Berita
           </Link>
+          <Link
+            href="/manual-book"
+            className="hover:text-brand-500 dark:hover:text-brand-400 transition-colors font-bold text-blue-600"
+          >
+            📖 Buku Panduan
+          </Link>
           <a
             href="http://127.0.0.1:8080/health"
             target="_blank"

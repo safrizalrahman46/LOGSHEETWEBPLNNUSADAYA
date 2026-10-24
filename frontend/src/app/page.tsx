@@ -60,10 +60,14 @@ export default function HomePage() {
       "Presensi kehadiran berbasis GPS Geofence radius 250 meter lokasi unit kerja",
       "Sinkronisasi data offline otomatis ketika koneksi internet stabil",
     ],
-    downloadCount: 142,
+    downloadCount: 286,
   });
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [showChangelogModal, setShowChangelogModal] = useState(false);
+  const [selectedChangelogApk, setSelectedChangelogApk] = useState<"logsheet" | "har">("logsheet");
   const [apkCopied, setApkCopied] = useState(false);
+  const [activeQrApkId, setActiveQrApkId] = useState<"logsheet" | "har">("logsheet");
+  const [copiedApkId, setCopiedApkId] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/apk")
@@ -633,18 +637,28 @@ export default function HomePage() {
           -webkit-backface-visibility: hidden;
         }
 
-        /* Vertical Gradient Overlay: Bawah 100% ke Atas 0% Jernih */
+        @media (min-width: 1024px) {
+          .hero-bg-video {
+            object-position: 75% center;
+          }
+        }
+
+        /* Directional Gradient Overlay: Lembut di Kiri untuk Teks, Bersih di Kanan untuk 3D Power Plant */
         .hero-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.96) 0%,
+            rgba(255, 255, 255, 0.88) 35%,
+            rgba(255, 255, 255, 0.60) 55%,
+            rgba(255, 255, 255, 0.15) 75%,
+            rgba(255, 255, 255, 0.0) 90%
+          ), linear-gradient(
             to top,
             rgba(255, 255, 255, 1.0) 0%,
-            rgba(255, 255, 255, 0.78) 18%,
-            rgba(255, 255, 255, 0.35) 42%,
-            rgba(255, 255, 255, 0.10) 65%,
-            rgba(255, 255, 255, 0.0) 85%,
-            rgba(255, 255, 255, 0.0) 100%
+            rgba(255, 255, 255, 0.4) 15%,
+            rgba(255, 255, 255, 0.0) 35%
           ) !important;
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
@@ -675,7 +689,6 @@ export default function HomePage() {
           color: #0f172a;
           margin-bottom: 22px;
           letter-spacing: -0.5px;
-          text-shadow: 0 1px 12px rgba(255, 255, 255, 0.95), 0 0 2px rgba(255, 255, 255, 0.9);
         }
 
         .hero-subtitle {
@@ -684,7 +697,6 @@ export default function HomePage() {
           line-height: 1.7;
           margin-bottom: 36px;
           font-weight: 600;
-          text-shadow: 0 1px 8px rgba(255, 255, 255, 0.95);
         }
 
         .hero-actions {
@@ -1133,70 +1145,224 @@ export default function HomePage() {
         .direksi-card-corp:hover { transform: translateY(-8px); box-shadow: 0 16px 40px rgba(0,0,0,0.12); }
         .direksi-photo-wrapper-corp { position: relative; width: 100%; aspect-ratio: 4/5; background: #f8fafc; overflow: hidden; }
         .direksi-photo-corp { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform .5s ease; }
-        /* Mobile App Official Release Section */
+        /* Mobile App Official Release Section (High-End Corporate Engineering Suite) */
         .mobile-app-section-corp {
-          padding: 90px 0 100px;
-          background: linear-gradient(180deg, #ffffff 0%, #f0f7fc 50%, #ffffff 100%);
+          padding: 88px 0 96px;
+          background-color: #f8fafc;
+          background-image: radial-gradient(rgba(2, 132, 199, 0.07) 1px, transparent 1px), radial-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+          background-size: 28px 28px;
           border-top: 1px solid #e2e8f0;
           border-bottom: 1px solid #e2e8f0;
           position: relative;
         }
         .mobile-app-container-corp {
-          max-width: 1280px; margin: 0 auto; padding: 0 32px;
-          display: grid; grid-template-columns: 1.25fr 1fr; gap: 52px; align-items: center;
+          max-width: 1240px; margin: 0 auto; padding: 0 28px;
         }
-        .mobile-app-badge-corp {
-          display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800;
-          color: #0284c7; background: #e0f2fe; padding: 5px 14px; border-radius: 9999px;
-          text-transform: uppercase; letter-spacing: 0.8px; border: 1px solid #bae6fd; margin-bottom: 16px;
+        .mobile-app-eyebrow-wrapper {
+          display: flex; justify-content: center; margin-bottom: 14px;
         }
-        .mobile-app-title-corp {
-          font-size: clamp(26px, 3.2vw, 36px); font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 14px;
+        .mobile-app-eyebrow {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 5px 14px; border-radius: 9999px;
+          background: #ffffff; border: 1px solid #cbd5e1;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+          font-size: 11px; font-weight: 800; letter-spacing: 0.8px;
+          text-transform: uppercase; color: #0284c7;
         }
-        .mobile-app-desc-corp {
-          font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 24px;
+        .pulse-led-dot {
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+          animation: pulseLed 2s infinite;
         }
-        .mobile-app-features-grid {
-          display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 28px;
+        @keyframes pulseLed {
+          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+          70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-        .mobile-app-feat-item {
-          display: flex; align-items: flex-start; gap: 12px; background: #ffffff;
-          padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all .25s ease;
+        .mobile-app-cards-grid {
+          display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 32px;
         }
-        .mobile-app-feat-item:hover {
-          border-color: #38bdf8; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1);
+        @media (max-width: 960px) {
+          .mobile-app-cards-grid { grid-template-columns: 1fr; }
         }
-        .mobile-app-feat-icon {
-          width: 36px; height: 36px; border-radius: 10px; background: #e0f2fe;
-          color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        .mobile-app-card {
+          background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0;
+          padding: 30px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03), 0 10px 24px -4px rgba(15, 23, 42, 0.05);
+          display: flex; flex-direction: column; justify-content: space-between;
+          transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+          position: relative; overflow: hidden;
         }
-        .mobile-app-actions {
-          display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 20px;
+        .mobile-app-card::before {
+          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
         }
-        .btn-download-apk {
-          display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px;
-          border-radius: 9999px; background: linear-gradient(135deg, #0284c7, #004581);
-          color: #ffffff; font-size: 14px; font-weight: 700; text-decoration: none;
-          box-shadow: 0 8px 24px rgba(2, 132, 199, 0.35); transition: all .25s ease;
+        .mobile-app-card.card-logsheet::before {
+          background: linear-gradient(90deg, #004581 0%, #0284c7 100%);
         }
-        .btn-download-apk:hover {
-          transform: translateY(-2px); box-shadow: 0 12px 30px rgba(2, 132, 199, 0.5);
-          background: linear-gradient(135deg, #0369a1, #003366);
+        .mobile-app-card.card-har::before {
+          background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
         }
-        .btn-guide-apk {
-          display: inline-flex; align-items: center; gap: 8px; padding: 14px 24px;
-          border-radius: 9999px; background: #ffffff; border: 1.5px solid #cbd5e1;
-          color: #334155; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer;
-          transition: all .25s ease;
+        .mobile-app-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 35px -6px rgba(15, 23, 42, 0.09), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+          border-color: #cbd5e1;
         }
-        .btn-guide-apk:hover {
-          border-color: #0284c7; color: #0284c7; background: #f0f9ff;
+        .app-card-head {
+          display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px;
         }
-        .mobile-app-qr-card {
-          background: #ffffff; border-radius: 24px; padding: 32px 28px;
-          border: 1px solid #e2e8f0; box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
-          text-align: center;
+        .app-icon-squircle {
+          width: 58px; height: 58px; border-radius: 16px;
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        .app-icon-squircle.logsheet {
+          background: linear-gradient(135deg, #003666 0%, #005082 50%, #0284c7 100%);
+          color: #ffffff;
+        }
+        .app-icon-squircle.har {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+          color: #fbbf24;
+        }
+        .app-head-info { flex-grow: 1; }
+        .app-jurisdiction-chip {
+          display: inline-flex; align-items: center; gap: 5px;
+          font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+          padding: 3px 9px; border-radius: 6px; margin-bottom: 6px;
+        }
+        .jurisdiction-logsheet {
+          background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;
+        }
+        .jurisdiction-har {
+          background: #fef3c7; color: #b45309; border: 1px solid #fde68a;
+        }
+        .app-card-title {
+          font-size: 21px; font-weight: 800; color: #0f172a; line-height: 1.25; margin-bottom: 3px;
+        }
+        .app-card-moniker {
+          font-size: 11.5px; color: #64748b; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        /* Telemetry Spec Strip */
+        .app-specs-strip {
+          display: grid; grid-template-columns: repeat(4, 1fr);
+          background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+          padding: 10px 14px; margin: 18px 0; gap: 8px;
+        }
+        .app-spec-col {
+          display: flex; flex-direction: column; gap: 2px;
+        }
+        .app-spec-label {
+          font-size: 9.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .app-spec-val {
+          font-size: 12.5px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .app-card-desc {
+          font-size: 13.5px; color: #475569; line-height: 1.6; margin-bottom: 18px;
+        }
+        /* Bento Capabilities Grid */
+        .app-bento-grid {
+          display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px;
+        }
+        @media (max-width: 580px) {
+          .app-bento-grid { grid-template-columns: 1fr; }
+        }
+        .app-bento-item {
+          background: #f8fafc; border: 1px solid #edf2f7; border-radius: 12px;
+          padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+          transition: background-color .15s ease, border-color .15s ease;
+        }
+        .app-bento-item:hover {
+          background: #ffffff; border-color: #cbd5e1;
+        }
+        .app-bento-header {
+          display: flex; align-items: center; gap: 7px;
+          font-size: 12.5px; font-weight: 700; color: #1e293b;
+        }
+        .app-bento-icon {
+          width: 15px; height: 15px; flex-shrink: 0; color: #0284c7;
+        }
+        .app-bento-icon.har { color: #d97706; }
+        .app-bento-text {
+          font-size: 11.5px; color: #64748b; line-height: 1.45;
+        }
+        .app-card-footer {
+          border-top: 1px solid #edf2f7; padding-top: 20px; margin-top: auto;
+          display: flex; flex-direction: column; gap: 11px;
+        }
+        .btn-download-primary {
+          display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+          width: 100%; padding: 12px 20px; border-radius: 12px;
+          background: linear-gradient(135deg, #004581 0%, #0284c7 100%);
+          color: #ffffff; font-size: 13.5px; font-weight: 700;
+          text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+          box-shadow: 0 4px 14px rgba(0, 69, 129, 0.25);
+        }
+        .btn-download-primary:hover {
+          filter: brightness(1.06); transform: translateY(-1.5px);
+          box-shadow: 0 6px 18px rgba(0, 69, 129, 0.32);
+        }
+        .btn-download-primary.har-btn {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #b45309 120%);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+        }
+        .btn-download-primary.har-btn:hover {
+          filter: brightness(1.08);
+          box-shadow: 0 6px 18px rgba(180, 83, 9, 0.32);
+        }
+        .app-action-subbar {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+        }
+        @media (max-width: 500px) {
+          .app-action-subbar { grid-template-columns: repeat(2, 1fr); }
+        }
+        .btn-ghost-action {
+          display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+          padding: 7px 10px; border-radius: 8px; background: #ffffff;
+          border: 1px solid #e2e8f0; color: #475569; font-size: 11.5px; font-weight: 600;
+          cursor: pointer; transition: all .15s ease; text-decoration: none; white-space: nowrap;
+        }
+        .btn-ghost-action:hover {
+          background: #f1f5f9; border-color: #cbd5e1; color: #0f172a;
+        }
+        /* QR Hub Centerpiece */
+        .mobile-app-qr-center {
+          background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0;
+          padding: 28px 32px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+          display: grid; grid-template-columns: 1fr 220px; gap: 36px; align-items: center;
+        }
+        @media (max-width: 860px) {
+          .mobile-app-qr-center { grid-template-columns: 1fr; text-align: center; }
+        }
+        .qr-hub-tabs {
+          display: inline-flex; padding: 4px; background: #f1f5f9; border-radius: 12px;
+          gap: 4px; margin-bottom: 16px; border: 1px solid #e2e8f0;
+        }
+        .qr-hub-tab-btn {
+          padding: 7px 16px; border-radius: 9px; font-size: 12px; font-weight: 700;
+          border: none; background: transparent; color: #64748b; cursor: pointer;
+          display: inline-flex; align-items: center; gap: 7px; transition: all .15s ease;
+        }
+        .qr-hub-tab-btn.active {
+          background: #ffffff; color: #0f172a; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .qr-link-box {
+          display: flex; align-items: center; gap: 8px; background: #f8fafc;
+          border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; font-size: 12px; max-width: 600px;
+        }
+        .qr-link-code {
+          flex-grow: 1; color: #334155;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .btn-copy-chip {
+          padding: 5px 12px; border-radius: 7px; border: 1px solid #cbd5e1;
+          background: #ffffff; color: #0f172a; font-size: 11.5px; font-weight: 700;
+          cursor: pointer; white-space: nowrap; transition: all .15s;
+        }
+        .btn-copy-chip:hover { background: #f1f5f9; }
+        .btn-copy-chip.copied {
+          background: #059669; color: #ffffff; border-color: #059669;
         }
 
         /* Contact */
@@ -1277,22 +1443,25 @@ export default function HomePage() {
         .dark .hero, .dark .hero-corp { background: #0c111d; }
         .dark .hero-overlay {
           background: linear-gradient(
-            to top,
-            rgba(12, 17, 29, 1.0) 0%,
-            rgba(12, 17, 29, 0.85) 18%,
-            rgba(12, 17, 29, 0.45) 42%,
-            rgba(12, 17, 29, 0.12) 65%,
-            rgba(12, 17, 29, 0.0) 85%,
+            90deg,
+            rgba(12, 17, 29, 0.95) 0%,
+            rgba(12, 17, 29, 0.88) 38%,
+            rgba(12, 17, 29, 0.50) 62%,
+            rgba(12, 17, 29, 0.15) 80%,
             rgba(12, 17, 29, 0.0) 100%
+          ),
+          linear-gradient(
+            0deg,
+            rgba(12, 17, 29, 1.0) 0%,
+            rgba(12, 17, 29, 0.5) 25%,
+            rgba(12, 17, 29, 0.0) 60%
           ) !important;
         }
         .dark .hero-title {
           color: #f1f5f9 !important;
-          text-shadow: 0 1px 12px rgba(0, 0, 0, 0.65), 0 0 2px rgba(0, 0, 0, 0.5) !important;
         }
         .dark .hero-subtitle {
           color: #cbd5e1 !important;
-          text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6) !important;
         }
         .dark .btn-hero-outline {
           background: rgba(12, 17, 29, 0.72);
@@ -1424,16 +1593,122 @@ export default function HomePage() {
         .dark .direksi-card-corp:hover { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
         /* Mobile App (Dark Mode) */
         .dark .mobile-app-section-corp {
-          background: linear-gradient(180deg, #0c111d 0%, #0f172a 50%, #0c111d 100%);
+          background-color: #0b0f19;
+          background-image: radial-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px), radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
           border-color: #1e293b;
         }
-        .dark .mobile-app-title-corp { color: #f1f5f9; }
-        .dark .mobile-app-desc-corp { color: #94a3b8; }
-        .dark .mobile-app-feat-item { background: #0f172a; border-color: #1e293b; }
-        .dark .mobile-app-feat-icon { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-        .dark .mobile-app-qr-card { background: #0f172a; border-color: #1e293b; }
-        .dark .btn-guide-apk { background: #111827; border-color: #334155; color: #cbd5e1; }
-        .dark .btn-guide-apk:hover { border-color: #38bdf8; color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+        .dark .mobile-app-eyebrow {
+          background: #0f172a; border-color: #334155; color: #38bdf8;
+        }
+        .dark .mobile-app-card {
+          background: #0f172a;
+          border-color: #1e293b;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .dark .mobile-app-card:hover {
+          border-color: #334155;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
+        }
+        .dark .jurisdiction-logsheet {
+          background: rgba(2, 132, 199, 0.15); color: #38bdf8; border-color: rgba(2, 132, 199, 0.3);
+        }
+        .dark .jurisdiction-har {
+          background: rgba(217, 119, 6, 0.15); color: #fbbf24; border-color: rgba(217, 119, 6, 0.3);
+        }
+        .dark .app-card-title {
+          color: #f1f5f9;
+        }
+        .dark .app-card-moniker {
+          color: #94a3b8;
+        }
+        .dark .app-card-desc {
+          color: #94a3b8;
+        }
+        .dark .app-specs-strip {
+          background: #111827;
+          border-color: #1e293b;
+        }
+        .dark .app-spec-label {
+          color: #64748b;
+        }
+        .dark .app-spec-val {
+          color: #f1f5f9;
+        }
+        .dark .app-bento-item {
+          background: #111827;
+          border-color: #1e293b;
+        }
+        .dark .app-bento-item:hover {
+          background: #1e293b;
+          border-color: #334155;
+        }
+        .dark .app-bento-header {
+          color: #e2e8f0;
+        }
+        .dark .app-bento-text {
+          color: #94a3b8;
+        }
+        .dark .app-card-footer {
+          border-color: #1e293b;
+        }
+        .dark .btn-download-primary {
+          background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        }
+        .dark .btn-download-primary.har-btn {
+          background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #b45309 120%);
+        }
+        .dark .btn-ghost-action {
+          background: #111827;
+          border-color: #1e293b;
+          color: #cbd5e1;
+        }
+        .dark .btn-ghost-action:hover {
+          background: #1e293b;
+          color: #f1f5f9;
+          border-color: #334155;
+        }
+        .dark .mobile-app-qr-center {
+          background: #0f172a;
+          border-color: #1e293b;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        .dark .qr-hub-tabs {
+          background: #111827;
+          border-color: #1e293b;
+        }
+        .dark .qr-hub-tab-btn {
+          color: #94a3b8;
+        }
+        .dark .qr-hub-tab-btn.active {
+          background: #1e293b;
+          color: #f1f5f9;
+        }
+        .dark .qr-link-box {
+          background: #111827;
+          border-color: #1e293b;
+        }
+        .dark .qr-link-code {
+          color: #cbd5e1;
+        }
+        .dark .btn-copy-chip {
+          background: #1e293b;
+          border-color: #334155;
+          color: #f1f5f9;
+        }
+        .dark .btn-copy-chip:hover {
+          background: #334155;
+        }
+        .dark .qr-link-code {
+          color: #cbd5e1;
+        }
+        .dark .btn-copy-chip {
+          background: #1e293b;
+          border-color: #334155;
+          color: #f1f5f9;
+        }
+        .dark .btn-copy-chip:hover {
+          background: #334155;
+        }
 
         /* Contact + social */
         .dark .social-link-corp { border-color: #38bdf8; color: #38bdf8; }
@@ -1498,8 +1773,6 @@ export default function HomePage() {
           .section-line-corp { width: 26px; }
         }
       `}</style>
-
-      <ThemeToggleButton className="landing-theme-fab" />
 
       {/* ================================================================
           NAVBAR (shared component: nav-container-corp)
@@ -2016,181 +2289,479 @@ export default function HomePage() {
       </section>
 
       {/* ================================================================
-          APLIKASI MOBILE RESMI (OFFICIAL DEVELOPER APK DISTRIBUTION)
+          APLIKASI MOBILE OPERASIONAL (OFFICIAL APK DISTRIBUTION)
       ================================================================ */}
       <section className="mobile-app-section-corp" id="mobile-app">
         <div className="section-header-corp">
+          <div className="mobile-app-eyebrow-wrapper">
+            <div className="mobile-app-eyebrow">
+              <span className="pulse-led-dot"></span>
+              <span>DISTRIBUSI RESMI • FIELD ENGINEERING SUITE</span>
+            </div>
+          </div>
           <div className="section-title-wrapper-corp">
             <span className="section-line-corp"></span>
-            <h2 className="section-title-corp">APLIKASI MOBILE RESMI</h2>
+            <h2 className="section-title-corp">APLIKASI MOBILE OPERASIONAL</h2>
             <span className="section-line-corp"></span>
           </div>
           <p className="section-subtitle-corp">
-            Solusi Digital Terpadu Operasional Pembangkit, Pemeliharaan HAR &amp; Presensi Kehadiran dalam Genggaman
+            Paket instalasi Android (.apk) mandiri terverifikasi untuk Operator Mesin Pembangkit dan Tim Pemeliharaan (HAR) PT PLN Nusa Daya
           </p>
         </div>
 
         <div className="mobile-app-container-corp">
-          {/* Left Column: Information & Download Action */}
-          <div className="scroll-reveal">
-            <div className="mobile-app-badge-corp">
-              <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981", display: "inline-block" }}></span>
-              DISTRIBUSI RESMI • ANDROID APK
-            </div>
-
-            <h3 className="mobile-app-title-corp">
-              {apkInfo?.appName || "PLN Nusa Daya Mobile"}
-            </h3>
-
-            <p className="mobile-app-desc-corp">
-              Aplikasi mobile Android resmi yang dirancang khusus untuk memfasilitasi petugas Pelayanan Teknik, operator mesin pembangkit, dan tim pemeliharaan (HAR) dalam pelaporan real-time, pengawasan beban 24 jam, serta integrasi presensi berbasis koordinat GPS.
-            </p>
-
-            {/* Badges / Chips */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 28 }}>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
-                <span style={{ color: "#0284c7", fontWeight: 800 }}>🏷️ Versi:</span>
-                <strong>{apkInfo?.version || "v1.0.0"}</strong>
-              </div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
-                <span style={{ color: "#0284c7", fontWeight: 800 }}>💾 Ukuran:</span>
-                <strong>{apkInfo?.fileSize || "64.3 MB"}</strong>
-              </div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
-                <span style={{ color: "#0284c7", fontWeight: 800 }}>📱 Sistem:</span>
-                <strong>{apkInfo?.minAndroid || "Android 8.0+"}</strong>
-              </div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--corp-card)", border: "1px solid var(--corp-border-line)", borderRadius: 10, padding: "8px 14px", fontSize: 13, color: "var(--corp-strong)" }}>
-                <span style={{ color: "#0284c7", fontWeight: 800 }}>📅 Rilis:</span>
-                <strong>{apkInfo?.releaseDate || "Terbaru"}</strong>
-              </div>
-            </div>
-
-            {/* Feature Cards Grid */}
-            <div className="mobile-app-features-grid">
-              <div className="mobile-app-feat-item">
-                <div className="mobile-app-feat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+          {/* Cards Grid: 2 High-Precision Enterprise Cards */}
+          <div className="mobile-app-cards-grid">
+            {/* CARD 1: APK LOGSHEET MESIN (OPERATOR) */}
+            <div className="mobile-app-card card-logsheet scroll-reveal">
+              <div>
+                <div className="app-card-head">
+                  <div className="app-icon-squircle logsheet">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 30, height: 30 }}>
+                      <rect x="4" y="2" width="16" height="20" rx="3" />
+                      <line x1="9" y1="22" x2="15" y2="22" />
+                      <circle cx="12" cy="11" r="4" />
+                      <path d="M12 7v1" />
+                      <path d="M12 14v1" />
+                      <path d="M8.5 9.5l.8.8" />
+                      <path d="M14.7 12.5l.8.8" />
+                      <path d="M9 18h6" />
+                    </svg>
+                  </div>
+                  <div className="app-head-info">
+                    <div className="app-jurisdiction-chip jurisdiction-logsheet">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: 11, height: 11 }}>
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                      <span>Khusus Operator PLTD</span>
+                    </div>
+                    <h3 className="app-card-title">PLN Logsheet PLTD</h3>
+                    <div className="app-card-moniker">com.plnnusadaya.logsheet • WACB Mobile Core</div>
+                  </div>
                 </div>
-                <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Logsheet Mesin 48-Slot</h4>
-                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Pencatatan parameter beban KW, tegangan, suhu &amp; frekuensi mesin real-time.</p>
+
+                {/* Telemetry Spec Strip */}
+                <div className="app-specs-strip">
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Versi Build</span>
+                    <span className="app-spec-val">v1.0.0</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Ukuran Berkas</span>
+                    <span className="app-spec-val">64.3 MB</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Target OS</span>
+                    <span className="app-spec-val">Android 8.0+</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Engine Data</span>
+                    <span className="app-spec-val">SQLite Offline</span>
+                  </div>
+                </div>
+
+                <p className="app-card-desc">
+                  Standardisasi digital pencatatan parameter 48-slot per jam mesin pembangkit, monitoring temperatur, tekanan oli, frekuensi, serta validasi absensi kehadiran presisi radius 250m geofence PLTD.
+                </p>
+
+                {/* Bento Capabilities Grid */}
+                <div className="app-bento-grid">
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                      <span>Logsheet 48-Slot</span>
+                    </div>
+                    <span className="app-bento-text">Input terstruktur beban kW, Volt, Ampere, Hz, dan suhu oli/pendingin.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <span>Presensi Geofence 250m</span>
+                    </div>
+                    <span className="app-bento-text">Validasi kehadiran akurat berbasis titik koordinat sentral PLTD.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                      </svg>
+                      <span>Sinkronisasi Otomatis</span>
+                    </div>
+                    <span className="app-bento-text">Buffer lokal aman saat blankspot dan auto-sync instan saat online.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                      </svg>
+                      <span>Jam Operasi &amp; BBM</span>
+                    </div>
+                    <span className="app-bento-text">Rekap jam kerja mesin, kalkulasi kWh produksi, dan sisa bahan bakar.</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="mobile-app-feat-item">
-                <div className="mobile-app-feat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
-                </div>
-                <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>HAR &amp; AMC Gangguan</h4>
-                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Pelaporan gangguan terintegrasi unit pembangkit dan approval berjenjang.</p>
-                </div>
-              </div>
+              <div className="app-card-footer">
+                <a
+                  href={apkInfo?.apkList?.[0]?.downloadApiUrl || "/api/apk/download?type=logsheet"}
+                  download={apkInfo?.apkList?.[0]?.fileName || "pln-logsheet-mobile-v1.0.0.apk"}
+                  className="btn-download-primary"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  <span>Unduh APK Logsheet ({apkInfo?.apkList?.[0]?.fileSize || "64.3 MB"})</span>
+                </a>
 
-              <div className="mobile-app-feat-item">
-                <div className="mobile-app-feat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>
-                </div>
-                <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Presensi GPS 250m</h4>
-                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Validasi absensi kehadiran presisi radius geofence unit kerja PLTD.</p>
-                </div>
-              </div>
+                <div className="app-action-subbar">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveQrApkId("logsheet");
+                      const el = document.getElementById("qr-center-box");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    className="btn-ghost-action"
+                    title="Pindai QR Code"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    <span>Pindai QR</span>
+                  </button>
 
-              <div className="mobile-app-feat-item">
-                <div className="mobile-app-feat-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M1.42 9a16 16 0 0 1 21.16 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
-                </div>
-                <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "var(--corp-strong)", marginBottom: 2 }}>Sinkronisasi Offline</h4>
-                  <p style={{ fontSize: 12, color: "var(--corp-muted)", lineHeight: 1.5 }}>Tetap andal saat tanpa sinyal di area pembangkit remote / terdistribusi.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Download Buttons */}
-            <div className="mobile-app-actions">
-              <a
-                href={apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk"}
-                download
-                className="btn-download-apk"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                <span>Download APK Resmi ({apkInfo?.fileSize || "64.3 MB"})</span>
-              </a>
-
-              <button
-                type="button"
-                onClick={() => setShowInstallGuide(true)}
-                className="btn-guide-apk"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 17, height: 17 }}>
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="16" x2="12" y2="12" />
-                  <line x1="12" y1="8" x2="12.01" y2="8" />
-                </svg>
-                <span>Panduan Instalasi</span>
-              </button>
-            </div>
-
-            <p style={{ fontSize: 12, color: "var(--corp-muted)", display: "flex", alignItems: "center", gap: 6 }}>
-              <span>🔒 Diverifikasi Aman</span> • Bebas Malware &amp; Resmi Terbitan Tim Pengembang PT PLN Nusa Daya
-            </p>
-          </div>
-
-          {/* Right Column: Scan QR Code Card */}
-          <div className="scroll-reveal">
-            <div className="mobile-app-qr-card">
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#f0fdf4", border: "1px solid #bbf7d0", padding: "4px 12px", borderRadius: 9999, fontSize: 11, fontWeight: 700, color: "#166534", marginBottom: 12 }}>
-                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }}></span>
-                INSTALASI CEPAT DI SMARTPHONE
-              </div>
-
-              <h4 style={{ fontSize: 18, fontWeight: 800, color: "var(--corp-heading)", marginBottom: 6 }}>
-                Pindai QR Code untuk Unduh
-              </h4>
-              <p style={{ fontSize: 12.5, color: "var(--corp-muted)", lineHeight: 1.6, marginBottom: 18 }}>
-                Arahkan kamera smartphone Android Anda ke kode QR di bawah ini untuk langsung mengunduh dan memasang aplikasi.
-              </p>
-
-              <div style={{ display: "inline-block", padding: 12, background: "#ffffff", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.08)", border: "1px solid #e2e8f0", marginBottom: 18 }}>
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-                    typeof window !== "undefined" ? window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk") : ""
-                  )}&bgcolor=ffffff&color=004581&qzone=2`}
-                  alt="QR Code Unduh APK"
-                  style={{ width: 200, height: 200, display: "block", borderRadius: 12 }}
-                />
-              </div>
-
-              <div style={{ background: "var(--corp-surface2)", border: "1px solid var(--corp-border-line)", borderRadius: 12, padding: "12px 14px", textAlign: "left", fontSize: 12 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "var(--corp-muted)", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
-                  Tautan File Langsung:
-                </span>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <code style={{ fontSize: 11, color: "var(--corp-strong)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexGrow: 1 }}>
-                    {typeof window !== "undefined" ? window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk") : ""}
-                  </code>
                   <button
                     type="button"
                     onClick={() => {
                       if (typeof window !== "undefined") {
-                        navigator.clipboard.writeText(window.location.origin + (apkInfo?.fileUrl || "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk"));
-                        setApkCopied(true);
-                        setTimeout(() => setApkCopied(false), 2000);
+                        navigator.clipboard.writeText(window.location.origin + "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk");
+                        setCopiedApkId("logsheet");
+                        setTimeout(() => setCopiedApkId(""), 2000);
                       }
                     }}
-                    style={{ padding: "4px 10px", borderRadius: 6, background: apkCopied ? "#10b981" : "#0284c7", color: "#ffffff", border: "none", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0 }}
+                    className="btn-ghost-action"
+                    title="Salin tautan unduhan langsung"
                   >
-                    {apkCopied ? "Tersalin" : "Salin"}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                    <span>{copiedApkId === "logsheet" ? "Tersalin!" : "Salin Link"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowInstallGuide(true)}
+                    className="btn-ghost-action"
+                    title="Lihat petunjuk instalasi"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span>Panduan</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedChangelogApk("logsheet");
+                      setShowChangelogModal(true);
+                    }}
+                    className="btn-ghost-action"
+                    title="Catatan rilis versi v1.0.0"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Changelog</span>
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* CARD 2: APK HAR & GANGGUAN (PEMELIHARAAN) */}
+            <div className="mobile-app-card card-har scroll-reveal">
+              <div>
+                <div className="app-card-head">
+                  <div className="app-icon-squircle har">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 30, height: 30 }}>
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                    </svg>
+                  </div>
+                  <div className="app-head-info">
+                    <div className="app-jurisdiction-chip jurisdiction-har">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ width: 11, height: 11 }}>
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                      <span>Khusus Tim HAR &amp; AMC</span>
+                    </div>
+                    <h3 className="app-card-title">PLN HAR &amp; Gangguan</h3>
+                    <div className="app-card-moniker">com.plnnusadaya.har • AMC Maintenance Hub</div>
+                  </div>
+                </div>
+
+                {/* Telemetry Spec Strip */}
+                <div className="app-specs-strip">
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Versi Build</span>
+                    <span className="app-spec-val">v1.0.0</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Ukuran Berkas</span>
+                    <span className="app-spec-val">47.2 MB</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Target OS</span>
+                    <span className="app-spec-val">Android 8.0+</span>
+                  </div>
+                  <div className="app-spec-col">
+                    <span className="app-spec-label">Otorisasi</span>
+                    <span className="app-spec-val">AMC Signature</span>
+                  </div>
+                </div>
+
+                <p className="app-card-desc">
+                  Penanganan cepat tiket kendala teknis pembangkit, penugasan Work Order (WO) inspeksi berkala, checklist pemeliharaan mesin terstandarisasi, serta validasi foto lapangan ber-watermark.
+                </p>
+
+                {/* Bento Capabilities Grid */}
+                <div className="app-bento-grid">
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon har" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                      </svg>
+                      <span>Tiket Gangguan Real-Time</span>
+                    </div>
+                    <span className="app-bento-text">Pelaporan cepat kerusakan mesin tereskalasi langsung ke posko AMC.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon har" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                      </svg>
+                      <span>Work Order (WO) Lapangan</span>
+                    </div>
+                    <span className="app-bento-text">Penugasan pemeliharaan terencana preventif &amp; jadwal overhaul mesin.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon har" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      <span>Checklist &amp; Geo-Photo</span>
+                    </div>
+                    <span className="app-bento-text">Standarisasi pemeriksaan peralatan dengan bukti foto ber-timestamp.</span>
+                  </div>
+
+                  <div className="app-bento-item">
+                    <div className="app-bento-header">
+                      <svg className="app-bento-icon har" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        <polyline points="9 12 11 14 15 10" />
+                      </svg>
+                      <span>Approval Berjenjang AMC</span>
+                    </div>
+                    <span className="app-bento-text">Verifikasi digital hasil pekerjaan oleh supervisor dan pengawas AMC.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="app-card-footer">
+                <a
+                  href={apkInfo?.apkList?.[1]?.downloadApiUrl || "/api/apk/download?type=har"}
+                  download={apkInfo?.apkList?.[1]?.fileName || "pln-har-mobile-v1.0.0.apk"}
+                  className="btn-download-primary har-btn"
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  <span>Unduh APK HAR ({apkInfo?.apkList?.[1]?.fileSize || "47.2 MB"})</span>
+                </a>
+
+                <div className="app-action-subbar">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveQrApkId("har");
+                      const el = document.getElementById("qr-center-box");
+                      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    className="btn-ghost-action"
+                    title="Pindai QR Code"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    <span>Pindai QR</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        navigator.clipboard.writeText(window.location.origin + "/downloads/apk/pln-har-mobile-v1.0.0.apk");
+                        setCopiedApkId("har");
+                        setTimeout(() => setCopiedApkId(""), 2000);
+                      }
+                    }}
+                    className="btn-ghost-action"
+                    title="Salin tautan unduhan langsung"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                    </svg>
+                    <span>{copiedApkId === "har" ? "Tersalin!" : "Salin Link"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowInstallGuide(true)}
+                    className="btn-ghost-action"
+                    title="Lihat petunjuk instalasi"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="16" x2="12" y2="12" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span>Panduan</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedChangelogApk("har");
+                      setShowChangelogModal(true);
+                    }}
+                    className="btn-ghost-action"
+                    title="Catatan rilis versi v1.0.0"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                    </svg>
+                    <span>Changelog</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* QR Rapid Deployment Hub Centerpiece */}
+          <div className="mobile-app-qr-center scroll-reveal" id="qr-center-box">
+            <div>
+              <div className="qr-hub-tabs">
+                <button
+                  type="button"
+                  onClick={() => setActiveQrApkId("logsheet")}
+                  className={`qr-hub-tab-btn ${activeQrApkId === "logsheet" ? "active" : ""}`}
+                >
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#0284c7" }}></span>
+                  <span>PLN Logsheet (64.3 MB)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveQrApkId("har")}
+                  className={`qr-hub-tab-btn ${activeQrApkId === "har" ? "active" : ""}`}
+                >
+                  <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#d97706" }}></span>
+                  <span>PLN HAR &amp; Gangguan (47.2 MB)</span>
+                </button>
+              </div>
+
+              <h4 style={{ fontSize: 18, fontWeight: 800, color: "var(--corp-heading)", marginBottom: 6 }}>
+                Instalasi Cepat via Pindai Kamera Smartphone
+              </h4>
+              <p style={{ fontSize: 13, color: "var(--corp-muted)", lineHeight: 1.6, marginBottom: 16 }}>
+                Arahkan kamera smartphone Android Anda ke kode QR untuk mengunduh paket instalasi {activeQrApkId === "logsheet" ? "APK Logsheet Operator PLTD" : "APK HAR Pemeliharaan"} langsung ke memori internal tanpa memerlukan kabel transfer.
+              </p>
+
+              <div className="qr-link-box">
+                <code className="qr-link-code">
+                  {typeof window !== "undefined"
+                    ? window.location.origin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")
+                    : ""}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      const targetUrl = window.location.origin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk");
+                      navigator.clipboard.writeText(targetUrl);
+                      setCopiedApkId(activeQrApkId);
+                      setTimeout(() => setCopiedApkId(""), 2000);
+                    }
+                  }}
+                  className={`btn-copy-chip ${copiedApkId === activeQrApkId ? "copied" : ""}`}
+                >
+                  {copiedApkId === activeQrApkId ? "Tersalin!" : "Salin Link"}
+                </button>
+              </div>
+
+              <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "var(--corp-muted)" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16, color: "#16a34a", flexShrink: 0 }}>
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+                <span>Paket resmi internal PT PLN Nusa Daya • Terverifikasi aman, bebas virus dan malware</span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div style={{ padding: 12, background: "#ffffff", borderRadius: 16, border: "1px solid #e2e8f0", boxShadow: "0 6px 18px rgba(0,0,0,0.06)" }}>
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                    typeof window !== "undefined"
+                      ? window.location.origin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")
+                      : ""
+                  )}&bgcolor=ffffff&color=${activeQrApkId === "logsheet" ? "004581" : "0f172a"}&qzone=1`}
+                  alt={`QR Code ${activeQrApkId === "logsheet" ? "APK Logsheet" : "APK HAR"}`}
+                  style={{ width: 160, height: 160, display: "block", borderRadius: 8 }}
+                />
+              </div>
+              <span style={{ marginTop: 9, fontSize: 11.5, fontWeight: 700, color: "var(--corp-muted)" }}>
+                {activeQrApkId === "logsheet" ? "Logsheet PLTD v1.0.0" : "PLN HAR v1.0.0"}
+              </span>
             </div>
           </div>
         </div>
@@ -2203,58 +2774,63 @@ export default function HomePage() {
         <div
           style={{
             position: "fixed", inset: 0, zIndex: 9999,
-            background: "rgba(15, 23, 42, 0.75)", backdropFilter: "blur(6px)",
+            background: "rgba(15, 23, 42, 0.75)", backdropFilter: "blur(8px)",
             display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
           }}
           onClick={() => setShowInstallGuide(false)}
         >
           <div
             style={{
-              background: "#ffffff", borderRadius: 20, maxWidth: 580, width: "100%",
-              padding: "28px 30px", boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              background: "#ffffff", borderRadius: 20, maxWidth: 540, width: "100%",
+              padding: "26px 28px", boxShadow: "0 25px 60px -15px rgba(0,0,0,0.3)",
               border: "1px solid #e2e8f0", position: "relative",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 24 }}>📱</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: "#e0f2fe", color: "#0284c7", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                    <line x1="12" y1="18" x2="12.01" y2="18" />
+                  </svg>
+                </div>
                 <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Panduan Instalasi APK Android</h3>
-                  <p style={{ fontSize: 12, color: "#64748b" }}>Cara mudah memasang aplikasi di HP Android</p>
+                  <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", margin: 0 }}>Panduan Instalasi APK Android</h3>
+                  <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>Langkah mudah instalasi aplikasi internal resmi di smartphone</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowInstallGuide(false)}
-                style={{ width: 32, height: 32, borderRadius: "50%", background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 16, fontWeight: 700, color: "#475569" }}
+                style={{ width: 32, height: 32, borderRadius: 8, background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 700, color: "#475569" }}
               >
                 ✕
               </button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
-              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>1</span>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 22 }}>
+              <div style={{ display: "flex", gap: 12, background: "#f8fafc", padding: "12px 14px", borderRadius: 12, border: "1px solid #edf2f7" }}>
+                <span style={{ width: 26, height: 26, borderRadius: "50%", background: "#004581", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>1</span>
                 <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Unduh File APK</h4>
-                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Klik tombol <strong>Download APK</strong> atau scan QR Code di atas menggunakan browser ponsel Android Anda.</p>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Unduh Berkas APK</h4>
+                  <p style={{ fontSize: 12, color: "#475569", lineHeight: 1.5, margin: 0 }}>Klik tombol <strong>Unduh APK</strong> atau pindai kode QR di halaman ini menggunakan smartphone Android Anda.</p>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>2</span>
+              <div style={{ display: "flex", gap: 12, background: "#f8fafc", padding: "12px 14px", borderRadius: 12, border: "1px solid #edf2f7" }}>
+                <span style={{ width: 26, height: 26, borderRadius: "50%", background: "#004581", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>2</span>
                 <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Izinkan Sumber Tidak Dikenal</h4>
-                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Saat membuka file, jika muncul peringatan keamanan sistem Android, pilih <em>Pengaturan</em> &rarr; aktifkan <em>&quot;Izinkan penginstalan dari sumber ini&quot;</em>.</p>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Izinkan Penginstalan Sumber Dikenal</h4>
+                  <p style={{ fontSize: 12, color: "#475569", lineHeight: 1.5, margin: 0 }}>Saat membuka berkas APK, jika muncul konfirmasi keamanan sistem Android, pilih <em>Setelan</em> &rarr; aktifkan <em>&quot;Izinkan penginstalan dari sumber ini&quot;</em>.</p>
                 </div>
               </div>
 
-              <div style={{ display: "flex", gap: 14, background: "#f8fafc", padding: 14, borderRadius: 12, border: "1px solid #e2e8f0" }}>
-                <span style={{ width: 28, height: 28, borderRadius: "50%", background: "#0284c7", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, flexShrink: 0 }}>3</span>
+              <div style={{ display: "flex", gap: 12, background: "#f8fafc", padding: "12px 14px", borderRadius: 12, border: "1px solid #edf2f7" }}>
+                <span style={{ width: 26, height: 26, borderRadius: "50%", background: "#004581", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>3</span>
                 <div>
-                  <h4 style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Buka &amp; Masuk</h4>
-                  <p style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.5 }}>Selesaikan proses instalasi, buka aplikasi <strong>PLN Nusa Daya Mobile</strong>, dan masuk dengan username akun Anda.</p>
+                  <h4 style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", marginBottom: 2 }}>Buka Aplikasi &amp; Masuk</h4>
+                  <p style={{ fontSize: 12, color: "#475569", lineHeight: 1.5, margin: 0 }}>Setelah instalasi selesai, buka aplikasi dan masuk menggunakan akun resmi petugas/operator unit kerja Anda.</p>
                 </div>
               </div>
             </div>
@@ -2263,9 +2839,115 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => setShowInstallGuide(false)}
-                style={{ padding: "10px 24px", borderRadius: 9999, background: "#0284c7", color: "#ffffff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                style={{ padding: "10px 24px", borderRadius: 10, background: "#004581", color: "#ffffff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
               >
                 Saya Mengerti
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================================================================
+          CHANGELOG MODAL
+      ================================================================ */}
+      {showChangelogModal && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(15, 23, 42, 0.75)", backdropFilter: "blur(8px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+          }}
+          onClick={() => setShowChangelogModal(false)}
+        >
+          <div
+            style={{
+              background: "#ffffff", borderRadius: 20, maxWidth: 560, width: "100%",
+              padding: "26px 28px", boxShadow: "0 25px 60px -15px rgba(0,0,0,0.3)",
+              border: "1px solid #e2e8f0", position: "relative",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: selectedChangelogApk === "logsheet" ? "#e0f2fe" : "#fef3c7", color: selectedChangelogApk === "logsheet" ? "#0284c7" : "#b45309", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", margin: 0 }}>
+                    Catatan Rilis — {selectedChangelogApk === "logsheet" ? "PLN Logsheet PLTD" : "PLN HAR & Gangguan"}
+                  </h3>
+                  <p style={{ fontSize: 12, color: "#64748b", margin: 0 }}>Versi v1.0.0 (Build 1) • Rilis Resmi 19 Oktober 2026</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowChangelogModal(false)}
+                style={{ width: 32, height: 32, borderRadius: 8, background: "#f1f5f9", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 700, color: "#475569" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <button
+                type="button"
+                onClick={() => setSelectedChangelogApk("logsheet")}
+                style={{
+                  padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer",
+                  background: selectedChangelogApk === "logsheet" ? "#004581" : "#f1f5f9",
+                  color: selectedChangelogApk === "logsheet" ? "#ffffff" : "#475569",
+                }}
+              >
+                Logsheet PLTD
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedChangelogApk("har")}
+                style={{
+                  padding: "6px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer",
+                  background: selectedChangelogApk === "har" ? "#b45309" : "#f1f5f9",
+                  color: selectedChangelogApk === "har" ? "#ffffff" : "#475569",
+                }}
+              >
+                HAR &amp; Gangguan
+              </button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22, maxHeight: 260, overflowY: "auto" }}>
+              {(selectedChangelogApk === "logsheet"
+                ? [
+                    "Rilis Resmi v1.0.0 — Modul Pencatatan Logsheet Pembangkit 48-slot (beban kW, frekuensi, arus Ampere, tegangan, suhu exhouse/radiator, dan tekanan oli).",
+                    "Validasi absensi kehadiran presisi GPS radius 250m titik pusat lokasi unit kerja PLTD.",
+                    "Engine SQLite offline-first dengan auto-sinkronisasi instan saat sinyal seluler pulih.",
+                    "Integrasi rekap jam operasi mesin, perhitungan kWh produksi harian, dan monitoring sisa BBM solar.",
+                  ]
+                : [
+                    "Rilis Resmi v1.0.0 — Modul Pelaporan Tiket Gangguan Real-Time terintegrasi posko AMC Kaltimra.",
+                    "Manajemen Work Order (WO) Preventif & Korektif langsung ke smartphone teknisi lapangan.",
+                    "Checklist digital AMC dengan validasi bukti foto kamera lapangan ber-watermark koordinat & timestamp.",
+                    "Sistem persetujuan berjenjang (Approval) oleh supervisor dan pengawas AMC terpusat.",
+                  ]
+              ).map((point, idx) => (
+                <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10, background: "#f8fafc", padding: "10px 12px", borderRadius: 10, border: "1px solid #edf2f7" }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: selectedChangelogApk === "logsheet" ? "#0284c7" : "#d97706", marginTop: 6, flexShrink: 0 }}></span>
+                  <span style={{ fontSize: 12.5, color: "#334155", lineHeight: 1.5 }}>{point}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => setShowChangelogModal(false)}
+                style={{ padding: "9px 22px", borderRadius: 10, background: "#004581", color: "#ffffff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+              >
+                Tutup
               </button>
             </div>
           </div>

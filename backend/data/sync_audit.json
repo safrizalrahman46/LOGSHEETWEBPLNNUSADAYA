@@ -1,0 +1,44 @@
+[
+  {
+    "id": "SYNC-1792849649",
+    "timestamp": "2026-10-24 20:47:29",
+    "sync_type": "SYNC_ALL",
+    "status": "SUCCESS",
+    "details": "Sinkronisasi ALL selesai dalam 0.22 detik. Total 132 data diproses.",
+    "items_synced": {
+      "pln_har": {
+        "units": 6,
+        "machines": 14,
+        "har_tickets": 3,
+        "amc_reports": 3,
+        "notifications": 1
+      },
+      "pln_nusa_daya_apps": {
+        "logsheet_records": 52,
+        "logsheet_details": 52,
+        "notifications": 1
+      }
+    }
+  },
+  {
+    "id": "SYNC-1792849593",
+    "timestamp": "2026-10-24 20:46:33",
+    "sync_type": "SYNC_ALL",
+    "status": "PARTIAL",
+    "details": "Sinkronisasi ALL selesai dalam 0.15 detik. Total 1 data diproses.",
+    "items_synced": {
+      "pln_har": {
+        "units": 0,
+        "machines": 0,
+        "har_tickets": 0,
+        "amc_reports": 0,
+        "notifications": 0
+      },
+      "pln_nusa_daya_apps": {
+        "logsheet_records": 1,
+        "logsheet_details": 0,
+        "notifications": 0
+      }
+    }
+  }
+]

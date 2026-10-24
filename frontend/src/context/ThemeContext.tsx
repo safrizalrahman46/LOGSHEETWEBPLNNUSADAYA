@@ -15,29 +15,31 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [theme, setThemeState] = useState<ThemeMode>("light");
+  const [theme] = useState<ThemeMode>("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem("pln_theme");
-    const initial: ThemeMode = saved === "dark" ? "dark" : "light";
-    setThemeState(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
+    try {
+      localStorage.removeItem("pln_theme");
+      document.documentElement.classList.remove("dark");
+    } catch (_) {}
   }, []);
 
-  const setTheme = (mode: ThemeMode) => {
-    setThemeState(mode);
+  const setTheme = () => {
     try {
-      localStorage.setItem("pln_theme", mode);
+      localStorage.removeItem("pln_theme");
+      document.documentElement.classList.remove("dark");
     } catch (_) {}
-    document.documentElement.classList.toggle("dark", mode === "dark");
   };
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    try {
+      localStorage.removeItem("pln_theme");
+      document.documentElement.classList.remove("dark");
+    } catch (_) {}
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme: "light", toggleTheme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
