@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -131,24 +132,27 @@ func (c *WACBClient) GetUnits(token, kdRegion string, kdArea *string) (*models.W
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil || resp.StatusCode != http.StatusOK {
-		// Fallback mock units Kalimantan 3
-		areaVal := "40"
+		// Fallback all 30 units Kalimantan 3
+		var list []models.WACBUnitItem
+		for kd, meta := range allUnitsMap {
+			list = append(list, models.WACBUnitItem{
+				KdUnit:   kd,
+				NamaUnit: meta.NamaUnit,
+				KdRegion: "05",
+				KdArea:   meta.KdArea,
+				NamaArea: meta.NamaArea,
+			})
+		}
+		sort.Slice(list, func(i, j int) bool {
+			return list[i].KdUnit < list[j].KdUnit
+		})
 		return &models.WACBFormatResponse{
 			Message: "Daftar unit logsheet PLTD",
 			Filters: models.WACBFilters{
 				KdRegion: "05",
-				KdArea:   &areaVal,
+				KdArea:   nil,
 			},
-			Units: []models.WACBUnitItem{
-				{KdUnit: "0264", NamaUnit: "ULD BATU AMPAR", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
-				{KdUnit: "0265", NamaUnit: "ULD BIDUK-BIDUK", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
-				{KdUnit: "0279", NamaUnit: "ULD LONG SEGAR", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
-				{KdUnit: "0281", NamaUnit: "ULD KELAY", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
-				{KdUnit: "0283", NamaUnit: "ULD MUARA PAHU", KdRegion: "05", KdArea: "40", NamaArea: "SITE BONTANG"},
-				{KdUnit: "0288", NamaUnit: "ULD MARATUA", KdRegion: "05", KdArea: "67", NamaArea: "SITE BERAU"},
-				{KdUnit: "0935", NamaUnit: "PLTD TAU LUMBIS", KdRegion: "05", KdArea: "55", NamaArea: "SITE NUNUKAN"},
-				{KdUnit: "0912", NamaUnit: "PLTD KRAYAN", KdRegion: "05", KdArea: "55", NamaArea: "SITE NUNUKAN"},
-			},
+			Units: list,
 		}, nil
 	}
 	defer resp.Body.Close()
@@ -321,6 +325,43 @@ func (c *WACBClient) GetDetail(token, idBebanUld, kdUnit, tanggal, jam string) (
 	return &detailResp, nil
 }
 
+var allUnitsMap = map[string]struct {
+	NamaUnit string
+	KdArea   string
+	NamaArea string
+}{
+	"0264": {"ULD BATU AMPAR", "40", "SITE BONTANG"},
+	"0265": {"ULD BIDUK-BIDUK", "67", "SITE BERAU"},
+	"0266": {"ULD DATAH BILANG", "18", "AREA SAMARINDA"},
+	"0271": {"ULD KAYAN HULU", "67", "SITE BERAU"},
+	"0272": {"ULD KELAY", "67", "SITE BERAU"},
+	"0274": {"ULD KRAYAN", "65", "AREA KALTARA"},
+	"0275": {"ULD LONG APARI", "18", "AREA SAMARINDA"},
+	"0276": {"ULD LONG LAYU", "65", "AREA KALTARA"},
+	"0277": {"ULD LONG PAHANGAI", "18", "AREA SAMARINDA"},
+	"0278": {"ULD LONG PESO", "65", "AREA KALTARA"},
+	"0279": {"ULD LONG SEGAR", "40", "SITE BONTANG"},
+	"0280": {"ULD LUMBIS OGONG", "67", "SITE BERAU"},
+	"0281": {"ULD MARATUA", "67", "SITE BERAU"},
+	"0282": {"ULD MERASA", "67", "SITE BERAU"},
+	"0283": {"ULD MUARA PAHU", "18", "AREA SAMARINDA"},
+	"0284": {"ULD MUARA PANTUAN", "18", "AREA SAMARINDA"},
+	"0285": {"ULD MUARA SIRAN", "18", "AREA SAMARINDA"},
+	"0286": {"ULD DERAWAN", "67", "SITE BERAU"},
+	"0287": {"ULD PA UPAN", "65", "AREA KALTARA"},
+	"0288": {"ULD PENYINGGAHAN", "18", "AREA SAMARINDA"},
+	"0289": {"ULD SEDULANG", "18", "AREA SAMARINDA"},
+	"0290": {"ULD SEI MENGGARIS", "65", "AREA KALTARA"},
+	"0292": {"ULD SENYIUR", "40", "SITE BONTANG"},
+	"0293": {"ULD TABANG", "18", "AREA SAMARINDA"},
+	"0294": {"ULD TANAH MERAH", "65", "AREA KALTARA"},
+	"0296": {"ULD LABANG", "67", "SITE BERAU"},
+	"0297": {"ULD MUARA PANTUN", "40", "SITE BONTANG"},
+	"0934": {"ULD SANDARAN", "17", "AREA BERAU & TARAKAN"},
+	"0935": {"PLTD TAU LUMBIS", "16", "AREA BALIKPAPAN"},
+	"1168": {"PLTD SUNGAI BOH", "67", "SITE BERAU"},
+}
+
 // Fallbacks
 func lookupUnitInfo(kdUnit string) (string, string, string, []models.WACBMachineItem) {
 	switch kdUnit {
@@ -342,15 +383,15 @@ func lookupUnitInfo(kdUnit string) (string, string, string, []models.WACBMachine
 			{Nomor: 2, NamaMesin: "PLTD LONG SEGAR #02 (PERKINS 4006TAG)", IdMesin: "000422", KodeMesinSilm: "22555140302792", Sn: "PRK-4006-02", Dt: 600, KdJenisBahanBakar: "B35"},
 		}
 	case "0281":
+		return "ULD MARATUA", "67", "SITE BERAU", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: "PLTD MARATUA #01 (MITSUBISHI S16R-PTA)", IdMesin: "000441", KodeMesinSilm: "22555140302881", Sn: "MIT-1601", Dt: 1400, KdJenisBahanBakar: "B35"},
+		}
+	case "0272":
 		return "ULD KELAY", "67", "SITE BERAU", []models.WACBMachineItem{
 			{Nomor: 1, NamaMesin: "PLTD KELAY #01 (CUMMINS KTA50-G3)", IdMesin: "000431", KodeMesinSilm: "22555140302811", Sn: "CUM-5001", Dt: 1000, KdJenisBahanBakar: "B35"},
 			{Nomor: 2, NamaMesin: "PLTD KELAY #02 (CUMMINS KTA38-G2)", IdMesin: "000432", KodeMesinSilm: "22555140302812", Sn: "CUM-3802", Dt: 800, KdJenisBahanBakar: "B35"},
 		}
-	case "0288":
-		return "ULD MARATUA", "67", "SITE BERAU", []models.WACBMachineItem{
-			{Nomor: 1, NamaMesin: "PLTD MARATUA #01 (MITSUBISHI S16R-PTA)", IdMesin: "000441", KodeMesinSilm: "22555140302881", Sn: "MIT-1601", Dt: 1400, KdJenisBahanBakar: "B35"},
-		}
-	default: // 0264 ULD BATU AMPAR
+	case "0264":
 		return "ULD BATU AMPAR", "40", "SITE BONTANG", []models.WACBMachineItem{
 			{Nomor: 1, NamaMesin: "PLTD BATU AMPAR #01 (DEUTZ BF6M 1013 E) s/n 134354", IdMesin: "000344", KodeMesinSilm: "22555140302001", Sn: "134354", Dt: 100, KdJenisBahanBakar: "B35"},
 			{Nomor: 2, NamaMesin: "PLTD BATU AMPAR #02 (DEUTZ BF6M 1013 E) s/n 64060", IdMesin: "000345", KodeMesinSilm: "22555140302002", Sn: "64060", Dt: 100, KdJenisBahanBakar: "B35"},
@@ -358,6 +399,19 @@ func lookupUnitInfo(kdUnit string) (string, string, string, []models.WACBMachine
 			{Nomor: 4, NamaMesin: "PLTD BATU AMPAR #05 (MAN D 2866 LE) s/n 39093750534101", IdMesin: "000348", KodeMesinSilm: "22555140302007", Sn: "39093750534101", Dt: 200, KdJenisBahanBakar: "B35"},
 			{Nomor: 5, NamaMesin: "PLTD BATU AMPAR #06 (MAN) EX PLTD KAUBUN #04", IdMesin: "000383", KodeMesinSilm: "22555140102002", Sn: "39400470874201", Dt: 200, KdJenisBahanBakar: "B35"},
 			{Nomor: 6, NamaMesin: "PLTD BATU AMPAR #07 (CUMMINS KTA50-G3)", IdMesin: "000390", KodeMesinSilm: "22555140102003", Sn: "45291032", Dt: 250, KdJenisBahanBakar: "B35"},
+		}
+	default:
+		if meta, ok := allUnitsMap[kdUnit]; ok {
+			return meta.NamaUnit, meta.KdArea, meta.NamaArea, []models.WACBMachineItem{
+				{Nomor: 1, NamaMesin: fmt.Sprintf("%s #01 (CATERPILLAR 3512B)", meta.NamaUnit), IdMesin: fmt.Sprintf("%s01", kdUnit), KodeMesinSilm: fmt.Sprintf("225551403%s1", kdUnit), Sn: fmt.Sprintf("CAT-%s-01", kdUnit), Dt: 1000, KdJenisBahanBakar: "B35"},
+				{Nomor: 2, NamaMesin: fmt.Sprintf("%s #02 (DEUTZ TBD 620 V12)", meta.NamaUnit), IdMesin: fmt.Sprintf("%s02", kdUnit), KodeMesinSilm: fmt.Sprintf("225551403%s2", kdUnit), Sn: fmt.Sprintf("DEU-%s-02", kdUnit), Dt: 800, KdJenisBahanBakar: "B35"},
+			}
+		}
+		// Dynamic fallback untuk unit baru yang belum ada di master map statis (tidak hardcode Batu Ampar)
+		customUnitName := fmt.Sprintf("PLTD %s", kdUnit)
+		return customUnitName, "40", "SITE BONTANG", []models.WACBMachineItem{
+			{Nomor: 1, NamaMesin: fmt.Sprintf("%s #01 (CATERPILLAR 3512B)", customUnitName), IdMesin: fmt.Sprintf("%s01", kdUnit), KodeMesinSilm: fmt.Sprintf("225551403%s1", kdUnit), Sn: fmt.Sprintf("CAT-%s-01", kdUnit), Dt: 1000, KdJenisBahanBakar: "B35"},
+			{Nomor: 2, NamaMesin: fmt.Sprintf("%s #02 (DEUTZ TBD 620)", customUnitName), IdMesin: fmt.Sprintf("%s02", kdUnit), KodeMesinSilm: fmt.Sprintf("225551403%s2", kdUnit), Sn: fmt.Sprintf("DEU-%s-02", kdUnit), Dt: 800, KdJenisBahanBakar: "B35"},
 		}
 	}
 }

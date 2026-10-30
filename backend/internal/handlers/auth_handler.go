@@ -47,6 +47,9 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		})
 	}
 
+	req.Username = strings.TrimSpace(req.Username)
+	req.Password = strings.TrimSpace(req.Password)
+
 	if req.Username == "" || req.Password == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
@@ -54,9 +57,9 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	// 1. Check local PostgreSQL database first
+	// 1. Check local PostgreSQL database first (Case-insensitive comparison)
 	var localUser models.User
-	err := h.db.Where("username = ?", req.Username).First(&localUser).Error
+	err := h.db.Where("LOWER(TRIM(username)) = LOWER(TRIM(?))", req.Username).First(&localUser).Error
 	if err == nil {
 		// Verify bcrypt password
 		if bcrypt.CompareHashAndPassword([]byte(localUser.Password), []byte(req.Password)) == nil {
@@ -100,7 +103,7 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 
 		// Find or create local shadow user
 		var shadowUser models.User
-		if err := h.db.Where("username = ?", req.Username).First(&shadowUser).Error; err != nil {
+		if err := h.db.Where("LOWER(TRIM(username)) = LOWER(TRIM(?))", req.Username).First(&shadowUser).Error; err != nil {
 			hashed, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 			shadowUser = models.User{
 				ID:       "U-" + strings.ToUpper(req.Username),
@@ -201,6 +204,50 @@ type CreateUserRequest struct {
 	NamaUnit string `json:"nama_unit"`
 }
 
+// ensureUnitAndMachinesExists memastikan unit dan mesin default terdaftar di DB
+func ensureUnitAndMachinesExists(db *gorm.DB, kdUnit, namaUnit string) {
+	kdUnit = strings.TrimSpace(kdUnit)
+	namaUnit = strings.TrimSpace(namaUnit)
+	if kdUnit == "" {
+		return
+	}
+	if namaUnit == "" {
+		namaUnit = "PLTD " + kdUnit
+	}
+
+	var count int64
+	db.Table("units").Where("id = ?", kdUnit).Count(&count)
+	now := time.Now()
+	if count == 0 {
+		db.Exec(`INSERT INTO units (id, name, location_name, latitude, longitude, radius_meter, status, created_at, updated_at) 
+			VALUES (?, ?, ?, ?, ?, ?, 'active', ?, ?) ON CONFLICT (id) DO NOTHING`,
+			kdUnit, namaUnit, namaUnit, 0.5, 117.0, 250, now, now)
+	}
+
+	var locCount int64
+	db.Table("unit_locations").Where("kd_unit = ?", kdUnit).Count(&locCount)
+	if locCount == 0 {
+		db.Exec(`INSERT INTO unit_locations (kd_unit, nama_unit, latitude, longitude, radius_meter, is_active, created_at, updated_at)
+			VALUES (?, ?, 0.5, 117.0, 250, true, ?, ?) ON CONFLICT (kd_unit) DO NOTHING`,
+			kdUnit, namaUnit, now, now)
+	}
+
+	var machCount int64
+	db.Table("machines").Where("unit_id = ?", kdUnit).Count(&machCount)
+	if machCount == 0 {
+		m1ID := fmt.Sprintf("M-%s-01", kdUnit)
+		m2ID := fmt.Sprintf("M-%s-02", kdUnit)
+		m1Name := fmt.Sprintf("%s #01 (CATERPILLAR 3512B)", namaUnit)
+		m2Name := fmt.Sprintf("%s #02 (DEUTZ TBD 620)", namaUnit)
+		db.Exec(`INSERT INTO machines (id, unit_id, machine_name, brand, machine_type, serial_number, generator_code, capacity, status, created_at, updated_at)
+			VALUES (?, ?, ?, 'Caterpillar', 'Diesel', ?, ?, '1000 kW', 'operasi', ?, ?) ON CONFLICT (id) DO NOTHING`,
+			m1ID, kdUnit, m1Name, fmt.Sprintf("SN-%s-01", kdUnit), fmt.Sprintf("GEN-%s-01", kdUnit), now, now)
+		db.Exec(`INSERT INTO machines (id, unit_id, machine_name, brand, machine_type, serial_number, generator_code, capacity, status, created_at, updated_at)
+			VALUES (?, ?, ?, 'Deutz', 'Diesel', ?, ?, '800 kW', 'operasi', ?, ?) ON CONFLICT (id) DO NOTHING`,
+			m2ID, kdUnit, m2Name, fmt.Sprintf("SN-%s-02", kdUnit), fmt.Sprintf("GEN-%s-02", kdUnit), now, now)
+	}
+}
+
 // CreateUser menambah user baru (Data Master User).
 // POST /api/admin/users
 func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
@@ -225,8 +272,31 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 	}
 
 	var existing models.User
-	if err := h.db.Where("username = ?", req.Username).First(&existing).Error; err == nil {
+	if err := h.db.Where("LOWER(TRIM(username)) = LOWER(TRIM(?))", req.Username).First(&existing).Error; err == nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Username sudah dipakai"})
+	}
+
+	kdUnit := strings.TrimSpace(req.KdUnit)
+	namaUnit := strings.TrimSpace(req.NamaUnit)
+
+	// Jika nama_unit terisi tapi kd_unit kosong, buatkan kode unit otomatis
+	if namaUnit != "" && kdUnit == "" {
+		cleanCode := strings.ToUpper(strings.ReplaceAll(namaUnit, " ", ""))
+		cleanCode = strings.ReplaceAll(cleanCode, "PLTD", "")
+		cleanCode = strings.ReplaceAll(cleanCode, "ULD", "")
+		cleanCode = strings.TrimSpace(cleanCode)
+		if len(cleanCode) > 6 {
+			cleanCode = cleanCode[:6]
+		}
+		if cleanCode == "" {
+			cleanCode = fmt.Sprintf("%d", time.Now().Unix()%10000)
+		}
+		kdUnit = cleanCode
+	}
+
+	// Auto-provision Unit & Mesin jika belum terdaftar
+	if kdUnit != "" {
+		ensureUnitAndMachinesExists(h.db, kdUnit, namaUnit)
 	}
 
 	hashed, _ := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
@@ -238,8 +308,8 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 		Email:    strings.TrimSpace(req.Email),
 		Role:     role,
 		KdRegion: strings.TrimSpace(req.KdRegion),
-		KdUnit:   strings.TrimSpace(req.KdUnit),
-		NamaUnit: strings.TrimSpace(req.NamaUnit),
+		KdUnit:   kdUnit,
+		NamaUnit: namaUnit,
 	}
 	if user.KdRegion == "" {
 		user.KdRegion = "05"
@@ -308,16 +378,29 @@ func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
 		updates["password"] = string(hashed)
 	}
 	if req.KdRegion != "" {
-		updates["kd_region"] = req.KdRegion
+		updates["kd_region"] = strings.TrimSpace(req.KdRegion)
 	}
 	if req.KdUnit != "" {
-		updates["kd_unit"] = req.KdUnit
+		updates["kd_unit"] = strings.TrimSpace(req.KdUnit)
 	}
 	if req.NamaUnit != "" {
-		updates["nama_unit"] = req.NamaUnit
+		updates["nama_unit"] = strings.TrimSpace(req.NamaUnit)
 	}
 	if len(updates) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Tidak ada perubahan"})
+	}
+
+	// Auto-provision Unit & Mesin jika kd_unit/nama_unit diperbarui
+	finalKdUnit := user.KdUnit
+	if req.KdUnit != "" {
+		finalKdUnit = strings.TrimSpace(req.KdUnit)
+	}
+	finalNamaUnit := user.NamaUnit
+	if req.NamaUnit != "" {
+		finalNamaUnit = strings.TrimSpace(req.NamaUnit)
+	}
+	if finalKdUnit != "" {
+		ensureUnitAndMachinesExists(h.db, finalKdUnit, finalNamaUnit)
 	}
 
 	if err := h.db.Model(&models.User{}).Where("id = ?", id).Updates(updates).Error; err != nil {

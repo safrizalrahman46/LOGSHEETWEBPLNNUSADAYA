@@ -68,6 +68,13 @@ export default function HomePage() {
   const [apkCopied, setApkCopied] = useState(false);
   const [activeQrApkId, setActiveQrApkId] = useState<"logsheet" | "har">("logsheet");
   const [copiedApkId, setCopiedApkId] = useState<string>("");
+  const [siteOrigin, setSiteOrigin] = useState<string>("https://upkaltimra.my.id");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSiteOrigin(window.location.origin);
+    }
+  }, []);
 
   useEffect(() => {
     fetch("/api/apk")
@@ -2718,9 +2725,7 @@ export default function HomePage() {
 
               <div className="qr-link-box">
                 <code className="qr-link-code">
-                  {typeof window !== "undefined"
-                    ? window.location.origin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")
-                    : ""}
+                  {siteOrigin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")}
                 </code>
                 <button
                   type="button"
@@ -2751,9 +2756,8 @@ export default function HomePage() {
               <div style={{ padding: 12, background: "#ffffff", borderRadius: 16, border: "1px solid #e2e8f0", boxShadow: "0 6px 18px rgba(0,0,0,0.06)" }}>
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
-                    typeof window !== "undefined"
-                      ? window.location.origin + (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")
-                      : ""
+                    siteOrigin +
+                      (activeQrApkId === "logsheet" ? "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk" : "/downloads/apk/pln-har-mobile-v1.0.0.apk")
                   )}&bgcolor=ffffff&color=${activeQrApkId === "logsheet" ? "004581" : "0f172a"}&qzone=1`}
                   alt={`QR Code ${activeQrApkId === "logsheet" ? "APK Logsheet" : "APK HAR"}`}
                   style={{ width: 160, height: 160, display: "block", borderRadius: 8 }}

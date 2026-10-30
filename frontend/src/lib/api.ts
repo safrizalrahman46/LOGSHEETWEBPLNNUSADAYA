@@ -8,10 +8,10 @@ function resolveApiBase(): string {
   const fromEnv = process.env.NEXT_PUBLIC_API_URL;
   if (fromEnv) return fromEnv;
   if (typeof window !== "undefined") {
-    const { protocol, hostname } = window.location;
+    const { hostname } = window.location;
     const isLocal = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
-    if (!isLocal && protocol === "http:") {
-      return `http://${hostname}:8080/api`;
+    if (!isLocal) {
+      return "/api";
     }
   }
   return "http://127.0.0.1:8080/api";

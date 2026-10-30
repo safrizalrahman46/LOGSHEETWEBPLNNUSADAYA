@@ -7,7 +7,7 @@ import { ExternalLink } from "lucide-react";
 export const AppFooter: React.FC = () => {
   const [apiOnline, setApiOnline] = useState<boolean>(true);
 
-  const healthUrl = "http://127.0.0.1:8080/health";
+  const healthUrl = "/api/health";
 
   useEffect(() => {
     // Health check ping to Go backend (IPv4 127.0.0.1 avoids Windows ::1 CORS conflict)
@@ -77,7 +77,7 @@ export const AppFooter: React.FC = () => {
             📖 Buku Panduan
           </Link>
           <a
-            href="http://127.0.0.1:8080/health"
+            href="/api/health"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] font-semibold text-gray-700 hover:border-brand-300 hover:bg-brand-50/50 dark:border-gray-800 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-brand-700"
@@ -87,7 +87,7 @@ export const AppFooter: React.FC = () => {
                 apiOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
               }`}
             />
-            <span>Backend Go :8080</span>
+            <span>Backend Go API</span>
             <ExternalLink className="h-3 w-3 text-gray-400" />
           </a>
         </div>

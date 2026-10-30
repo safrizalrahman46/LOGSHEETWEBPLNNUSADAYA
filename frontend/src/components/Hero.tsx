@@ -20,7 +20,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         style={{
           transform: "translate3d(0, 0, 0)",
           WebkitTransform: "translate3d(0, 0, 0)",

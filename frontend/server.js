@@ -20,11 +20,13 @@ process.on("unhandledRejection", (reason) => {
 });
 
 process.on("SIGINT", () => {
-  console.log("[SERVER] Received SIGINT, ignoring for persistence");
+  console.log("[SERVER] Received SIGINT, shutting down");
+  process.exit(0);
 });
 
 process.on("SIGTERM", () => {
-  console.log("[SERVER] Received SIGTERM, ignoring for persistence");
+  console.log("[SERVER] Received SIGTERM, shutting down");
+  process.exit(0);
 });
 
 if (process.platform === "win32") {

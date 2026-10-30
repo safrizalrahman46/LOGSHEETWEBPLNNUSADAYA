@@ -112,7 +112,7 @@ export const AppSidebar: React.FC = () => {
           href: "/pilih-unit",
           icon: Building2,
           roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
-          badge: "6 Unit",
+          badge: "Semua Unit",
           badgeColor: "bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
         },
       ],
@@ -306,7 +306,14 @@ export const AppSidebar: React.FC = () => {
       <div className="flex h-18 items-center px-4 sm:px-5 border-b border-gray-200 dark:border-gray-800 justify-between">
         <Link href="/" className="flex items-center gap-3 min-w-0">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 border border-gray-100 dark:border-gray-800 dark:bg-gray-800 shadow-theme-xs">
-            <img src="/images/logo/LOGO-PLN.png" alt="PLN Logo" className="h-8 w-auto object-contain" />
+            <img
+              src="/images/logo/LOGO-PLN.png"
+              alt="PLN Logo"
+              width={32}
+              height={32}
+              className="h-8 w-auto object-contain"
+              style={{ width: 32, height: 32, objectFit: "contain" }}
+            />
           </div>
           {isWide && (
             <div className="overflow-hidden">

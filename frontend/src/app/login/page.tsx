@@ -66,16 +66,20 @@ export default function LoginPage() {
       if (res.data?.success && res.data.token) {
         localStorage.setItem("pln_token", res.data.token);
         localStorage.setItem("pln_user", JSON.stringify(res.data.user));
-        if (res.data.user.kd_unit) {
-          localStorage.setItem(
-            "pln_selected_unit",
-            JSON.stringify({
-              kd_unit: res.data.user.kd_unit,
-              nama_unit: res.data.user.nama_unit || "ULD BATU AMPAR",
-            })
-          );
+        const kdUnit = res.data.user.kd_unit || "";
+        const namaUnit = res.data.user.nama_unit || (kdUnit ? `PLTD ${kdUnit}` : "ULD BATU AMPAR");
+        localStorage.setItem(
+          "pln_selected_unit",
+          JSON.stringify({
+            kd_unit: kdUnit || "0264",
+            nama_unit: namaUnit,
+          })
+        );
+        if (res.data.user.role === "OPERATOR") {
+          router.push("/logsheet/input");
+        } else {
+          router.push("/dashboard");
         }
-        router.push("/dashboard");
       } else {
         setErrorMsg(res.data?.message || "Login gagal, silakan periksa username & password.");
       }
@@ -190,6 +194,9 @@ export default function LoginPage() {
                   <input
                     type="text"
                     autoComplete="username"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                     placeholder="Masukkan username"
                     value={username}
                     onChange={(e) => {

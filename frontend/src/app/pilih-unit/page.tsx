@@ -45,7 +45,17 @@ export default function PilihUnitPage() {
         nama_area: unit.nama_area,
       })
     );
-    router.push("/dashboard");
+    let isOperator = false;
+    try {
+      const u = JSON.parse(localStorage.getItem("pln_user") || "{}");
+      if (u.role === "OPERATOR") isOperator = true;
+    } catch {}
+
+    if (isOperator) {
+      router.push("/logsheet/input");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   const areas = Array.from(new Set(units.map((u) => u.nama_area).filter(Boolean)));

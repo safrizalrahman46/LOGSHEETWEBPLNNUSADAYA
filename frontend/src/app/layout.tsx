@@ -44,7 +44,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-white text-gray-900 antialiased min-h-screen">
+      <body className="bg-white text-gray-900 antialiased min-h-screen" suppressHydrationWarning>
         <Providers>
           {children}
         </Providers>

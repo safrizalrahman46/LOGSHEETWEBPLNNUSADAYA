@@ -110,7 +110,7 @@ export const AppHeader: React.FC = () => {
           {/* Clock Display */}
           <div className="hidden lg:flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
             <Calendar className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
-            <span>{currentTime}</span>
+            <span suppressHydrationWarning>{currentTime}</span>
           </div>
 
           {/* Network Status Badge */}

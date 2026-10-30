@@ -65,6 +65,10 @@ export default function LogsheetRiwayatPage() {
       );
       if (res.data?.history) {
         setHistory(res.data.history);
+      } else if ((res.data as any)?.data) {
+        setHistory((res.data as any).data);
+      } else {
+        setHistory([]);
       }
     } catch (err) {
       console.error("Gagal memuat riwayat logsheet:", err);
