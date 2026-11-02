@@ -57,6 +57,7 @@ type WACBMachineItem struct {
 	Sn                string `json:"sn"`
 	Dt                int    `json:"dt"`
 	KdJenisBahanBakar string `json:"kd_jenis_bahan_bakar"`
+	StatusMesin       string `json:"status_mesin,omitempty"`
 }
 
 // WACB Submit Logsheet

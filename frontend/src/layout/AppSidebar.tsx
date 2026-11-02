@@ -280,6 +280,83 @@ export const AppSidebar: React.FC = () => {
     },
   ];
 
+  // Khusus role OPERATOR: Tampilan menu super simpel & efisien agar operator tidak bingung
+  const operatorNavGroups: { groupTitle: string; items: NavItem[] }[] = [
+    {
+      groupTitle: "OPERASIONAL LOGSHEET",
+      items: [
+        {
+          title: "Input Logsheet",
+          href: "/logsheet/input",
+          icon: FileSpreadsheet,
+          roles: ["OPERATOR"],
+          badge: "Input Sekarang",
+          badgeColor: "bg-emerald-500 text-white font-extrabold animate-pulse",
+        },
+        {
+          title: "Riwayat Logsheet",
+          href: "/logsheet/riwayat",
+          icon: FileText,
+          roles: ["OPERATOR"],
+          badge: "Laporan Saya",
+          badgeColor: "bg-brand-50 text-brand-600 dark:bg-brand-500/20 dark:text-brand-400",
+        },
+        {
+          title: "Dashboard Unit",
+          href: "/dashboard",
+          icon: LayoutDashboard,
+          roles: ["OPERATOR"],
+        },
+        {
+          title: "Ganti Unit PLTD",
+          href: "/pilih-unit",
+          icon: Building2,
+          roles: ["OPERATOR"],
+          badge: "Pilih Unit",
+          badgeColor: "bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
+        },
+      ],
+    },
+    {
+      groupTitle: "PRESENSI & PANDUAN",
+      items: [
+        {
+          title: "Presensi GPS",
+          href: "/presensi",
+          icon: MapPin,
+          roles: ["OPERATOR"],
+          badge: "Absen",
+          badgeColor: "bg-blue-50 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400",
+        },
+        {
+          title: "Riwayat Presensi",
+          href: "/presensi/riwayat",
+          icon: UserCheck,
+          roles: ["OPERATOR"],
+        },
+        {
+          title: "Panduan Pengisian",
+          href: "/manual-book",
+          icon: BookOpen,
+          roles: ["OPERATOR"],
+        },
+      ],
+    },
+    {
+      groupTitle: "AKUN",
+      items: [
+        {
+          title: "Profil Saya",
+          href: "/profil",
+          icon: UserRound,
+          roles: ["OPERATOR"],
+        },
+      ],
+    },
+  ];
+
+  const currentNavGroups = user?.role === "OPERATOR" ? operatorNavGroups : navGroups;
+
   const roleBadgeColors: Record<string, string> = {
     SUPERADMIN: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-800",
     ADMIN: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800",
@@ -348,27 +425,29 @@ export const AppSidebar: React.FC = () => {
 
       {/* Navigation Groups */}
       <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-5 space-y-6">
-        {navGroups.map((group, gIdx) => (
-          <div key={gIdx} className="space-y-1.5">
-            {isWide && (
-              <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-                {group.groupTitle}
-              </h3>
-            )}
-            <ul className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href;
-                const isGuest = !user || user.role === "GUEST";
-                const isRoleAllowed =
-                  user?.role === "SUPERADMIN" || (user && item.roles.includes(user.role));
+        {currentNavGroups.map((group, gIdx) => {
+          const visibleItems = group.items.filter((item) => {
+            const isGuest = !user || user.role === "GUEST";
+            const isRoleAllowed =
+              user?.role === "SUPERADMIN" || (user && item.roles.includes(user.role));
+            return isGuest || isRoleAllowed;
+          });
 
-                // Jika user sudah login dengan role resmi tapi tidak punya hak akses ke modul ini -> sembunyikan
-                if (!isGuest && !isRoleAllowed) return null;
+          if (visibleItems.length === 0) return null;
 
-                // Modul terkunci khusus untuk pengunjung / guest yang belum login
-                const isLockedForGuest = isGuest && !item.roles.includes("GUEST");
-
-                const Icon = item.icon;
+          return (
+            <div key={gIdx} className="space-y-1.5">
+              {isWide && (
+                <h3 className="px-3 text-[11px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                  {group.groupTitle}
+                </h3>
+              )}
+              <ul className="space-y-1">
+                {visibleItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  const isGuest = !user || user.role === "GUEST";
+                  const isLockedForGuest = isGuest && !item.roles.includes("GUEST");
+                  const Icon = item.icon;
 
                 return (
                   <li key={item.href}>
@@ -428,7 +507,8 @@ export const AppSidebar: React.FC = () => {
               })}
             </ul>
           </div>
-        ))}
+        );
+      })}
       </div>
 
       {/* User Card Widget & Login/Logout */}

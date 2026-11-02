@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -87,6 +88,23 @@ func main() {
 
 	// Public Routes (No Auth Required)
 	api.Post("/auth/login", authHandler.Login)
+	api.Post("/login", authHandler.Login)
+	api.Post("/logout", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{"success": true, "message": "Logout berhasil"})
+	})
+
+	// Mobile format logsheet & unit lookup (Publicly accessible / cached fallback)
+	formatLogsheetHandler := func(c *fiber.Ctx) error {
+		kdUnit := strings.TrimSpace(c.Query("kd_unit"))
+		if kdUnit == "" {
+			return logsheetHandler.GetUnits(c)
+		}
+		return logsheetHandler.GetUnitFormat(c)
+	}
+	api.Get("/v1/format-logsheet-pltd", formatLogsheetHandler)
+	api.Get("/wacb/format-logsheet-pltd", formatLogsheetHandler)
+	api.Post("/v1/logsheet-pltd", logsheetHandler.SubmitRawMessage)
+
 	api.Get("/public/guest/summary", guestHandler.GetPublicSummary)
 	api.Get("/public/corporate-stats", publicContentHandler.GetCorporateStats)
 	api.Get("/public/article-categories", publicContentHandler.GetArticleCategories)
@@ -109,18 +127,30 @@ func main() {
 	// Protected Routes (with JWT Auth)
 	protected := api.Group("/", middleware.JWTAuth(cfg))
 
-	// User Profile & Management
+	// User Profile & Management (Web & Mobile Interconnection)
 	protected.Get("/auth/me", authHandler.Me)
+	protected.Get("/me", authHandler.Me)
 	protected.Put("/auth/profile", authHandler.UpdateProfile)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
 	protected.Post("/auth/avatar", authHandler.UploadAvatar)
 	protected.Post("/upload/image", uploadHandler.UploadImage)
+	
+	userManagers := middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin, models.RoleSupervisor)
 	adminOnly := middleware.RequireRoles(models.RoleSuperadmin, models.RoleAdmin)
-	protected.Get("/admin/users", adminOnly, authHandler.GetUsers)
-	protected.Post("/admin/users", adminOnly, authHandler.CreateUser)
-	protected.Put("/admin/users/:id", adminOnly, authHandler.UpdateUser)
-	protected.Delete("/admin/users/:id", adminOnly, authHandler.DeleteUser)
+
+	protected.Get("/admin/users", userManagers, authHandler.GetUsers)
+	protected.Post("/admin/users", userManagers, authHandler.CreateUser)
+	protected.Put("/admin/users/:id", userManagers, authHandler.UpdateUser)
+	protected.Delete("/admin/users/:id", userManagers, authHandler.DeleteUser)
+	protected.Put("/admin/users/:id/reset-password", userManagers, authHandler.ResetPassword)
 	protected.Get("/admin/roles", adminOnly, authHandler.GetRoles)
+
+	// Direct Mobile API aliases for User Management
+	protected.Get("/users", userManagers, authHandler.GetUsers)
+	protected.Post("/users", userManagers, authHandler.CreateUser)
+	protected.Put("/users/:id", userManagers, authHandler.UpdateUser)
+	protected.Delete("/users/:id", userManagers, authHandler.DeleteUser)
+	protected.Put("/users/:id/reset-password", userManagers, authHandler.ResetPassword)
 
 	// Notifications
 	protected.Get("/notifications", notificationHandler.List)

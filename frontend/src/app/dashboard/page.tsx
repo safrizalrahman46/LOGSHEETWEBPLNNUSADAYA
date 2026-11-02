@@ -115,6 +115,7 @@ export default function DashboardPage() {
     nama_unit: "ULD BATU AMPAR",
   });
   const [downloading, setDownloading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ name?: string; role?: string; username?: string } | null>(null);
 
   const [stats, setStats] = useState<StatsData | null>(null);
   const [statsState, setStatsState] = useState<"loading" | "ok" | "error" | "guest">(
@@ -133,6 +134,12 @@ export default function DashboardPage() {
       } catch {
         // default
       }
+    }
+    const userStr = localStorage.getItem("pln_user");
+    if (userStr) {
+      try {
+        setCurrentUser(JSON.parse(userStr));
+      } catch {}
     }
   }, []);
 
@@ -508,7 +515,59 @@ export default function DashboardPage() {
         moduleName="Dashboard Utama Operasional"
       >
         <div className="space-y-6">
-        {/* Supervisor Command Banner: Tinggal Lihat Doang */}
+        {/* Banner Khusus Operator: Pintasan Pengisian Logsheet & Status Shift */}
+        {currentUser?.role === "OPERATOR" ? (
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-900 via-teal-800 to-slate-900 p-5 text-white shadow-theme-md sm:p-6">
+            <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-400/20 via-transparent to-transparent pointer-events-none" />
+            
+            <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-400/20 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-400/30">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Mode Operator • Siaga Pengisian Logsheet
+                  </span>
+                  <span className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/90">
+                    Unit Bertugas: {activeUnit.nama_unit} ({activeUnit.kd_unit})
+                  </span>
+                </div>
+                <h1 className="mt-2 text-xl font-black text-white sm:text-2xl">
+                  Selamat Bertugas, {currentUser.name || "Operator PLTD"}!
+                </h1>
+                <p className="mt-1 text-xs text-white/80 max-w-2xl leading-relaxed">
+                  Lakukan pencatatan logsheet mesin per 30 menit secara berkala. Klik tombol hijau di bawah untuk langsung membuka formulir pengisian logsheet unit Anda.
+                </p>
+              </div>
+
+              {/* Operator Primary Shortcuts */}
+              <div className="flex flex-wrap items-center gap-2.5 lg:shrink-0">
+                <Link
+                  href="/logsheet/input"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:bg-emerald-300 active:scale-95 animate-pulse"
+                >
+                  <Plus className="h-4 w-4 stroke-[3]" />
+                  <span>+ Input Logsheet Sekarang</span>
+                </Link>
+
+                <Link
+                  href="/logsheet/riwayat"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-xs font-bold text-white ring-1 ring-white/30 transition-all hover:bg-white/30"
+                >
+                  <FileText className="h-4 w-4" />
+                  <span>Riwayat Laporan Saya</span>
+                </Link>
+
+                <Link
+                  href="/pilih-unit"
+                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-semibold text-white/80 ring-1 ring-white/20 transition-all hover:bg-white/20"
+                >
+                  <span>Ganti Unit PLTD</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : (
+        /* Supervisor Command Banner: Tinggal Lihat Doang */
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-[#004581] to-slate-900 p-5 text-white shadow-theme-md sm:p-6">
           <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-400/20 via-transparent to-transparent pointer-events-none" />
           
@@ -527,7 +586,7 @@ export default function DashboardPage() {
                 Command Center Operasional & Keandalan Pembangkit
               </h1>
               <p className="mt-1 text-xs text-white/80 max-w-2xl">
-                Panel pengawasan menyeluruh tanpa perlu entri manual. Pantau status kesiapan 10 mesin, kurva pembebanan 24 jam, dan persetujuan 1-klik.
+                Panel pengawasan menyeluruh tanpa perlu entri manual. Pantau status kesiapan mesin, kurva pembebanan 24 jam, dan persetujuan 1-klik.
               </p>
             </div>
 
@@ -620,6 +679,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Floating Toast Notification */}
         {toastMessage && (

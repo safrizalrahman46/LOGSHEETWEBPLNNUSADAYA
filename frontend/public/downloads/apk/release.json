@@ -7,7 +7,7 @@
   "fileName": "pln-logsheet-mobile-v1.0.0.apk",
   "fileSize": "64.3 MB",
   "fileSizeBytes": 67461867,
-  "releaseDate": "19 Oktober 2026",
+  "releaseDate": "2 November 2026",
   "minAndroid": "Android 8.0 (Oreo) atau lebih tinggi",
   "isActive": true,
   "developer": "Tim Developer PT PLN Nusa Daya",
@@ -34,7 +34,7 @@
       "fileName": "pln-logsheet-mobile-v1.0.0.apk",
       "fileUrl": "/downloads/apk/pln-logsheet-mobile-v1.0.0.apk",
       "minAndroid": "Android 8.0 (Oreo)+",
-      "releaseDate": "19 Oktober 2026",
+      "releaseDate": "2 November 2026",
       "features": [
         "Pencatatan Logsheet Mesin 48-Slot (Beban kW, Tegangan, Suhu, Hz)",
         "Presensi GPS Geofence radius 250m lokasi unit PLTD",
@@ -57,7 +57,7 @@
       "fileName": "pln-har-mobile-v1.0.0.apk",
       "fileUrl": "/downloads/apk/pln-har-mobile-v1.0.0.apk",
       "minAndroid": "Android 8.0 (Oreo)+",
-      "releaseDate": "19 Oktober 2026",
+      "releaseDate": "2 November 2026",
       "features": [
         "Pelaporan & Monitoring Tiket Gangguan Pembangkit Real-Time",
         "Manajemen Work Order (WO) Pemeliharaan Mesin & Trafo",

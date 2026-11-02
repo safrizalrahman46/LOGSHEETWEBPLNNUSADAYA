@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"math"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -137,19 +139,40 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 		MachineName   string `gorm:"column:machine_name"`
 		SerialNumber  string `gorm:"column:serial_number"`
 		GeneratorCode string `gorm:"column:generator_code"`
+		Capacity      string `gorm:"column:capacity"`
+		Status        string `gorm:"column:status"`
 	}
 	var dbMachines []DBMachineInfo
 	if err := h.db.Table("machines").Where("unit_id = ?", kdUnit).Order("id ASC").Find(&dbMachines).Error; err == nil && len(dbMachines) > 0 {
 		var wacbMachines []models.WACBMachineItem
 		for idx, m := range dbMachines {
+			dtVal := 1000
+			cleanCap := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(m.Capacity), "kw", ""))
+			if val, err := strconv.Atoi(cleanCap); err == nil && val > 0 {
+				dtVal = val
+			} else if fval, ferr := strconv.ParseFloat(cleanCap, 64); ferr == nil && fval > 0 {
+				dtVal = int(math.Round(fval))
+			}
+
+			initialStatus := "OPERASI"
+			switch strings.ToLower(m.Status) {
+			case "standby":
+				initialStatus = "STANDBY"
+			case "gangguan-rusak", "rusak", "gangguan":
+				initialStatus = "GANGGUAN"
+			default:
+				initialStatus = "OPERASI"
+			}
+
 			wacbMachines = append(wacbMachines, models.WACBMachineItem{
 				Nomor:             idx + 1,
 				NamaMesin:         m.MachineName,
 				IdMesin:           m.ID,
 				KodeMesinSilm:     m.GeneratorCode,
 				Sn:                m.SerialNumber,
-				Dt:                1000,
+				Dt:                dtVal,
 				KdJenisBahanBakar: "B35",
+				StatusMesin:       initialStatus,
 			})
 		}
 		if resp.Format != nil {
@@ -419,5 +442,113 @@ func (h *LogsheetHandler) GetHistory(c *fiber.Ctx) error {
 		"data":    records,
 		"history": records,
 		"total":   len(records),
+	})
+}
+
+type RawSubmitRequest struct {
+	MessageText string `json:"message_text"`
+}
+
+// SubmitRawMessage menangani pengiriman logsheet teks mentah dari Flutter Mobile App (POST /v1/logsheet-pltd).
+// Pesan diteruskan ke WACB Client sekaligus dicatat ke PostgreSQL lokal (logsheet_records).
+func (h *LogsheetHandler) SubmitRawMessage(c *fiber.Ctx) error {
+	var req RawSubmitRequest
+	if err := c.BodyParser(&req); err != nil || strings.TrimSpace(req.MessageText) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "message_text wajib diisi",
+		})
+	}
+
+	kdRegion := c.Query("kd_region", "05")
+	token := c.Get("Authorization")
+
+	// 1. Relay ke WACB Server
+	wacbResp, err := h.wacbClient.SubmitLogsheet(token, kdRegion, req.MessageText)
+	wacbIDStr := ""
+	syncStatus := "SYNCED"
+	if err != nil {
+		syncStatus = "PENDING"
+		log.Printf("[LOGSHEET RAW] WACB server error: %v, disimpan lokal ke PostgreSQL", err)
+	} else if wacbResp != nil && wacbResp.Data != nil {
+		wacbIDStr = fmt.Sprintf("%d", wacbResp.Data.ID)
+	}
+
+	// 2. Parse text fields
+	lines := strings.Split(req.MessageText, "\n")
+	unitName := ""
+	kdUnit := ""
+	tanggal := time.Now().Format("2006-01-02")
+	jam := time.Now().Format("15:04")
+	operatorName := "Operator Mobile"
+
+	for idx, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		lower := strings.ToLower(trimmed)
+		if idx == 1 && !strings.Contains(lower, ":") {
+			unitName = trimmed
+		}
+		if strings.HasPrefix(lower, "id unit:") {
+			kdUnit = strings.TrimSpace(strings.TrimPrefix(trimmed, "id unit:"))
+			if kdUnit == "" {
+				kdUnit = strings.TrimSpace(strings.TrimPrefix(trimmed, "ID UNIT:"))
+			}
+		} else if strings.HasPrefix(lower, "tgl :") || strings.HasPrefix(lower, "tgl:") {
+			parts := strings.SplitN(trimmed, ":", 2)
+			if len(parts) == 2 {
+				tanggal = strings.TrimSpace(parts[1])
+			}
+		} else if strings.HasPrefix(lower, "jam :") || strings.HasPrefix(lower, "jam:") {
+			parts := strings.SplitN(trimmed, ":", 2)
+			if len(parts) == 2 {
+				jam = strings.TrimSpace(parts[1])
+			}
+		} else if strings.HasPrefix(lower, "nama operator:") {
+			parts := strings.SplitN(trimmed, ":", 2)
+			if len(parts) == 2 {
+				operatorName = strings.TrimSpace(parts[1])
+			}
+		}
+	}
+
+	if kdUnit == "" {
+		kdUnit = "0264"
+	}
+	if unitName == "" {
+		unitName = "PLTD " + kdUnit
+	}
+
+	now := time.Now()
+	localID := fmt.Sprintf("RAW-%s-%d", kdUnit, now.UnixNano())
+	record := models.LogsheetRecord{
+		LocalID:            localID,
+		KdRegion:           kdRegion,
+		KdUnit:             kdUnit,
+		NamaUnit:           unitName,
+		Tanggal:            tanggal,
+		Jam:                jam,
+		OperatorName:       operatorName,
+		MachineCount:       1,
+		MessageText:        req.MessageText,
+		StatusMesinSummary: "Mobile Logsheet Sync",
+		SyncStatus:         syncStatus,
+		WACBID:             wacbIDStr,
+		CreatedAt:          now,
+		UpdatedAt:          now,
+	}
+	h.db.Create(&record)
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Laporan logsheet berhasil disimpan",
+		"data": fiber.Map{
+			"id":           record.ID,
+			"localId":      localID,
+			"unitId":       kdUnit,
+			"unitName":     unitName,
+			"operatorName": operatorName,
+			"submittedAt":  now.Format(time.RFC3339),
+			"syncStatus":   "synced",
+		},
 	})
 }

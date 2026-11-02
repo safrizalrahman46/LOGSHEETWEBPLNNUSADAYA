@@ -35,6 +35,7 @@ export interface WACBMachineItem {
   sn: string;
   dt: number;
   kd_jenis_bahan_bakar: string;
+  status_mesin?: string;
 }
 
 export interface WACBFormatResponse {

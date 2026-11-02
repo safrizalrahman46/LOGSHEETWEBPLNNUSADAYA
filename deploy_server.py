@@ -78,6 +78,7 @@ def deploy():
     uploaded_files = []
     backend_changed = False
     frontend_changed = False
+    frontend_code_changed = False
 
     print("\n[2/4] Memeriksa perubahan berkas lokal...")
     for d in dirs_to_sync:
@@ -121,6 +122,8 @@ def deploy():
                         backend_changed = True
                     if rel_path.startswith("frontend"):
                         frontend_changed = True
+                    if rel_path.startswith("frontend/src") or rel_path.startswith("frontend/package") or rel_path.startswith("frontend/next.config"):
+                        frontend_code_changed = True
 
     sftp.close()
 
@@ -144,7 +147,7 @@ def deploy():
         print("\n[3/4] Backend Go tidak berubah (skip recompile).")
 
     # Rebuild frontend if necessary
-    if frontend_changed:
+    if frontend_code_changed:
         print("\n[4/4] Mengompilasi ulang Frontend Next.js di VPS & Restart Service...")
         cmd = "cd /var/www/upkaltimra/frontend && NODE_OPTIONS='--max-old-space-size=2048' npx next build && systemctl restart pln-frontend && systemctl is-active pln-frontend"
         _, stdout, stderr = ssh.exec_command(cmd)
@@ -154,6 +157,12 @@ def deploy():
             print("      Frontend Next.js berhasil di-build & restart: [ACTIVE]")
         else:
             print(f"      Frontend build output: {out}\n      Errors: {err}")
+    elif frontend_changed:
+        print("\n[4/4] File publik Frontend diperbarui, merestart service pln-frontend...")
+        cmd = "systemctl restart pln-frontend && systemctl is-active pln-frontend"
+        _, stdout, stderr = ssh.exec_command(cmd)
+        out = stdout.read().decode('utf-8', errors='replace').strip()
+        print(f"      Frontend service: [{out}]")
     else:
         print("\n[4/4] Frontend Next.js tidak berubah (skip rebuild).")
 

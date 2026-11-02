@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Send,
@@ -20,6 +20,8 @@ import {
   Search,
   FileText,
   X,
+  Building2,
+  ChevronDown,
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { RoleGuard } from "@/components/common/RoleGuard";
@@ -34,7 +36,53 @@ import {
   MachineFormEntry,
   BatchLogsheetRequest,
   LogsheetHistoryItem,
+  WACBUnitItem,
 } from "@/types";
+
+// Standard 41 PLTD Units Kalimantan 3 (Sesuai Data Kinerja Real)
+const DEFAULT_PLTD_UNITS: WACBUnitItem[] = [
+  { kd_unit: "0264", nama_unit: "ULD BATU AMPAR", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0265", nama_unit: "ULD BIDUK-BIDUK", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0266", nama_unit: "ULD DATAH BILANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0267", nama_unit: "ULD DILANG PUTI", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0268", nama_unit: "ULD GEMAR BARU", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0269", nama_unit: "ULD JANTUR", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0270", nama_unit: "ULD KARANGAN DALAM", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0271", nama_unit: "ULD KAYAN HULU", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0272", nama_unit: "ULD KELAY", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0273", nama_unit: "ULD KELUMPANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0274", nama_unit: "ULD KRAYAN", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0275", nama_unit: "ULD LONG APARI", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0276", nama_unit: "ULD LONG LAYU", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0277", nama_unit: "ULD LONG PAHANGAI", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0278", nama_unit: "ULD LONG PESO", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0279", nama_unit: "ULD LONG SEGAR", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0280", nama_unit: "ULD LUMBIS OGONG", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0281", nama_unit: "ULD MARATUA", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0282", nama_unit: "ULD MERASA", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0283", nama_unit: "ULD MUARA PAHU", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0284", nama_unit: "ULD MUARA PANTUAN", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0285", nama_unit: "ULD MUARA SIRAN", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0286", nama_unit: "ULD DERAWAN", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0287", nama_unit: "ULD PA UPAN", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0288", nama_unit: "ULD PENYINGGAHAN", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0289", nama_unit: "ULD SEDULANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0290", nama_unit: "ULD SEI MENGGARIS", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0291", nama_unit: "ULD MUARA KEDANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0292", nama_unit: "ULD SENYIUR", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0293", nama_unit: "ULD TABANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0294", nama_unit: "ULD TANAH MERAH", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0295", nama_unit: "ULD PENGANDAN", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0296", nama_unit: "ULD LABANG", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0297", nama_unit: "ULD MUARA PANTUN", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0298", nama_unit: "ULD SEKATAK BUJI", kd_region: "05", kd_area: "40", nama_area: "AREA KALTARA" },
+  { kd_unit: "0299", nama_unit: "ULD SEMAYANG", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0300", nama_unit: "ULD TABISAQ", kd_region: "05", kd_area: "40", nama_area: "AREA SAMARINDA" },
+  { kd_unit: "0301", nama_unit: "ULD TANJUNG BATU", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "0934", nama_unit: "ULD SANDARAN", kd_region: "05", kd_area: "40", nama_area: "SITE BONTANG" },
+  { kd_unit: "0935", nama_unit: "PLTD TAU LUMBIS", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+  { kd_unit: "1168", nama_unit: "PLTD SUNGAI BOH", kd_region: "05", kd_area: "40", nama_area: "SITE BERAU" },
+];
 
 // Kotak foto seperti versi mobile (Absen Petugas / Foto Mesin)
 function PhotoBox({
@@ -54,8 +102,6 @@ function PhotoBox({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Kamera live hanya bisa di localhost/HTTPS; selain itu langsung pakai
-  // kamera bawaan perangkat (input capture) agar tetap bisa dipakai di HP/tablet.
   const canUseLiveCamera =
     typeof navigator !== "undefined" &&
     !!navigator.mediaDevices?.getUserMedia &&
@@ -132,7 +178,7 @@ function PhotoBox({
   );
 }
 
-// Daftar logsheet (default tampilan halaman) — formulir hanya terbuka via tombol Tambah
+// Daftar logsheet (default tampilan halaman)
 const SYNC_STYLES: Record<string, string> = {
   SYNCED: "bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400",
   PENDING: "bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-warning-400",
@@ -487,11 +533,15 @@ function InputLogsheetContent() {
   const searchParams = useSearchParams();
   const { isOnline } = useNetwork();
 
+  // Unit List State (all 30 units available)
+  const [unitsList, setUnitsList] = useState<WACBUnitItem[]>(DEFAULT_PLTD_UNITS);
+
   // Unit State
-  const [activeUnit, setActiveUnit] = useState<{ kd_unit: string; nama_unit: string; kd_area?: string }>({
+  const [activeUnit, setActiveUnit] = useState<{ kd_unit: string; nama_unit: string; kd_area?: string; nama_area?: string }>({
     kd_unit: "0264",
     nama_unit: "ULD BATU AMPAR",
     kd_area: "40",
+    nama_area: "SITE BONTANG",
   });
 
   // Form Header State
@@ -517,7 +567,7 @@ function InputLogsheetContent() {
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
-  // Tampilan halaman: daftar dulu (default) — formulir hanya terbuka via tombol Tambah
+  // Tampilan halaman: form langsung jika dipanggil dengan param add=1 atau dibuka dari operator
   const [view, setView] = useState<"list" | "form">(
     searchParams.get("add") ? "form" : "list"
   );
@@ -541,15 +591,185 @@ function InputLogsheetContent() {
     timeSlots.push(`${hh}:30`);
   }
 
-  useEffect(() => {
-    const savedUnit = localStorage.getItem("pln_selected_unit");
-    let currentUnit = activeUnit;
-    if (savedUnit) {
-      try {
-        currentUnit = JSON.parse(savedUnit);
-        setActiveUnit(currentUnit);
-      } catch {}
+  // Fetch Machines Format for a specific unit
+  const fetchFormatForUnit = useCallback(async (targetUnit: { kd_unit: string; nama_unit: string; kd_area?: string }) => {
+    setLoadingFormat(true);
+    try {
+      const res = await apiClient.get<WACBFormatResponse>("/wacb/format", {
+        params: {
+          kd_region: "05",
+          kd_area: targetUnit.kd_area || "40",
+          kd_unit: targetUnit.kd_unit,
+        },
+      });
+
+      let machinesData = res.data?.format?.mesin;
+      if (!machinesData || machinesData.length === 0) {
+        const uName = targetUnit.nama_unit || "PLTD Unit";
+        machinesData = [
+          {
+            nomor: 1,
+            id_mesin: `${targetUnit.kd_unit}01`,
+            nama_mesin: `${uName} #01 (CATERPILLAR 3512B)`,
+            kode_mesin_silm: `225551403${targetUnit.kd_unit}1`,
+            sn: `CAT-${targetUnit.kd_unit}-01`,
+            dt: 1000,
+            kd_jenis_bahan_bakar: "B35",
+          },
+          {
+            nomor: 2,
+            id_mesin: `${targetUnit.kd_unit}02`,
+            nama_mesin: `${uName} #02 (DEUTZ TBD 620)`,
+            kode_mesin_silm: `225551403${targetUnit.kd_unit}2`,
+            sn: `DEU-${targetUnit.kd_unit}-02`,
+            dt: 800,
+            kd_jenis_bahan_bakar: "B35",
+          },
+        ];
+      }
+
+      const list: MachineFormEntry[] = machinesData.map((m, idx) => {
+        let initialStatus: "OPERASI" | "STANDBY" | "GANGGUAN" = "OPERASI";
+        let initialKet = "Beroperasi Normal";
+        if (m.status_mesin) {
+          const sm = m.status_mesin.toUpperCase();
+          if (sm.includes("STANDBY")) {
+            initialStatus = "STANDBY";
+            initialKet = "Mesin Siaga / Standby";
+          } else if (sm.includes("GANGGUAN") || sm.includes("RUSAK") || sm.includes("PEMELIHARAAN")) {
+            initialStatus = "GANGGUAN";
+            initialKet = "Gangguan / Pemeliharaan";
+          } else {
+            initialStatus = "OPERASI";
+            initialKet = "Beroperasi Normal";
+          }
+        }
+        const isOp = initialStatus === "OPERASI";
+        const cap = m.dt > 0 ? m.dt : 1000;
+        return {
+          nomor: m.nomor || idx + 1,
+          id_mesin: m.id_mesin || `${targetUnit.kd_unit}0${idx + 1}`,
+          nama_mesin: m.nama_mesin,
+          kode_mesin_silm: m.kode_mesin_silm || "",
+          sn: m.sn || "",
+          dt: cap,
+          daya_mampu: String(cap),
+          status_mesin: initialStatus,
+          beban: isOp ? Math.min(cap, Math.round(cap * 0.7)) : 0,
+          stand_kwh: 12450.5 + idx * 100,
+          stand_bbm: 2800.0 + idx * 50,
+          phasa_r: isOp ? 380.0 : 0,
+          phasa_s: isOp ? 380.0 : 0,
+          phasa_t: isOp ? 380.0 : 0,
+          tek_oli: isOp ? 4.2 : 0,
+          temp_air: isOp ? 78.0 : 0,
+          tegangan: isOp ? 380.0 : 0,
+          frequency: isOp ? 50.0 : 0,
+          cos_phi: isOp ? 0.85 : 0,
+          jam_kerja_mesin: 1420.0 + idx * 250,
+          kd_jenis_bahan_bakar: m.kd_jenis_bahan_bakar || "B35",
+          keterangan: initialKet,
+        };
+      });
+      setMachines(list);
+    } catch (err) {
+      console.error("Failed to load unit format:", err);
+      const uName = targetUnit.nama_unit || "PLTD Unit";
+      setMachines([
+        {
+          nomor: 1,
+          id_mesin: `${targetUnit.kd_unit}01`,
+          nama_mesin: `${uName} #01 (CATERPILLAR 3512B)`,
+          kode_mesin_silm: `225551403${targetUnit.kd_unit}1`,
+          sn: `CAT-${targetUnit.kd_unit}-01`,
+          dt: 1000,
+          daya_mampu: "1000",
+          status_mesin: "OPERASI",
+          beban: 80.0,
+          stand_kwh: 12450.5,
+          stand_bbm: 2800.0,
+          phasa_r: 380.0,
+          phasa_s: 380.0,
+          phasa_t: 380.0,
+          tek_oli: 4.2,
+          temp_air: 78.0,
+          tegangan: 380.0,
+          frequency: 50.0,
+          cos_phi: 0.85,
+          jam_kerja_mesin: 1420.0,
+          kd_jenis_bahan_bakar: "B35",
+          keterangan: "Beroperasi Normal",
+        },
+        {
+          nomor: 2,
+          id_mesin: `${targetUnit.kd_unit}02`,
+          nama_mesin: `${uName} #02 (DEUTZ TBD 620)`,
+          kode_mesin_silm: `225551403${targetUnit.kd_unit}2`,
+          sn: `DEU-${targetUnit.kd_unit}-02`,
+          dt: 800,
+          daya_mampu: "800",
+          status_mesin: "OPERASI",
+          beban: 75.0,
+          stand_kwh: 11200.0,
+          stand_bbm: 2400.0,
+          phasa_r: 380.0,
+          phasa_s: 380.0,
+          phasa_t: 380.0,
+          tek_oli: 4.0,
+          temp_air: 76.0,
+          tegangan: 380.0,
+          frequency: 50.0,
+          cos_phi: 0.85,
+          jam_kerja_mesin: 1200.0,
+          kd_jenis_bahan_bakar: "B35",
+          keterangan: "Beroperasi Normal",
+        },
+      ]);
+    } finally {
+      setLoadingFormat(false);
     }
+  }, []);
+
+  // Fetch all units from API and merge with defaults
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const res = await apiClient.get<WACBFormatResponse>("/wacb/units", {
+          params: { kd_region: "05" },
+        });
+        if (res.data?.units && res.data.units.length > 0) {
+          const map = new Map<string, WACBUnitItem>();
+          DEFAULT_PLTD_UNITS.forEach((u) => map.set(u.kd_unit, u));
+          res.data.units.forEach((u) => map.set(u.kd_unit, u));
+          setUnitsList(Array.from(map.values()));
+        }
+      } catch (err) {
+        console.warn("Using offline fallback units:", err);
+      }
+    };
+    fetchUnits();
+  }, []);
+
+  // Initialize selected unit from query params, localStorage, or user profile
+  useEffect(() => {
+    let initialUnit = activeUnit;
+    const qUnit = searchParams.get("kd_unit") || searchParams.get("unit");
+
+    if (qUnit) {
+      const match = DEFAULT_PLTD_UNITS.find((u) => u.kd_unit === qUnit);
+      if (match) {
+        initialUnit = match;
+      }
+    } else {
+      const savedUnit = localStorage.getItem("pln_selected_unit");
+      if (savedUnit) {
+        try {
+          initialUnit = JSON.parse(savedUnit);
+        } catch {}
+      }
+    }
+
+    setActiveUnit(initialUnit);
 
     const savedUser = localStorage.getItem("pln_user");
     if (savedUser) {
@@ -559,129 +779,30 @@ function InputLogsheetContent() {
       } catch {}
     }
 
-    // Fetch Machines Format from WACB API via Go
-    const fetchFormat = async () => {
-      setLoadingFormat(true);
-      try {
-        const res = await apiClient.get<WACBFormatResponse>("/wacb/format", {
-          params: {
-            kd_region: "05",
-            kd_area: currentUnit.kd_area || "40",
-            kd_unit: currentUnit.kd_unit,
-          },
-        });
+    fetchFormatForUnit(initialUnit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-        let machinesData = res.data?.format?.mesin;
-        if (!machinesData || machinesData.length === 0) {
-          const uName = currentUnit.nama_unit || "PLTD Unit";
-          machinesData = [
-            {
-              nomor: 1,
-              id_mesin: `${currentUnit.kd_unit}01`,
-              nama_mesin: `${uName} #01 (CATERPILLAR 3512B)`,
-              kode_mesin_silm: `225551403${currentUnit.kd_unit}1`,
-              sn: `CAT-${currentUnit.kd_unit}-01`,
-              dt: 1000,
-              kd_jenis_bahan_bakar: "B35",
-            },
-            {
-              nomor: 2,
-              id_mesin: `${currentUnit.kd_unit}02`,
-              nama_mesin: `${uName} #02 (DEUTZ TBD 620)`,
-              kode_mesin_silm: `225551403${currentUnit.kd_unit}2`,
-              sn: `DEU-${currentUnit.kd_unit}-02`,
-              dt: 800,
-              kd_jenis_bahan_bakar: "B35",
-            },
-          ];
-        }
+  // Handle unit change from dropdown selector
+  const handleUnitChange = (newKdUnit: string) => {
+    const found = unitsList.find((u) => u.kd_unit === newKdUnit);
+    if (!found) return;
 
-        const list: MachineFormEntry[] = machinesData.map((m, idx) => ({
-          nomor: m.nomor || idx + 1,
-          id_mesin: m.id_mesin || `${currentUnit.kd_unit}0${idx + 1}`,
-          nama_mesin: m.nama_mesin,
-          kode_mesin_silm: m.kode_mesin_silm || "",
-          sn: m.sn || "",
-          dt: m.dt || 100,
-          daya_mampu: String(m.dt || 100),
-          status_mesin: idx === 4 ? "STANDBY" : idx === 5 ? "GANGGUAN" : "OPERASI",
-          beban: idx < 4 ? 75.0 + idx * 5 : 0,
-          stand_kwh: 12450.5 + idx * 100,
-          stand_bbm: 2800.0 + idx * 50,
-          phasa_r: idx < 4 ? 380.0 : 0,
-          phasa_s: idx < 4 ? 380.0 : 0,
-          phasa_t: idx < 4 ? 380.0 : 0,
-          tek_oli: idx < 4 ? 4.2 : 0,
-          temp_air: idx < 4 ? 78.0 : 0,
-          tegangan: idx < 4 ? 380.0 : 0,
-          frequency: idx < 4 ? 50.0 : 0,
-          cos_phi: idx < 4 ? 0.85 : 0,
-          jam_kerja_mesin: 1420.0 + idx * 250,
-          kd_jenis_bahan_bakar: m.kd_jenis_bahan_bakar || "B35",
-          keterangan: idx === 4 ? "Mesin Siaga" : idx === 5 ? "Kerusakan Injektor" : "Beroperasi Normal",
-        }));
-        setMachines(list);
-      } catch (err) {
-        console.error("Failed to load unit format:", err);
-        // Fallback offline / network fail
-        const uName = currentUnit.nama_unit || "PLTD Unit";
-        setMachines([
-          {
-            nomor: 1,
-            id_mesin: `${currentUnit.kd_unit}01`,
-            nama_mesin: `${uName} #01 (CATERPILLAR 3512B)`,
-            kode_mesin_silm: `225551403${currentUnit.kd_unit}1`,
-            sn: `CAT-${currentUnit.kd_unit}-01`,
-            dt: 1000,
-            daya_mampu: "1000",
-            status_mesin: "OPERASI",
-            beban: 80.0,
-            stand_kwh: 12450.5,
-            stand_bbm: 2800.0,
-            phasa_r: 380.0,
-            phasa_s: 380.0,
-            phasa_t: 380.0,
-            tek_oli: 4.2,
-            temp_air: 78.0,
-            tegangan: 380.0,
-            frequency: 50.0,
-            cos_phi: 0.85,
-            jam_kerja_mesin: 1420.0,
-            kd_jenis_bahan_bakar: "B35",
-            keterangan: "Beroperasi Normal",
-          },
-          {
-            nomor: 2,
-            id_mesin: `${currentUnit.kd_unit}02`,
-            nama_mesin: `${uName} #02 (DEUTZ TBD 620)`,
-            kode_mesin_silm: `225551403${currentUnit.kd_unit}2`,
-            sn: `DEU-${currentUnit.kd_unit}-02`,
-            dt: 800,
-            daya_mampu: "800",
-            status_mesin: "OPERASI",
-            beban: 75.0,
-            stand_kwh: 11200.0,
-            stand_bbm: 2400.0,
-            phasa_r: 380.0,
-            phasa_s: 380.0,
-            phasa_t: 380.0,
-            tek_oli: 4.0,
-            temp_air: 76.0,
-            tegangan: 380.0,
-            frequency: 50.0,
-            cos_phi: 0.85,
-            jam_kerja_mesin: 1200.0,
-            kd_jenis_bahan_bakar: "B35",
-            keterangan: "Beroperasi Normal",
-          },
-        ]);
-      } finally {
-        setLoadingFormat(false);
-      }
+    const nextUnit = {
+      kd_unit: found.kd_unit,
+      nama_unit: found.nama_unit,
+      kd_area: found.kd_area || "40",
+      nama_area: found.nama_area || "KAL-3",
     };
 
-    fetchFormat();
-  }, []);
+    setActiveUnit(nextUnit);
+    localStorage.setItem("pln_selected_unit", JSON.stringify(nextUnit));
+    fetchFormatForUnit(nextUnit);
+    setActiveTab(0);
+
+    setSuccessToast(`Unit aktif berganti ke: ${nextUnit.nama_unit}`);
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
 
   const handleMachineChange = (index: number, updated: Partial<MachineFormEntry>) => {
     setMachines((prev) => {
@@ -790,7 +911,6 @@ function InputLogsheetContent() {
       }
     } catch (err: any) {
       console.error("Submit error:", err);
-      // Fallback offline save on network failure
       await saveOfflineDraft(payload);
       setSuccessToast("Koneksi gagal: Logsheet diamankan ke antrean lokal.");
       setTimeout(() => router.push("/sync"), 2000);
@@ -801,18 +921,18 @@ function InputLogsheetContent() {
 
   return (
     <div className="space-y-6">
-        {/* Success Toast */}
-        {successToast && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-success-600 px-4 py-3 text-xs font-bold text-white shadow-theme-md animate-bounce">
-            <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <span className="min-w-0">{successToast}</span>
-          </div>
-        )}
+      {/* Success Toast */}
+      {successToast && (
+        <div className="flex flex-wrap items-center gap-2 rounded-xl bg-success-600 px-4 py-3 text-xs font-bold text-white shadow-theme-md animate-bounce">
+          <CheckCircle2 className="h-5 w-5 shrink-0" />
+          <span className="min-w-0">{successToast}</span>
+        </div>
+      )}
 
-        {/* Form Container / Daftar Logsheet */}
-        {view === "list" ? (
-          <LogsheetList onAdd={() => setView("form")} refreshToken={refreshToken} />
-        ) : (
+      {/* Form Container / Daftar Logsheet */}
+      {view === "list" ? (
+        <LogsheetList onAdd={() => setView("form")} refreshToken={refreshToken} />
+      ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 transition-colors">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -821,7 +941,8 @@ function InputLogsheetContent() {
                   Formulir Logsheet PLTD
                 </h1>
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {activeUnit.nama_unit} • Penginputan Multi-Mesin Sekaligus (1 s/d {machines.length || 6} Mesin)
+                  <span className="font-bold text-brand-600 dark:text-brand-400">{activeUnit.nama_unit}</span> •
+                  Penginputan Multi-Mesin Sekaligus (1 s/d {machines.length || 6} Mesin)
                 </p>
               </div>
 
@@ -864,8 +985,35 @@ function InputLogsheetContent() {
               </div>
             </div>
 
-            {/* Header Fields: Tanggal, Jam Bebas, Operator */}
-            <div className="mt-6 grid grid-cols-1 gap-4 border-t border-gray-100 pt-5 sm:grid-cols-3 dark:border-gray-800">
+            {/* Header Fields: Unit Switcher, Tanggal, Jam Bebas, Operator */}
+            <div className="mt-6 grid grid-cols-1 gap-4 border-t border-gray-100 pt-5 sm:grid-cols-2 lg:grid-cols-4 dark:border-gray-800">
+              {/* Unit PLTD Dropdown Selector (Can Choose Any of the 30 Units) */}
+              <div>
+                <label className="mb-1.5 flex items-center justify-between text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  <span className="flex items-center gap-1.5">
+                    <Building2 className="h-3.5 w-3.5 text-brand-500" />
+                    <span>Pilih Unit PLTD:</span>
+                  </span>
+                  <span className="text-[10px] font-bold text-brand-600 dark:text-brand-400">
+                    {unitsList.length} Unit
+                  </span>
+                </label>
+                <div className="relative">
+                  <select
+                    value={activeUnit.kd_unit}
+                    onChange={(e) => handleUnitChange(e.target.value)}
+                    className="w-full appearance-none rounded-xl border border-brand-300 bg-brand-50/50 py-2 pl-3.5 pr-8 text-xs font-bold text-brand-900 focus:border-brand-500 focus:outline-hidden dark:border-brand-700 dark:bg-gray-800 dark:text-brand-200"
+                  >
+                    {unitsList.map((u) => (
+                      <option key={u.kd_unit} value={u.kd_unit}>
+                        [{u.kd_unit}] {u.nama_unit} ({u.nama_area || "PLTD"})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-500" />
+                </div>
+              </div>
+
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
                   <Calendar className="h-3.5 w-3.5 text-brand-500" />
@@ -883,7 +1031,7 @@ function InputLogsheetContent() {
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300">
                   <Clock className="h-3.5 w-3.5 text-brand-500" />
-                  <span>Jam Laporan (48 Slot 30 Menit):</span>
+                  <span>Jam Laporan (48 Slot):</span>
                 </label>
                 <select
                   value={jam}
@@ -914,91 +1062,6 @@ function InputLogsheetContent() {
             </div>
           </div>
 
-          {/* Lokasi Unit (GPS) — seperti versi mobile */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs sm:p-6 dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <h2 className="text-sm font-extrabold text-gray-900 dark:text-white">
-                  Lokasi Unit (GPS)
-                </h2>
-                <p className="mt-0.5 text-xs font-medium leading-relaxed text-gray-500 dark:text-gray-400">
-                  Lokasi unit cukup diambil sekali. Setelah tersimpan, GPS akan dipakai ulang
-                  untuk mesin lain pada unit yang sama.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              {gps ? (
-                <div className="min-w-0 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 font-mono text-[11px] font-semibold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300">
-                  <div>Lat: {gps.lat.toFixed(6)}</div>
-                  <div>Lng: {gps.lng.toFixed(6)}</div>
-                  <div>Akurasi: ±{Math.round(gps.accuracy)} m</div>
-                </div>
-              ) : (
-                <p className="min-w-0 text-xs font-semibold text-gray-400 dark:text-gray-500">
-                  {gpsError || "Belum ada lokasi (opsional — disarankan agar laporan terverifikasi)."}
-                </p>
-              )}
-
-              <button
-                type="button"
-                onClick={captureLocation}
-                disabled={gpsLoading}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-60 dark:border-emerald-700 dark:bg-gray-900 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
-              >
-                <Crosshair className={`h-4 w-4 ${gpsLoading ? "animate-spin" : ""}`} />
-                <span>{gpsLoading ? "Mengambil GPS..." : gps ? "Ambil Ulang Lokasi" : "Ambil Lokasi Unit"}</span>
-              </button>
-            </div>
-            {!gps && gpsError && (
-              <p className="mt-2 text-[11px] font-semibold text-error-500 dark:text-error-400">{gpsError}</p>
-            )}
-          </div>
-
-          {/* Absen Petugas & Foto Mesin — seperti versi mobile */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs sm:p-6 dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
-                <Camera className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <h2 className="text-sm font-extrabold text-gray-900 dark:text-white">
-                  Absen Petugas &amp; Foto Mesin
-                </h2>
-                <p className="mt-0.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                  Absen petugas dan foto mesin (Opsional) — sama seperti aplikasi mobile.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <PhotoBox
-                title="Absen Petugas"
-                note="Selfie operator cukup sekali untuk seluruh mesin dalam unit ini."
-                value={selfie}
-                onOpenCamera={() => setCameraTarget("selfie")}
-                onPick={(file) => handlePickPhoto(file, "selfie")}
-                onClear={() => setSelfie("")}
-              />
-              <PhotoBox
-                title="Foto Mesin"
-                note={
-                  machines[activeTab]?.status_mesin === "GANGGUAN"
-                    ? "Status Gangguan-Rusak: ambil 1 foto khusus untuk mesin ini."
-                    : "Foto mesin umum cukup sekali dan bisa dipakai ulang untuk mesin lain pada unit ini."
-                }
-                value={fotoMesin}
-                onOpenCamera={() => setCameraTarget("mesin")}
-                onPick={(file) => handlePickPhoto(file, "mesin")}
-                onClear={() => setFotoMesin("")}
-              />
-            </div>
-          </div>
-
           {/* WACB Payload Preview Box */}
           {previewOpen && (
             <div className="space-y-2 rounded-2xl border border-gray-800 bg-gray-950 p-4 font-mono text-xs text-gray-200 shadow-theme-sm">
@@ -1024,7 +1087,7 @@ ${machines
             </div>
           )}
 
-          {/* Machine Tabs & Form */}
+          {/* Machine Tabs & Form: PROMINENTLY AT TOP FOR IMMEDIATE ACCESS */}
           <MachineForm
             machines={machines}
             activeTab={activeTab}
@@ -1032,23 +1095,119 @@ ${machines
             onChange={handleMachineChange}
             onCopyParametersToAll={handleCopyParameters}
           />
-        </form>
-        )}
 
-        {/* Kamera live untuk absen petugas & foto mesin */}
-        <CameraCaptureModal
-          open={cameraTarget !== null}
-          title={cameraTarget === "selfie" ? "Absen Petugas" : "Foto Mesin"}
-          onCapture={(dataUrl) => {
-            if (cameraTarget === "selfie") setSelfie(dataUrl);
-            else if (cameraTarget === "mesin") setFotoMesin(dataUrl);
-            setCameraTarget(null);
-          }}
-          onClose={() => setCameraTarget(null)}
-        />
-      </div>
-    );
-  }
+          {/* Lampiran Pendukung (Lokasi Unit GPS & Absen Petugas / Foto Mesin) */}
+          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs sm:p-6 dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-sm font-extrabold text-gray-900 dark:text-white">
+                  Lokasi Unit (GPS) &amp; Lampiran Foto (Opsional)
+                </h2>
+                <p className="mt-0.5 text-xs font-medium leading-relaxed text-gray-500 dark:text-gray-400">
+                  Data pendukung laporan seperti di aplikasi mobile — lokasi GPS dan foto petugas/mesin.
+                </p>
+              </div>
+            </div>
+
+            {/* GPS Section */}
+            <div className="mt-4 flex flex-col gap-3 rounded-xl border border-gray-100 bg-gray-50/70 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800 dark:bg-gray-800/40">
+              {gps ? (
+                <div className="min-w-0 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 font-mono text-[11px] font-semibold text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300">
+                  <div>Lat: {gps.lat.toFixed(6)}</div>
+                  <div>Lng: {gps.lng.toFixed(6)}</div>
+                  <div>Akurasi: ±{Math.round(gps.accuracy)} m</div>
+                </div>
+              ) : (
+                <p className="min-w-0 text-xs font-semibold text-gray-400 dark:text-gray-500">
+                  {gpsError || "Belum ada lokasi GPS (opsional — disarankan untuk verifikasi shift)."}
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={captureLocation}
+                disabled={gpsLoading}
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-emerald-300 bg-white px-4 py-2 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:opacity-60 dark:border-emerald-700 dark:bg-gray-900 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+              >
+                <Crosshair className={`h-4 w-4 ${gpsLoading ? "animate-spin" : ""}`} />
+                <span>{gpsLoading ? "Mengambil GPS..." : gps ? "Ambil Ulang Lokasi" : "Ambil Lokasi Unit"}</span>
+              </button>
+            </div>
+
+            {/* Photo Section */}
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <PhotoBox
+                title="Absen Petugas"
+                note="Selfie operator cukup sekali untuk seluruh mesin dalam unit ini."
+                value={selfie}
+                onOpenCamera={() => setCameraTarget("selfie")}
+                onPick={(file) => handlePickPhoto(file, "selfie")}
+                onClear={() => setSelfie("")}
+              />
+              <PhotoBox
+                title="Foto Mesin"
+                note={
+                  machines[activeTab]?.status_mesin === "GANGGUAN"
+                    ? "Status Gangguan-Rusak: ambil 1 foto khusus untuk mesin ini."
+                    : "Foto mesin umum cukup sekali dan bisa dipakai ulang untuk mesin lain pada unit ini."
+                }
+                value={fotoMesin}
+                onOpenCamera={() => setCameraTarget("mesin")}
+                onPick={(file) => handlePickPhoto(file, "mesin")}
+                onClear={() => setFotoMesin("")}
+              />
+            </div>
+          </div>
+
+          {/* Bottom Submit Action Bar */}
+          <div className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs sm:flex-row sm:items-center sm:justify-between dark:border-gray-800 dark:bg-gray-900">
+            <div>
+              <p className="text-xs font-bold text-gray-900 dark:text-white">
+                Siap Kirim: <span className="text-brand-600 dark:text-brand-400">{activeUnit.nama_unit}</span>
+              </p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                {machines.length} Mesin • Tanggal {tanggal} • Slot {jam} WITA • Operator {operatorName}
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting || loadingFormat}
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-500 px-6 py-3 text-xs font-extrabold text-white shadow-theme-xs transition-colors hover:bg-brand-600 active:scale-98 disabled:opacity-50"
+            >
+              {isOnline ? (
+                <>
+                  <Send className="h-4 w-4" />
+                  <span>{submitting ? "Mengirim ke WACB..." : `Submit Logsheet (${activeUnit.nama_unit})`}</span>
+                </>
+              ) : (
+                <>
+                  <CloudUpload className="h-4 w-4" />
+                  <span>{submitting ? "Menyimpan..." : "Simpan Antrean (Offline)"}</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Kamera live untuk absen petugas & foto mesin */}
+      <CameraCaptureModal
+        open={cameraTarget !== null}
+        title={cameraTarget === "selfie" ? "Absen Petugas" : "Foto Mesin"}
+        onCapture={(dataUrl) => {
+          if (cameraTarget === "selfie") setSelfie(dataUrl);
+          else if (cameraTarget === "mesin") setFotoMesin(dataUrl);
+          setCameraTarget(null);
+        }}
+        onClose={() => setCameraTarget(null)}
+      />
+    </div>
+  );
+}
 
 export default function InputLogsheetPage() {
   return (

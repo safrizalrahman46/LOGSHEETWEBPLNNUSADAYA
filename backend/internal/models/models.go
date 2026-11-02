@@ -28,9 +28,17 @@ type User struct {
 	KdRegion  string         `gorm:"default:'05'" json:"kd_region"`
 	KdUnit    string         `json:"kd_unit"`
 	NamaUnit  string         `json:"nama_unit"`
+	UnitID    string         `json:"unit_id,omitempty" gorm:"-"`
+	UnitName  string         `json:"unit_name,omitempty" gorm:"-"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+func (u *User) AfterFind(tx *gorm.DB) error {
+	u.UnitID = u.KdUnit
+	u.UnitName = u.NamaUnit
+	return nil
 }
 
 type LogsheetRecord struct {

@@ -26,11 +26,19 @@ func JWTAuth(cfg *config.Config) fiber.Handler {
 		if path == "/health" ||
 			path == "/api/health" ||
 			path == "/api/auth/login" ||
+			path == "/api/login" ||
+			path == "/login" ||
+			path == "/api/logout" ||
+			path == "/logout" ||
 			strings.HasPrefix(path, "/api/public") ||
 			strings.HasPrefix(path, "/public") ||
 			path == "/api/attendance/units" ||
 			path == "/api/attendance/units-location" ||
-			path == "/api/wacb/units" {
+			path == "/api/wacb/units" ||
+			strings.HasPrefix(path, "/api/v1/format-logsheet-pltd") ||
+			strings.HasPrefix(path, "/v1/format-logsheet-pltd") ||
+			strings.HasPrefix(path, "/api/v1/logsheet-pltd") ||
+			strings.HasPrefix(path, "/v1/logsheet-pltd") {
 			return c.Next()
 		}
 

@@ -28,6 +28,12 @@ landing-page/
 # Upload runtime (foto profil, dll.)
 frontend/public/uploads/
 
+# Python cache & temp files
+__pycache__/
+*.py[cod]
+*$py.class
+~$*
+
 # Editor / OS
 .vscode/
 .idea/

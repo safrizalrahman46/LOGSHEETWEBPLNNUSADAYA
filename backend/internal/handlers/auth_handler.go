@@ -72,21 +72,26 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 				})
 			}
 
+			userMap := fiber.Map{
+				"id":        localUser.ID,
+				"username":  localUser.Username,
+				"name":      localUser.Name,
+				"email":     localUser.Email,
+				"avatar":    localUser.Avatar,
+				"role":      localUser.Role,
+				"kd_region": localUser.KdRegion,
+				"kd_unit":   localUser.KdUnit,
+				"nama_unit": localUser.NamaUnit,
+				"unit_id":   localUser.KdUnit,
+				"unit_name": localUser.NamaUnit,
+				"token":     token,
+			}
 			return c.JSON(fiber.Map{
 				"success": true,
 				"message": "Login berhasil (Akun Lokal/RBAC)",
 				"token":   token,
-				"user": fiber.Map{
-					"id":        localUser.ID,
-					"username":  localUser.Username,
-					"name":      localUser.Name,
-					"email":     localUser.Email,
-					"avatar":    localUser.Avatar,
-					"role":      localUser.Role,
-					"kd_region": localUser.KdRegion,
-					"kd_unit":   localUser.KdUnit,
-					"nama_unit": localUser.NamaUnit,
-				},
+				"user":    userMap,
+				"data":    userMap,
 			})
 		}
 	}
@@ -125,22 +130,28 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 
 		token, _ := h.generateJWT(&shadowUser)
 
+		userMap := fiber.Map{
+			"id":        shadowUser.ID,
+			"username":  shadowUser.Username,
+			"name":      shadowUser.Name,
+			"email":     shadowUser.Email,
+			"avatar":    shadowUser.Avatar,
+			"role":      shadowUser.Role,
+			"kd_region": shadowUser.KdRegion,
+			"kd_unit":   shadowUser.KdUnit,
+			"nama_unit": shadowUser.NamaUnit,
+			"unit_id":   shadowUser.KdUnit,
+			"unit_name": shadowUser.NamaUnit,
+			"token":     token,
+		}
+
 		return c.JSON(fiber.Map{
 			"success":    true,
 			"message":    "Login berhasil terintegrasi dengan WACB DIGIKIT",
 			"token":      token,
 			"wacb_token": wacbResp.Token,
-			"user": fiber.Map{
-				"id":        shadowUser.ID,
-				"username":  shadowUser.Username,
-				"name":      shadowUser.Name,
-				"email":     shadowUser.Email,
-				"avatar":    shadowUser.Avatar,
-				"role":      shadowUser.Role,
-				"kd_region": shadowUser.KdRegion,
-				"kd_unit":   shadowUser.KdUnit,
-				"nama_unit": shadowUser.NamaUnit,
-			},
+			"user":       userMap,
+			"data":       userMap,
 		})
 	}
 
@@ -170,10 +181,13 @@ func (h *AuthHandler) GetUsers(c *fiber.Ctx) error {
 	h.db.Find(&users)
 	for i := range users {
 		users[i].Role = models.Role(strings.ToUpper(string(users[i].Role)))
+		users[i].UnitID = users[i].KdUnit
+		users[i].UnitName = users[i].NamaUnit
 	}
 	return c.JSON(fiber.Map{
 		"success": true,
 		"users":   users,
+		"data":    users,
 	})
 }
 
@@ -202,6 +216,8 @@ type CreateUserRequest struct {
 	KdRegion string `json:"kd_region"`
 	KdUnit   string `json:"kd_unit"`
 	NamaUnit string `json:"nama_unit"`
+	UnitID   string `json:"unit_id"`
+	UnitName string `json:"unit_name"`
 }
 
 // ensureUnitAndMachinesExists memastikan unit dan mesin default terdaftar di DB
@@ -277,7 +293,13 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 	}
 
 	kdUnit := strings.TrimSpace(req.KdUnit)
+	if kdUnit == "" {
+		kdUnit = strings.TrimSpace(req.UnitID)
+	}
 	namaUnit := strings.TrimSpace(req.NamaUnit)
+	if namaUnit == "" {
+		namaUnit = strings.TrimSpace(req.UnitName)
+	}
 
 	// Jika nama_unit terisi tapi kd_unit kosong, buatkan kode unit otomatis
 	if namaUnit != "" && kdUnit == "" {
@@ -310,6 +332,8 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 		KdRegion: strings.TrimSpace(req.KdRegion),
 		KdUnit:   kdUnit,
 		NamaUnit: namaUnit,
+		UnitID:   kdUnit,
+		UnitName: namaUnit,
 	}
 	if user.KdRegion == "" {
 		user.KdRegion = "05"
@@ -321,10 +345,13 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 			"message": "Gagal menyimpan user: " + err.Error(),
 		})
 	}
+	user.UnitID = user.KdUnit
+	user.UnitName = user.NamaUnit
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
 		"message": "User berhasil ditambahkan",
 		"user":    user,
+		"data":    user,
 	})
 }
 
@@ -336,6 +363,8 @@ type UpdateUserRequest struct {
 	KdRegion string `json:"kd_region"`
 	KdUnit   string `json:"kd_unit"`
 	NamaUnit string `json:"nama_unit"`
+	UnitID   string `json:"unit_id"`
+	UnitName string `json:"unit_name"`
 }
 
 // UpdateUser memperbarui user (Data Master User).
@@ -382,9 +411,13 @@ func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
 	}
 	if req.KdUnit != "" {
 		updates["kd_unit"] = strings.TrimSpace(req.KdUnit)
+	} else if req.UnitID != "" {
+		updates["kd_unit"] = strings.TrimSpace(req.UnitID)
 	}
 	if req.NamaUnit != "" {
 		updates["nama_unit"] = strings.TrimSpace(req.NamaUnit)
+	} else if req.UnitName != "" {
+		updates["nama_unit"] = strings.TrimSpace(req.UnitName)
 	}
 	if len(updates) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Tidak ada perubahan"})
@@ -394,10 +427,14 @@ func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
 	finalKdUnit := user.KdUnit
 	if req.KdUnit != "" {
 		finalKdUnit = strings.TrimSpace(req.KdUnit)
+	} else if req.UnitID != "" {
+		finalKdUnit = strings.TrimSpace(req.UnitID)
 	}
 	finalNamaUnit := user.NamaUnit
 	if req.NamaUnit != "" {
 		finalNamaUnit = strings.TrimSpace(req.NamaUnit)
+	} else if req.UnitName != "" {
+		finalNamaUnit = strings.TrimSpace(req.UnitName)
 	}
 	if finalKdUnit != "" {
 		ensureUnitAndMachinesExists(h.db, finalKdUnit, finalNamaUnit)
@@ -409,7 +446,9 @@ func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
 
 	h.db.First(&user, "id = ?", id)
 	user.Role = models.Role(strings.ToUpper(string(user.Role)))
-	return c.JSON(fiber.Map{"success": true, "message": "User berhasil diperbarui", "user": user})
+	user.UnitID = user.KdUnit
+	user.UnitName = user.NamaUnit
+	return c.JSON(fiber.Map{"success": true, "message": "User berhasil diperbarui", "user": user, "data": user})
 }
 
 // DeleteUser menghapus user (Data Master User). Tidak boleh menghapus diri sendiri.
@@ -428,6 +467,50 @@ func (h *AuthHandler) DeleteUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"success": false, "message": "User tidak ditemukan"})
 	}
 	return c.JSON(fiber.Map{"success": true, "message": "User berhasil dihapus"})
+}
+
+type ResetPasswordRequest struct {
+	NewPassword string `json:"new_password"`
+}
+
+// ResetPassword mereset password user secara langsung oleh administrator.
+// PUT /api/admin/users/:id/reset-password atau PUT /api/users/:id/reset-password
+func (h *AuthHandler) ResetPassword(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var req ResetPasswordRequest
+	if err := c.BodyParser(&req); err != nil || len(strings.TrimSpace(req.NewPassword)) < 3 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Password baru minimal 3 karakter",
+		})
+	}
+
+	hashed, err := bcrypt.GenerateFromPassword([]byte(strings.TrimSpace(req.NewPassword)), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengenkripsi password",
+		})
+	}
+
+	res := h.db.Model(&models.User{}).Where("id = ?", id).Update("password", string(hashed))
+	if res.Error != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mereset password di database: " + res.Error.Error(),
+		})
+	}
+	if res.RowsAffected == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "User tidak ditemukan",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Password user berhasil direset",
+	})
 }
 
 // roleDescriptions deskripsi singkat tiap role.

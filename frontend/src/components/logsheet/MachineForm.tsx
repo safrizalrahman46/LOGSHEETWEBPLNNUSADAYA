@@ -1,7 +1,8 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { MachineFormEntry } from "@/types";
-import { AlertTriangle, Cpu, Activity, ShieldAlert, PauseCircle } from "lucide-react";
+import { AlertTriangle, Cpu, Activity, ShieldAlert, PauseCircle, ChevronDown, Check } from "lucide-react";
 
 interface MachineFormProps {
   machines: MachineFormEntry[];
@@ -9,6 +10,59 @@ interface MachineFormProps {
   onTabChange: (index: number) => void;
   onChange: (index: number, updated: Partial<MachineFormEntry>) => void;
   onCopyParametersToAll?: (fromIndex: number) => void;
+}
+
+// Decimal / Numeric Input that handles Indonesian locale (commas and dots) smoothly
+// without resetting to 0 when backspacing or clearing.
+function DecimalInput({
+  value,
+  disabled,
+  onChange,
+  placeholder,
+  className,
+}: {
+  value: number;
+  disabled?: boolean;
+  onChange: (val: number) => void;
+  placeholder?: string;
+  className?: string;
+}) {
+  const [text, setText] = useState<string>(() => (value === 0 ? "" : String(value)));
+
+  // Synchronize with external changes (e.g. machine tab switched or value reset)
+  useEffect(() => {
+    const currentNum = parseFloat(text.replace(/,/g, "."));
+    if (isNaN(currentNum) && value === 0) return;
+    if (currentNum !== value) {
+      setText(value === 0 ? "" : String(value));
+    }
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setText(raw);
+    const cleaned = raw.replace(/,/g, ".").trim();
+    if (cleaned === "" || cleaned === "-") {
+      onChange(0);
+      return;
+    }
+    const num = parseFloat(cleaned);
+    if (!isNaN(num)) {
+      onChange(num);
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      disabled={disabled}
+      value={text}
+      onChange={handleChange}
+      placeholder={placeholder || "0"}
+      className={className}
+    />
+  );
 }
 
 export function MachineForm({
@@ -42,32 +96,77 @@ export function MachineForm({
     }
   }
 
+  const statusColors: Record<string, string> = {
+    OPERASI: "bg-success-500",
+    STANDBY: "bg-warning-500",
+    GANGGUAN: "bg-error-500",
+  };
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs transition-colors dark:border-gray-800 dark:bg-gray-900">
-      {/* Machine Tabs */}
-      <div className="flex border-b border-gray-200 bg-gray-50/80 dark:border-gray-800 dark:bg-gray-950/60 overflow-x-auto no-scrollbar">
+      {/* Top Machine Selector Bar: Dropdown on Mobile + Tabs on Desktop */}
+      <div className="border-b border-gray-200 bg-gray-50/90 p-3 sm:px-6 sm:py-3 dark:border-gray-800 dark:bg-gray-950/70">
+        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-gray-700 dark:text-gray-300 shrink-0">
+              Pilih Mesin:
+            </label>
+            <div className="relative flex-1 sm:w-72">
+              <select
+                value={activeTab}
+                onChange={(e) => onTabChange(Number(e.target.value))}
+                className="w-full appearance-none rounded-xl border border-brand-300 bg-white py-2 pl-3.5 pr-8 text-xs font-bold text-brand-700 shadow-xs focus:border-brand-500 focus:outline-none dark:border-brand-700 dark:bg-gray-900 dark:text-brand-300"
+              >
+                {machines.map((m, idx) => (
+                  <option key={idx} value={idx}>
+                    Mesin #{m.nomor || idx + 1} - {m.nama_mesin} [{m.status_mesin}]
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-500" />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+            <span className="font-semibold">Total: {machines.length} Mesin</span>
+            <span>•</span>
+            <span className="text-success-600 font-bold dark:text-success-400">
+              {machines.filter((m) => m.status_mesin === "OPERASI").length} Operasi
+            </span>
+            <span>•</span>
+            <span className="text-warning-600 font-bold dark:text-warning-400">
+              {machines.filter((m) => m.status_mesin === "STANDBY").length} Standby
+            </span>
+            {machines.some((m) => m.status_mesin === "GANGGUAN") && (
+              <>
+                <span>•</span>
+                <span className="text-error-600 font-bold dark:text-error-400">
+                  {machines.filter((m) => m.status_mesin === "GANGGUAN").length} Gangguan
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Horizontal Tabs for Fast Switching */}
+      <div className="flex border-b border-gray-200 bg-gray-50/50 dark:border-gray-800 dark:bg-gray-950/40 overflow-x-auto no-scrollbar">
         {machines.map((m, idx) => {
           const isActive = idx === activeTab;
-          const statusColors: Record<string, string> = {
-            OPERASI: "bg-success-500",
-            STANDBY: "bg-warning-500",
-            GANGGUAN: "bg-error-500",
-          };
-
           return (
             <button
               key={idx}
               type="button"
               onClick={() => onTabChange(idx)}
-              className={`flex items-center gap-2 border-b-2 px-4 py-3.5 text-xs font-bold whitespace-nowrap transition-all ${
+              className={`flex items-center gap-2 border-b-2 px-4 py-3 text-xs font-bold whitespace-nowrap transition-all ${
                 isActive
                   ? "border-brand-500 bg-white text-brand-600 shadow-theme-xs dark:bg-gray-900 dark:text-brand-400"
                   : "border-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-gray-800/40 dark:hover:text-gray-200"
               }`}
             >
-              <span className={`h-2 w-2 rounded-full ${statusColors[m.status_mesin] || "bg-success-500"}`} />
+              <span className={`h-2.5 w-2.5 rounded-full ${statusColors[m.status_mesin] || "bg-success-500"}`} />
               <span>Mesin #{m.nomor || idx + 1}</span>
-              <span className="max-w-[90px] truncate text-[10px] font-normal text-gray-400">
+              <span className="max-w-[110px] truncate text-[10px] font-normal text-gray-400">
                 {m.nama_mesin.split("(")[0]}
               </span>
             </button>
@@ -75,7 +174,7 @@ export function MachineForm({
         })}
       </div>
 
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-4 sm:p-6">
         {/* Machine Info Bar & Status Switcher */}
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50/70 p-4 dark:border-gray-800 dark:bg-gray-800/40">
           <div>
@@ -85,8 +184,8 @@ export function MachineForm({
             </div>
             <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
               ID Mesin: <span className="font-semibold text-gray-700 dark:text-gray-200">{current.id_mesin}</span> • SN:{" "}
-              <span className="font-semibold text-gray-700 dark:text-gray-200">{current.sn}</span> • Daya Terpasang:{" "}
-              <span className="font-semibold text-gray-700 dark:text-gray-200">{current.dt} kW</span>
+              <span className="font-semibold text-gray-700 dark:text-gray-200">{current.sn || "-"}</span> • Daya Terpasang:{" "}
+              <span className="font-semibold text-gray-700 dark:text-gray-200">{current.dt || 1000} kW</span>
             </p>
           </div>
 
@@ -97,7 +196,7 @@ export function MachineForm({
               <button
                 type="button"
                 onClick={() => onChange(activeTab, { status_mesin: "OPERASI" })}
-                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all sm:px-3.5 sm:text-xs ${
                   current.status_mesin === "OPERASI"
                     ? "bg-success-600 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -122,7 +221,7 @@ export function MachineForm({
                     cos_phi: 0,
                   })
                 }
-                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all sm:px-3.5 sm:text-xs ${
                   current.status_mesin === "STANDBY"
                     ? "bg-warning-500 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -147,7 +246,7 @@ export function MachineForm({
                     cos_phi: 0,
                   })
                 }
-                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-extrabold transition-all sm:px-3 sm:text-xs ${
+                className={`flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-extrabold transition-all sm:px-3.5 sm:text-xs ${
                   current.status_mesin === "GANGGUAN"
                     ? "bg-error-600 text-white shadow-theme-xs"
                     : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -175,147 +274,135 @@ export function MachineForm({
           </div>
         )}
 
-        {/* 11 Parameters Form */}
+        {/* 11 Parameters Form with Easy Input */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
               Beban Mesin (kW) <span className="text-error-500">*</span>
             </label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.beban}
-              onChange={(e) => onChange(activeTab, { beban: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { beban: val })}
+              placeholder="Contoh: 75.5"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Stand KWH (kWh)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               value={current.stand_kwh}
-              onChange={(e) => onChange(activeTab, { stand_kwh: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { stand_kwh: val })}
+              placeholder="Contoh: 12450.5"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Stand BBM (Liter)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               value={current.stand_bbm}
-              onChange={(e) => onChange(activeTab, { stand_bbm: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { stand_bbm: val })}
+              placeholder="Contoh: 2800"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Tekanan Oli (bar)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.tek_oli}
-              onChange={(e) => onChange(activeTab, { tek_oli: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { tek_oli: val })}
+              placeholder="Contoh: 4.2"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Suhu Air Pendingin (°C)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.temp_air}
-              onChange={(e) => onChange(activeTab, { temp_air: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { temp_air: val })}
+              placeholder="Contoh: 78"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Tegangan (Volt)</label>
-            <input
-              type="number"
-              step="1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.tegangan}
-              onChange={(e) => onChange(activeTab, { tegangan: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { tegangan: val })}
+              placeholder="Contoh: 380"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Frekuensi (Hz)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.frequency}
-              onChange={(e) => onChange(activeTab, { frequency: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { frequency: val })}
+              placeholder="Contoh: 50.0"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Cos Phi</label>
-            <input
-              type="number"
-              step="0.01"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.cos_phi}
-              onChange={(e) => onChange(activeTab, { cos_phi: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { cos_phi: val })}
+              placeholder="Contoh: 0.85"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Arus Phasa R (A)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.phasa_r}
-              onChange={(e) => onChange(activeTab, { phasa_r: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { phasa_r: val })}
+              placeholder="Contoh: 380"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Arus Phasa S (A)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.phasa_s}
-              onChange={(e) => onChange(activeTab, { phasa_s: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { phasa_s: val })}
+              placeholder="Contoh: 380"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Arus Phasa T (A)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               disabled={current.status_mesin !== "OPERASI"}
               value={current.phasa_t}
-              onChange={(e) => onChange(activeTab, { phasa_t: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { phasa_t: val })}
+              placeholder="Contoh: 380"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden disabled:bg-gray-100 disabled:text-gray-400 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">Jam Kerja Mesin (JKM)</label>
-            <input
-              type="number"
-              step="0.1"
+            <DecimalInput
               value={current.jam_kerja_mesin}
-              onChange={(e) => onChange(activeTab, { jam_kerja_mesin: parseFloat(e.target.value) || 0 })}
+              onChange={(val) => onChange(activeTab, { jam_kerja_mesin: val })}
+              placeholder="Contoh: 1420"
               className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
             />
           </div>
@@ -333,7 +420,7 @@ export function MachineForm({
                 ? "Wajib diisi: contoh kerusakan injektor bahan bakar / trip overcurrent"
                 : "Contoh: Kondisi mesin normal dan stabil"
             }
-            value={current.keterangan}
+            value={current.keterangan || ""}
             onChange={(e) => onChange(activeTab, { keterangan: e.target.value })}
             className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-xs font-semibold text-gray-900 transition-colors focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
           />
