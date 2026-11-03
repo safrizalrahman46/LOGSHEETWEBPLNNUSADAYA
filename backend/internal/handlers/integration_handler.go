@@ -319,7 +319,7 @@ func (h *IntegrationHandler) PushNotification(c *fiber.Ctx) error {
 		Time:        time.Now(),
 		Priority:    allowedPriority(req.Priority),
 		Type:        req.Type,
-		TargetType:  targetForType(req.Type),
+		TargetType:  targetForRecipient(req.UserID, req.UnitID),
 		IsRead:      false,
 		UserID:      nil,
 		UnitID:      strings.TrimSpace(req.UnitID),

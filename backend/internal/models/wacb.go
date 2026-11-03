@@ -185,5 +185,7 @@ type MachineFormEntry struct {
 	CosPhi            float64 `json:"cos_phi"`
 	JamKerjaMesin     float64 `json:"jam_kerja_mesin"`
 	KdJenisBahanBakar string  `json:"kd_jenis_bahan_bakar"`
+	KwhProduksi       float64 `json:"kwh_produksi"`
+	PemakaianBbm      float64 `json:"pemakaian_bbm"`
 	Keterangan        string  `json:"keterangan"`
 }

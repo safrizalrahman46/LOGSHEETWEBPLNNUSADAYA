@@ -63,13 +63,8 @@ func (w *WACBWatcher) token() string {
 	if t := w.wacbClient.CachedToken(); t != "" {
 		return t
 	}
-	if w.pollUser != "" && w.pollPass != "" {
-		resp, err := w.wacbClient.Login(w.pollUser, w.pollPass)
-		if err == nil && resp != nil && resp.Token != "" {
-			log.Println("[WATCHER] Login akun service WACB berhasil.")
-			return resp.Token
-		}
-		log.Printf("[WATCHER] Login akun service WACB gagal: %v", err)
+	if tok, err := w.wacbClient.EnsureToken(); err == nil && tok != "" {
+		return tok
 	}
 	return ""
 }

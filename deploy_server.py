@@ -24,6 +24,9 @@ IGNORE_DIRS = {
 IGNORE_EXTS = {
     ".log", ".tar", ".gz", ".zip", ".exe", ".bat"
 }
+IGNORE_FILES = {
+    "server_app", "server_app.exe"
+}
 
 def get_ssh():
     client = paramiko.SSHClient()
@@ -94,7 +97,7 @@ def deploy():
 
             for file in files:
                 ext = os.path.splitext(file)[1].lower()
-                if ext in IGNORE_EXTS:
+                if ext in IGNORE_EXTS or file in IGNORE_FILES:
                     continue
                 if file.startswith(".") and file not in [".env", ".env.production", ".env.local"]:
                     continue

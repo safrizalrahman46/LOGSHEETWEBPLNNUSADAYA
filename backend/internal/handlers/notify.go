@@ -30,31 +30,29 @@ func allowedPriority(p string) string {
 	}
 }
 
-// targetForType memetakan tipe notifikasi ke enum notification_target.
-func targetForType(nType string) string {
-	switch strings.ToLower(nType) {
-	case "error", "warning":
-		return "error"
-	case "logsheet", "sync", "wacb":
-		return "logsheet"
-	case "approval":
-		return "approval"
-	default:
-		return "general"
+// targetForRecipient memetakan penerima ke enum notification_target (general, role, user, unit).
+func targetForRecipient(userID, unitID string) string {
+	if strings.TrimSpace(userID) != "" {
+		return "user"
 	}
+	if strings.TrimSpace(unitID) != "" {
+		return "unit"
+	}
+	return "general"
 }
 
 // NotifyUser membuat notifikasi untuk satu users.id.
 // userID kosong → notifikasi broadcast: user_id diisi NULL
 // (kolom punya FK ke users.id sehingga string kosong akan ditolak DB).
 func NotifyUser(db *gorm.DB, userID, unitID, nType, priority, title, description string) {
+	target := targetForRecipient(userID, unitID)
 	n := models.Notification{
 		Title:       strings.TrimSpace(title),
 		Description: strings.TrimSpace(description),
 		Time:        time.Now(),
 		Priority:    allowedPriority(priority),
 		Type:        nType,
-		TargetType:  targetForType(nType),
+		TargetType:  target,
 		IsRead:      false,
 		UserID:      nil,
 		UnitID:      strings.TrimSpace(unitID),

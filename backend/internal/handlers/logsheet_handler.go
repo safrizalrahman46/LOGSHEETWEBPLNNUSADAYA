@@ -394,7 +394,10 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 func (h *LogsheetHandler) GetMatrix(c *fiber.Ctx) error {
 	kdRegion := c.Query("kd_region", "05")
 	tanggal := c.Query("tanggal", time.Now().Format("2006-01-02"))
-	kdUnit := c.Query("kd_unit", "0264")
+	kdUnit := strings.TrimSpace(c.Query("kd_unit"))
+	if strings.EqualFold(kdUnit, "ALL") || kdUnit == "*" {
+		kdUnit = ""
+	}
 
 	token := c.Get("Authorization")
 	resp, err := h.wacbClient.GetMatrix(token, kdRegion, tanggal, kdUnit)
@@ -404,6 +407,40 @@ func (h *LogsheetHandler) GetMatrix(c *fiber.Ctx) error {
 			"message": "Gagal mengambil matriks: " + err.Error(),
 		})
 	}
+
+	// Merge dengan database lokal PostgreSQL agar input terbaru yang baru saja
+	// dikirim langsung berwarna hijau di tampilan pengguna
+	var localRecords []models.LogsheetRecord
+	q := h.db.Where("tanggal = ?", tanggal)
+	if kdUnit != "" {
+		q = q.Where("kd_unit = ?", kdUnit)
+	}
+	q.Find(&localRecords)
+
+	if len(localRecords) > 0 && resp != nil && len(resp.Data) > 0 {
+		for i := range resp.Data {
+			unit := &resp.Data[i]
+			for _, rec := range localRecords {
+				if rec.KdUnit == unit.KdUnit {
+					jam := rec.Jam
+					if len(jam) == 5 {
+						slot, exists := unit.LogsheetPLTD[jam]
+						if exists && slot.Status != "done" {
+							idBeban := rec.WACBID
+							if idBeban == "" {
+								idBeban = fmt.Sprintf("%s-LOCAL-%s-%s:00", rec.KdUnit, rec.Tanggal, jam)
+							}
+							unit.LogsheetPLTD[jam] = models.WACBTimeSlotStatus{
+								Status:  "done",
+								IdBeban: &idBeban,
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return c.JSON(resp)
 }
 

@@ -18,6 +18,8 @@ import (
 
 type WACBClient struct {
 	baseURL    string
+	pollUser   string
+	pollPass   string
 	httpClient *http.Client
 
 	mu          sync.RWMutex
@@ -25,10 +27,25 @@ type WACBClient struct {
 }
 
 func NewWACBClient(cfg *config.Config) *WACBClient {
+	baseURL := strings.TrimRight(cfg.WACBBaseURL, "/")
+	if strings.HasPrefix(baseURL, "http://") {
+		baseURL = "https://" + strings.TrimPrefix(baseURL, "http://")
+	}
+	pollUser := strings.TrimSpace(cfg.WACBPollUser)
+	if pollUser == "" {
+		pollUser = "kal3"
+	}
+	pollPass := strings.TrimSpace(cfg.WACBPollPassword)
+	if pollPass == "" {
+		pollPass = "password"
+	}
+
 	return &WACBClient{
-		baseURL: cfg.WACBBaseURL,
+		baseURL:  baseURL,
+		pollUser: pollUser,
+		pollPass: pollPass,
 		httpClient: &http.Client{
-			Timeout: 15 * time.Second,
+			Timeout: 20 * time.Second,
 		},
 	}
 }
@@ -58,16 +75,48 @@ func (c *WACBClient) ClearToken() {
 	c.mu.Unlock()
 }
 
+// EnsureToken memastikan client memiliki token aktif dari WACB, login otomatis jika belum ada / expired.
+func (c *WACBClient) EnsureToken() (string, error) {
+	c.mu.RLock()
+	tok := c.cachedToken
+	c.mu.RUnlock()
+	if tok != "" && !strings.HasPrefix(tok, "mock_") {
+		return tok, nil
+	}
+
+	// Login ke WACB dilakukan tanpa menahan lock mutex agar tidak deadlock
+	loginResp, err := c.Login(c.pollUser, c.pollPass)
+	if err != nil {
+		return "", fmt.Errorf("gagal autentikasi ke WACB API: %w", err)
+	}
+	return loginResp.Token, nil
+}
+
 // pickToken memilih token yang dipakai ke server WACB:
 // token cache (akun service / hasil login relay) lebih diprioritaskan,
-// selain itu token yang diteruskan dari request dibersihkan dari prefix "Bearer".
+// jika token yang dikirim adalah JWT lokal (eyJ...), otomatis diabaikan dan memakai token WACB asli.
 func (c *WACBClient) pickToken(token string) string {
 	if cached := c.CachedToken(); cached != "" {
 		return cached
 	}
+
 	t := strings.TrimSpace(token)
 	t = strings.TrimPrefix(t, "Bearer")
-	return strings.TrimSpace(t)
+	t = strings.TrimSpace(t)
+
+	// Filter token JWT lokal (header.payload.signature) agar tidak ditolak WACB
+	if strings.HasPrefix(t, "eyJ") || strings.Count(t, ".") == 2 {
+		t = ""
+	}
+
+	if t != "" && !strings.HasPrefix(t, "mock_") {
+		return t
+	}
+
+	if tok, err := c.EnsureToken(); err == nil && tok != "" {
+		return tok
+	}
+	return ""
 }
 
 // Login melakukan autentikasi ke WACB (POST /login, lihat dokumentasi API DIGIKIT).
@@ -122,16 +171,31 @@ func (c *WACBClient) GetUnits(token, kdRegion string, kdArea *string) (*models.W
 		endpoint += "&kd_area=" + url.QueryEscape(*kdArea)
 	}
 
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	if tok := c.pickToken(token); tok != "" {
-		req.Header.Set("Authorization", "Bearer "+tok)
+	sendReq := func(tok string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+		if err != nil {
+			return nil, err
+		}
+		if tok != "" {
+			req.Header.Set("Authorization", "Bearer "+tok)
+		}
+		return c.httpClient.Do(req)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
+	tok := c.pickToken(token)
+	resp, err := sendReq(tok)
+	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		c.ClearToken()
+		if newTok, err2 := c.EnsureToken(); err2 == nil {
+			resp, err = sendReq(newTok)
+		}
+	}
+
+	if err != nil || resp == nil || resp.StatusCode != http.StatusOK {
+		if resp != nil {
+			resp.Body.Close()
+		}
 		// Fallback all 30 units Kalimantan 3
 		var list []models.WACBUnitItem
 		for kd, meta := range allUnitsMap {
@@ -169,16 +233,31 @@ func (c *WACBClient) GetUnitFormat(token, kdRegion, kdArea, kdUnit string) (*mod
 	endpoint := fmt.Sprintf("%s/v1/format-logsheet-pltd?kd_region=%s&kd_area=%s&kd_unit=%s",
 		c.baseURL, kdRegion, url.QueryEscape(kdArea), url.QueryEscape(kdUnit))
 
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	if tok := c.pickToken(token); tok != "" {
-		req.Header.Set("Authorization", "Bearer "+tok)
+	sendReq := func(tok string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+		if err != nil {
+			return nil, err
+		}
+		if tok != "" {
+			req.Header.Set("Authorization", "Bearer "+tok)
+		}
+		return c.httpClient.Do(req)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
+	tok := c.pickToken(token)
+	resp, err := sendReq(tok)
+	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		c.ClearToken()
+		if newTok, err2 := c.EnsureToken(); err2 == nil {
+			resp, err = sendReq(newTok)
+		}
+	}
+
+	if err != nil || resp == nil || resp.StatusCode != http.StatusOK {
+		if resp != nil {
+			resp.Body.Close()
+		}
 		// Fallback mock unit with 5-6 machines for PLTD Batu Ampar or standard
 		return c.getFallbackUnitFormat(kdRegion, kdArea, kdUnit), nil
 	}
@@ -203,35 +282,46 @@ func (c *WACBClient) SubmitLogsheet(token, kdRegion, messageText string) (*model
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonBytes))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	if tok := c.pickToken(token); tok != "" {
-		req.Header.Set("Authorization", "Bearer "+tok)
+	sendReq := func(tok string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonBytes))
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Accept", "application/json")
+		if tok != "" {
+			req.Header.Set("Authorization", "Bearer "+tok)
+		}
+		return c.httpClient.Do(req)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil || (resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated) {
-		// Return success simulation if WACB is temporarily uncontactable
-		return &models.WACBSubmitResponse{
-			Success: true,
-			Message: "Laporan logsheet berhasil disimpan (Simulated Relay).",
-			Data: &models.WACBSubmitData{
-				ID:       999,
-				KdRegion: kdRegion,
-				KdUnit:   "0264",
-				NamaUnit: "ULD BATU AMPAR",
-			},
-		}, nil
+	tok := c.pickToken(token)
+	resp, err := sendReq(tok)
+	if err != nil {
+		return nil, fmt.Errorf("gagal menghubungi WACB API: %w", err)
+	}
+
+	// Auto-retry jika token kedaluwarsa (401)
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		c.ClearToken()
+		if newTok, err2 := c.EnsureToken(); err2 == nil {
+			resp, err = sendReq(newTok)
+			if err != nil {
+				return nil, fmt.Errorf("retry submit WACB gagal: %w", err)
+			}
+		}
 	}
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("WACB menolak input logsheet (HTTP %d): %s", resp.StatusCode, string(body))
+	}
+
 	var submitResp models.WACBSubmitResponse
 	if err := json.Unmarshal(body, &submitResp); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("format respons WACB tidak valid: %w (body: %s)", err, string(body))
 	}
 	return &submitResp, nil
 }
@@ -246,7 +336,6 @@ func (c *WACBClient) GetMatrix(token, kdRegion, tanggal, kdUnit string) (*models
 	body, _ := io.ReadAll(resp.Body)
 	var matrixResp models.WACBMatrixResponse
 	if resp.StatusCode != http.StatusOK || json.Unmarshal(body, &matrixResp) != nil {
-		// WACB merespons non-JSON (mis. halaman HTML/login) → pakai mock 48 slot
 		return c.getFallbackMatrix(kdRegion, tanggal, kdUnit), nil
 	}
 	return &matrixResp, nil
@@ -279,40 +368,73 @@ func (c *WACBClient) GetMatrixStrict(token, kdRegion, tanggal, kdUnit string) (*
 // doReport memanggil endpoint Get Report Logsheet (GET /logsheet).
 func (c *WACBClient) doReport(token, kdRegion, tanggal, kdUnit string) (*http.Response, error) {
 	endpoint := fmt.Sprintf("%s/logsheet?kd_region=%s&tanggal=%s", c.baseURL, kdRegion, url.QueryEscape(tanggal))
-	if kdUnit != "" {
+	if kdUnit != "" && kdUnit != "ALL" {
 		endpoint += "&kd_unit=" + url.QueryEscape(kdUnit)
 	}
 
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	sendReq := func(tok string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Accept", "application/json")
+		if tok != "" {
+			req.Header.Set("Authorization", "Bearer "+tok)
+		}
+		return c.httpClient.Do(req)
+	}
+
+	tok := c.pickToken(token)
+	resp, err := sendReq(tok)
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Accept", "application/json")
-	if tok := c.pickToken(token); tok != "" {
-		req.Header.Set("Authorization", "Bearer "+tok)
+
+	// Auto-retry jika token kedaluwarsa (401)
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		c.ClearToken()
+		if newTok, err2 := c.EnsureToken(); err2 == nil {
+			return sendReq(newTok)
+		}
 	}
-	return c.httpClient.Do(req)
+	return resp, nil
 }
 
 func (c *WACBClient) GetDetail(token, idBebanUld, kdUnit, tanggal, jam string) (*models.WACBDetailReportResponse, error) {
 	endpoint := fmt.Sprintf("%s/getLogsheet/%s?kd_unit=%s&tanggal=%s&jam=%s",
 		c.baseURL, url.PathEscape(idBebanUld), url.QueryEscape(kdUnit), url.QueryEscape(tanggal), url.QueryEscape(jam))
 
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Accept", "application/json")
-	if tok := c.pickToken(token); tok != "" {
-		req.Header.Set("Authorization", "Bearer "+tok)
+	sendReq := func(tok string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Set("Accept", "application/json")
+		if tok != "" {
+			req.Header.Set("Authorization", "Bearer "+tok)
+		}
+		return c.httpClient.Do(req)
 	}
 
-	resp, err := c.httpClient.Do(req)
+	tok := c.pickToken(token)
+	resp, err := sendReq(tok)
 	if err != nil {
-		// Mock detail
 		return c.getFallbackDetail(idBebanUld, kdUnit, tanggal, jam), nil
 	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
+		c.ClearToken()
+		if newTok, err2 := c.EnsureToken(); err2 == nil {
+			resp, err = sendReq(newTok)
+			if err != nil {
+				return c.getFallbackDetail(idBebanUld, kdUnit, tanggal, jam), nil
+			}
+		}
+	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		return c.getFallbackDetail(idBebanUld, kdUnit, tanggal, jam), nil
 	}
@@ -445,40 +567,57 @@ func (c *WACBClient) getFallbackUnitFormat(kdRegion, kdArea, kdUnit string) *mod
 }
 
 func (c *WACBClient) getFallbackMatrix(kdRegion, tanggal, kdUnit string) *models.WACBMatrixResponse {
-	unitName, _, _, machines := lookupUnitInfo(kdUnit)
-	firstMachineID := "000344"
-	if len(machines) > 0 {
-		firstMachineID = machines[0].IdMesin
-	}
-
-	slots := make(map[string]models.WACBTimeSlotStatus)
-	for h := 0; h < 24; h++ {
-		slot1 := fmt.Sprintf("%02d:00", h)
-		slot2 := fmt.Sprintf("%02d:30", h)
-
-		status := "not done"
-		var idBeban *string
-		if h >= 8 && h <= 14 {
-			status = "done"
-			idVal := fmt.Sprintf("%s-%s-%s-%s:00", kdUnit, firstMachineID, tanggal, slot1)
-			idBeban = &idVal
+	makeSlots := func(unitCode, machineID string) map[string]models.WACBTimeSlotStatus {
+		slots := make(map[string]models.WACBTimeSlotStatus)
+		for h := 0; h < 24; h++ {
+			slot1 := fmt.Sprintf("%02d:00", h)
+			slot2 := fmt.Sprintf("%02d:30", h)
+			slots[slot1] = models.WACBTimeSlotStatus{Status: "not done", IdBeban: nil}
+			slots[slot2] = models.WACBTimeSlotStatus{Status: "not done", IdBeban: nil}
 		}
-		slots[slot1] = models.WACBTimeSlotStatus{Status: status, IdBeban: idBeban}
-		slots[slot2] = models.WACBTimeSlotStatus{Status: status, IdBeban: idBeban}
+		return slots
 	}
 
+	if kdUnit != "" && kdUnit != "ALL" {
+		unitName, _, _, machines := lookupUnitInfo(kdUnit)
+		firstMachineID := "000344"
+		if len(machines) > 0 {
+			firstMachineID = machines[0].IdMesin
+		}
+		return &models.WACBMatrixResponse{
+			Success: true,
+			Data: []models.WACBMatrixUnit{
+				{
+					ID:             269,
+					KdRegion:       kdRegion,
+					KdUnit:         kdUnit,
+					NamaUnit:       unitName,
+					JamOperasional: 24,
+					LogsheetPLTD:   makeSlots(kdUnit, firstMachineID),
+				},
+			},
+		}
+	}
+
+	var units []models.WACBMatrixUnit
+	idCounter := 260
+	for kd, meta := range allUnitsMap {
+		idCounter++
+		units = append(units, models.WACBMatrixUnit{
+			ID:             idCounter,
+			KdRegion:       kdRegion,
+			KdUnit:         kd,
+			NamaUnit:       meta.NamaUnit,
+			JamOperasional: 24,
+			LogsheetPLTD:   makeSlots(kd, "000344"),
+		})
+	}
+	sort.Slice(units, func(i, j int) bool {
+		return units[i].KdUnit < units[j].KdUnit
+	})
 	return &models.WACBMatrixResponse{
 		Success: true,
-		Data: []models.WACBMatrixUnit{
-			{
-				ID:             269,
-				KdRegion:       kdRegion,
-				KdUnit:         kdUnit,
-				NamaUnit:       unitName,
-				JamOperasional: 24,
-				LogsheetPLTD:   slots,
-			},
-		},
+		Data:    units,
 	}
 }
 

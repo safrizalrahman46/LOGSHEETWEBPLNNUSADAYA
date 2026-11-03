@@ -90,8 +90,18 @@ func (mb *MessageBuilder) BuildMessageText(req *models.BatchLogsheetRequest) str
 		}
 		sb.WriteString(fmt.Sprintf("jam kerja mesin: %s\n", jkmStr))
 		sb.WriteString(fmt.Sprintf("status mesin: %s\n", status))
-		sb.WriteString("Kwh produksi : \n")
-		sb.WriteString("pemakaian bbm : \n")
+
+		kwhProd := ""
+		if m.KwhProduksi > 0 {
+			kwhProd = fmt.Sprintf("%.1f", m.KwhProduksi)
+		}
+		sb.WriteString(fmt.Sprintf("Kwh produksi : %s\n", kwhProd))
+
+		bbmProd := ""
+		if m.PemakaianBbm > 0 {
+			bbmProd = fmt.Sprintf("%.1f", m.PemakaianBbm)
+		}
+		sb.WriteString(fmt.Sprintf("pemakaian bbm : %s\n", bbmProd))
 		sb.WriteString(fmt.Sprintf("jenis bahan bakar : %s\n", fuel))
 
 		notes := strings.TrimSpace(m.Keterangan)
@@ -104,7 +114,7 @@ func (mb *MessageBuilder) BuildMessageText(req *models.BatchLogsheetRequest) str
 				notes = "Beroperasi Normal"
 			}
 		}
-		sb.WriteString(fmt.Sprintf("ket: %s", notes))
+		sb.WriteString(fmt.Sprintf("ket: %s\n", notes))
 	}
 
 	return sb.String()

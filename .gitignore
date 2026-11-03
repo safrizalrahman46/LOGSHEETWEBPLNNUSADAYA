@@ -39,3 +39,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+backend/server_app
+wacb_doc_extracted.txt
