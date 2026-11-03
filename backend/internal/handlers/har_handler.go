@@ -194,6 +194,21 @@ func (h *HARHandler) GetTicketDetail(c *fiber.Ctx) error {
 	})
 }
 
+// DeleteTicket menghapus tiket HAR / laporan gangguan
+func (h *HARHandler) DeleteTicket(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if err := h.db.Delete(&models.HARTicket{}, id).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal menghapus tiket HAR: " + err.Error(),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Tiket HAR / laporan gangguan berhasil dihapus",
+	})
+}
+
 // ==========================================
 // AMC GANGGUAN KIT KALTIMRA 2026 HANDLERS
 // ==========================================

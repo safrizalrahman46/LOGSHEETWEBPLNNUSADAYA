@@ -25,6 +25,7 @@ import {
   ArrowRight,
   AlertCircle,
   FileSpreadsheet,
+  Trash2,
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { RoleGuard } from "@/components/common/RoleGuard";
@@ -188,6 +189,36 @@ export default function HarModulePage() {
   // Detail Modal State
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<HARTicket | null>(null);
+
+  // Delete Ticket State
+  const [deleteTicketModalOpen, setDeleteTicketModalOpen] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState<HARTicket | null>(null);
+  const [deletingTicket, setDeletingTicket] = useState(false);
+
+  const confirmDeleteTicket = (t: HARTicket) => {
+    setTicketToDelete(t);
+    setDeleteTicketModalOpen(true);
+  };
+
+  const handleDeleteTicket = async () => {
+    if (!ticketToDelete) return;
+    setDeletingTicket(true);
+    try {
+      await apiClient.delete(`/har/tickets/${ticketToDelete.id}`);
+      fetchTickets();
+      setDeleteTicketModalOpen(false);
+      if (selectedTicket?.id === ticketToDelete.id) {
+        setDetailModalOpen(false);
+        setSelectedTicket(null);
+      }
+      setTicketToDelete(null);
+      alert("Tiket HAR / laporan gangguan berhasil dihapus!");
+    } catch (err: any) {
+      alert("Gagal menghapus tiket: " + (err.response?.data?.message || err.message));
+    } finally {
+      setDeletingTicket(false);
+    }
+  };
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -561,6 +592,13 @@ export default function HarModulePage() {
                                       Approve
                                     </button>
                                   )}
+                                <button
+                                  onClick={() => confirmDeleteTicket(t)}
+                                  className="rounded-lg border border-rose-200 bg-rose-50/70 p-1.5 text-rose-600 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/50 transition-colors shadow-theme-xs"
+                                  title="Hapus Tiket HAR"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
                               </div>
                             </td>
                           </tr>
@@ -1283,26 +1321,96 @@ export default function HarModulePage() {
                 </div>
 
                 {/* Approval Action */}
-                <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
+                <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
                   <button
                     type="button"
-                    onClick={() => setDetailModalOpen(false)}
-                    className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300"
+                    onClick={() => confirmDeleteTicket(selectedTicket)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400 transition-colors"
                   >
-                    Tutup
+                    <Trash2 className="h-4 w-4" />
+                    <span>Hapus Tiket</span>
                   </button>
-                  {selectedTicket.status !== "APPROVED" &&
-                    (userRole === "SUPERVISOR" ||
-                      userRole === "ADMIN" ||
-                      userRole === "SUPERADMIN") && (
-                      <button
-                        type="button"
-                        onClick={() => handleApproveTicket(selectedTicket.id)}
-                        className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-theme-xs"
-                      >
-                        Setujui & Approve Tiket
-                      </button>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDetailModalOpen(false)}
+                      className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300"
+                    >
+                      Tutup
+                    </button>
+                    {selectedTicket.status !== "APPROVED" &&
+                      (userRole === "SUPERVISOR" ||
+                        userRole === "ADMIN" ||
+                        userRole === "SUPERADMIN") && (
+                        <button
+                          type="button"
+                          onClick={() => handleApproveTicket(selectedTicket.id)}
+                          className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 shadow-theme-xs"
+                        >
+                          Setujui & Approve Tiket
+                        </button>
+                      )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Konfirmasi Hapus Tiket HAR */}
+          {deleteTicketModalOpen && ticketToDelete && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 backdrop-blur-xs p-4">
+              <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-800 dark:bg-gray-900 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+                    <Trash2 className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                      Hapus Tiket Gangguan / HAR
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      Tindakan ini permanen dan menghapus tiket dari database.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-gray-50 p-3.5 text-xs dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 space-y-1">
+                  <p className="font-bold text-gray-900 dark:text-white">
+                    {ticketToDelete.ticket_number} • {ticketToDelete.nama_mesin}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {ticketToDelete.nama_unit} • {ticketToDelete.maintenance_type}
+                  </p>
+                  <p className="text-rose-600 dark:text-rose-400 font-medium truncate">
+                    {ticketToDelete.fault_description}
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Apakah Anda yakin ingin menghapus tiket pemeliharaan / gangguan ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                  <button
+                    type="button"
+                    disabled={deletingTicket}
+                    onClick={() => {
+                      setDeleteTicketModalOpen(false);
+                      setTicketToDelete(null);
+                    }}
+                    className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    disabled={deletingTicket}
+                    onClick={handleDeleteTicket}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 disabled:opacity-50 shadow-theme-xs transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>{deletingTicket ? "Menghapus..." : "Ya, Hapus Tiket"}</span>
+                  </button>
                 </div>
               </div>
             </div>

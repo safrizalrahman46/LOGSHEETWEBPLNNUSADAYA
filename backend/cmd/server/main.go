@@ -205,13 +205,14 @@ func main() {
 	har.Post("/tickets", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateTicket)
 	har.Put("/tickets/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor), harHandler.UpdateTicketStatus)
 	har.Put("/tickets/:id/approve", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.ApproveTicket)
+	har.Delete("/tickets/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.DeleteTicket)
 
 	// AMC Gangguan KIT KALTIMRA 2026
 	har.Get("/amc", harHandler.GetAMCReports)
 	har.Get("/amc/stats", harHandler.GetAMCStats)
 	har.Post("/amc", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateAMCReport)
 	har.Put("/amc/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.UpdateAMCReport)
-	har.Delete("/amc/:id", middleware.RequireRoles(models.RoleAdmin, models.RoleSuperadmin), harHandler.DeleteAMCReport)
+	har.Delete("/amc/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.DeleteAMCReport)
 
 	// Excel Export & Data Import / Export Suite
 	protected.Get("/export/excel", exportHandler.ExportExcel)

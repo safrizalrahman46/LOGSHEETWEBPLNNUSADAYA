@@ -20,6 +20,7 @@ import {
   Check,
   X,
   FileSpreadsheet,
+  Trash2,
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { RoleGuard } from "@/components/common/RoleGuard";
@@ -40,6 +41,34 @@ export default function AmcModulePage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<AMCReport | null>(null);
+
+  // Delete State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<AMCReport | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const confirmDelete = (report: AMCReport) => {
+    setReportToDelete(report);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteReport = async () => {
+    if (!reportToDelete) return;
+    setDeleting(true);
+    try {
+      await apiClient.delete(`/har/amc/${reportToDelete.id}`);
+      fetchReports();
+      setDeleteModalOpen(false);
+      if (expandedId === reportToDelete.id) setExpandedId(null);
+      if (updateModalOpen && selectedReport?.id === reportToDelete.id) setUpdateModalOpen(false);
+      setReportToDelete(null);
+      alert("Laporan gangguan AMC berhasil dihapus!");
+    } catch (err: any) {
+      alert("Gagal menghapus laporan gangguan: " + (err.response?.data?.message || err.message));
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   // New Report State
   const [newReport, setNewReport] = useState<Partial<AMCReport>>({
@@ -500,6 +529,13 @@ export default function AmcModulePage() {
                               >
                                 Update Progres
                               </button>
+                              <button
+                                onClick={() => confirmDelete(r)}
+                                className="rounded-lg border border-rose-200 bg-rose-50/70 p-1.5 text-rose-600 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/50 transition-colors shadow-theme-xs"
+                                title="Hapus Laporan Gangguan"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
                             </div>
                           </td>
                         </tr>
@@ -560,6 +596,30 @@ export default function AmcModulePage() {
                           <span>Downtime: {item.lama_gangguan_jam} Jam</span>
                           <span>PIC: {item.pic}</span>
                         </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between border-t border-gray-200/80 pt-3 dark:border-gray-800">
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                        ID Laporan: #{item.id} • Dibuat: {item.waktu_kejadian ? new Date(item.waktu_kejadian).toLocaleString("id-ID") : "-"}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => confirmDelete(item)}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-600 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/50 transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Hapus Laporan Gangguan</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => openUpdateModal(item)}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-brand-500 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-brand-600 shadow-theme-xs transition-colors"
+                        >
+                          <Activity className="h-3.5 w-3.5" />
+                          <span>Update Progres</span>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -881,22 +941,94 @@ export default function AmcModulePage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-end gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
                     <button
                       type="button"
-                      onClick={() => setUpdateModalOpen(false)}
-                      className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                      onClick={() => {
+                        if (selectedReport) confirmDelete(selectedReport);
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-600 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400 transition-colors"
                     >
-                      Batal
+                      <Trash2 className="h-4 w-4" />
+                      <span>Hapus Laporan</span>
                     </button>
-                    <button
-                      type="submit"
-                      className="rounded-xl bg-brand-500 px-5 py-2 text-xs font-semibold text-white shadow-theme-xs hover:bg-brand-600"
-                    >
-                      Update Progres
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setUpdateModalOpen(false)}
+                        className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                      >
+                        Batal
+                      </button>
+                      <button
+                        type="submit"
+                        className="rounded-xl bg-brand-500 px-5 py-2 text-xs font-semibold text-white shadow-theme-xs hover:bg-brand-600"
+                      >
+                        Update Progres
+                      </button>
+                    </div>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Konfirmasi Hapus Laporan Gangguan */}
+          {deleteModalOpen && reportToDelete && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 backdrop-blur-xs p-4">
+              <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-800 dark:bg-gray-900 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+                    <Trash2 className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                      Hapus Laporan Gangguan
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      Tindakan ini permanen dan menghapus rekaman dari database.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl bg-gray-50 p-3.5 text-xs dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 space-y-1">
+                  <p className="font-bold text-gray-900 dark:text-white">
+                    {reportToDelete.unit_pembangkit}
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {reportToDelete.sentral} • UP3 {reportToDelete.up3}
+                  </p>
+                  <p className="text-rose-600 dark:text-rose-400 font-medium">
+                    Indikasi: {reportToDelete.indikasi_gangguan}
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Apakah Anda yakin ingin menghapus data laporan gangguan untuk mesin ini? Tindakan ini tidak dapat dibatalkan.
+                </p>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                  <button
+                    type="button"
+                    disabled={deleting}
+                    onClick={() => {
+                      setDeleteModalOpen(false);
+                      setReportToDelete(null);
+                    }}
+                    className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    disabled={deleting}
+                    onClick={handleDeleteReport}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 disabled:opacity-50 shadow-theme-xs transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>{deleting ? "Menghapus..." : "Ya, Hapus Laporan"}</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
