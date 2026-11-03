@@ -230,11 +230,18 @@ func (c *WACBClient) GetUnits(token, kdRegion string, kdArea *string) (*models.W
 }
 
 func (c *WACBClient) GetUnitFormat(token, kdRegion, kdArea, kdUnit string) (*models.WACBFormatResponse, error) {
-	endpoint := fmt.Sprintf("%s/v1/format-logsheet-pltd?kd_region=%s&kd_area=%s&kd_unit=%s",
-		c.baseURL, kdRegion, url.QueryEscape(kdArea), url.QueryEscape(kdUnit))
+	// WACB API memfilter ketat parameter kd_area. Jika kd_area kosong, '40', atau 'ALL',
+	// jangan sertakan kd_area karena akan menyebabkan HTTP 404 pada unit di area lain (mis. 67 SITE BERAU).
+	// Query dengan kd_region & kd_unit saja terbukti 100% akurat untuk seluruh 30 unit di Kalimantan 3.
+	endpoint := fmt.Sprintf("%s/v1/format-logsheet-pltd?kd_region=%s&kd_unit=%s",
+		c.baseURL, kdRegion, url.QueryEscape(kdUnit))
+	if kdArea != "" && kdArea != "40" && kdArea != "ALL" {
+		endpoint = fmt.Sprintf("%s/v1/format-logsheet-pltd?kd_region=%s&kd_area=%s&kd_unit=%s",
+			c.baseURL, kdRegion, url.QueryEscape(kdArea), url.QueryEscape(kdUnit))
+	}
 
-	sendReq := func(tok string) (*http.Response, error) {
-		req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	sendReq := func(tok, targetUrl string) (*http.Response, error) {
+		req, err := http.NewRequest(http.MethodGet, targetUrl, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -245,13 +252,21 @@ func (c *WACBClient) GetUnitFormat(token, kdRegion, kdArea, kdUnit string) (*mod
 	}
 
 	tok := c.pickToken(token)
-	resp, err := sendReq(tok)
+	resp, err := sendReq(tok, endpoint)
 	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
 		resp.Body.Close()
 		c.ClearToken()
 		if newTok, err2 := c.EnsureToken(); err2 == nil {
-			resp, err = sendReq(newTok)
+			resp, err = sendReq(newTok, endpoint)
 		}
+	}
+
+	// Jika ada kd_area dan mendapatkan 404, coba lagi tanpa parameter kd_area
+	if resp != nil && resp.StatusCode == http.StatusNotFound && strings.Contains(endpoint, "kd_area=") {
+		resp.Body.Close()
+		fallbackUrl := fmt.Sprintf("%s/v1/format-logsheet-pltd?kd_region=%s&kd_unit=%s",
+			c.baseURL, kdRegion, url.QueryEscape(kdUnit))
+		resp, err = sendReq(tok, fallbackUrl)
 	}
 
 	if err != nil || resp == nil || resp.StatusCode != http.StatusOK {

@@ -195,6 +195,7 @@ func main() {
 	wacb.Get("/matrix", logsheetHandler.GetMatrix)
 	wacb.Get("/detail/:idBebanUld", logsheetHandler.GetDetail)
 	wacb.Get("/history", logsheetHandler.GetHistory)
+	wacb.Post("/resync-pending", logsheetHandler.ResyncPending)
 
 	// HAR Module
 	har := protected.Group("/har")

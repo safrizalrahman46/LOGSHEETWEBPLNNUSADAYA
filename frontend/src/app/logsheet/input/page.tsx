@@ -595,12 +595,15 @@ function InputLogsheetContent() {
   const fetchFormatForUnit = useCallback(async (targetUnit: { kd_unit: string; nama_unit: string; kd_area?: string }) => {
     setLoadingFormat(true);
     try {
+      const queryParams: Record<string, string> = {
+        kd_region: "05",
+        kd_unit: targetUnit.kd_unit,
+      };
+      if (targetUnit.kd_area && targetUnit.kd_area !== "40" && targetUnit.kd_area !== "ALL") {
+        queryParams.kd_area = targetUnit.kd_area;
+      }
       const res = await apiClient.get<WACBFormatResponse>("/wacb/format", {
-        params: {
-          kd_region: "05",
-          kd_area: targetUnit.kd_area || "40",
-          kd_unit: targetUnit.kd_unit,
-        },
+        params: queryParams,
       });
 
       let machinesData = res.data?.format?.mesin;

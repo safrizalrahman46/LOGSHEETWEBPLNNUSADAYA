@@ -88,7 +88,7 @@ func (h *LogsheetHandler) GetUnits(c *fiber.Ctx) error {
 
 func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 	kdRegion := c.Query("kd_region", "05")
-	kdArea := c.Query("kd_area", "40")
+	kdArea := c.Query("kd_area")
 	kdUnit := c.Query("kd_unit", "0264")
 
 	token := c.Get("Authorization")
@@ -144,39 +144,72 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 	}
 	var dbMachines []DBMachineInfo
 	if err := h.db.Table("machines").Where("unit_id = ?", kdUnit).Order("id ASC").Find(&dbMachines).Error; err == nil && len(dbMachines) > 0 {
-		var wacbMachines []models.WACBMachineItem
-		for idx, m := range dbMachines {
-			dtVal := 1000
-			cleanCap := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(m.Capacity), "kw", ""))
-			if val, err := strconv.Atoi(cleanCap); err == nil && val > 0 {
-				dtVal = val
-			} else if fval, ferr := strconv.ParseFloat(cleanCap, 64); ferr == nil && fval > 0 {
-				dtVal = int(math.Round(fval))
+		// PENTING: Jika WACB sudah mengembalikan format mesin resmi (resp.Format.Mesin > 0),
+		// JANGAN pernah mengganti IdMesin atau KodeMesinSilm dengan ID lokal ("M-xxxx-xx"),
+		// karena WACB akan menolak pelaporan dengan error "ID mesin tidak ditemukan"!
+		if resp.Format != nil && len(resp.Format.Mesin) > 0 {
+			for idx := range resp.Format.Mesin {
+				if idx < len(dbMachines) {
+					m := dbMachines[idx]
+					if m.MachineName != "" {
+						resp.Format.Mesin[idx].NamaMesin = m.MachineName
+					}
+					// Update status
+					switch strings.ToLower(m.Status) {
+					case "standby":
+						resp.Format.Mesin[idx].StatusMesin = "STANDBY"
+					case "gangguan-rusak", "rusak", "gangguan":
+						resp.Format.Mesin[idx].StatusMesin = "GANGGUAN"
+					default:
+						resp.Format.Mesin[idx].StatusMesin = "OPERASI"
+					}
+				}
 			}
+		} else {
+			// Hanya gunakan dbMachines jika WACB offline/tidak memiliki data mesin
+			var wacbMachines []models.WACBMachineItem
+			for idx, m := range dbMachines {
+				dtVal := 1000
+				cleanCap := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(m.Capacity), "kw", ""))
+				if val, err := strconv.Atoi(cleanCap); err == nil && val > 0 {
+					dtVal = val
+				} else if fval, ferr := strconv.ParseFloat(cleanCap, 64); ferr == nil && fval > 0 {
+					dtVal = int(math.Round(fval))
+				}
 
-			initialStatus := "OPERASI"
-			switch strings.ToLower(m.Status) {
-			case "standby":
-				initialStatus = "STANDBY"
-			case "gangguan-rusak", "rusak", "gangguan":
-				initialStatus = "GANGGUAN"
-			default:
-				initialStatus = "OPERASI"
+				initialStatus := "OPERASI"
+				switch strings.ToLower(m.Status) {
+				case "standby":
+					initialStatus = "STANDBY"
+				case "gangguan-rusak", "rusak", "gangguan":
+					initialStatus = "GANGGUAN"
+				default:
+					initialStatus = "OPERASI"
+				}
+
+				idMesin := m.ID
+				kodeMesin := m.GeneratorCode
+				if strings.HasPrefix(idMesin, "M-") || len(idMesin) > 8 {
+					idMesin = fmt.Sprintf("%s%02d", kdUnit, idx+1)
+				}
+				if kodeMesin == "" || kodeMesin == "PLTD-HSD" {
+					kodeMesin = fmt.Sprintf("225551403%s%d", kdUnit, idx+1)
+				}
+
+				wacbMachines = append(wacbMachines, models.WACBMachineItem{
+					Nomor:             idx + 1,
+					NamaMesin:         m.MachineName,
+					IdMesin:           idMesin,
+					KodeMesinSilm:     kodeMesin,
+					Sn:                m.SerialNumber,
+					Dt:                dtVal,
+					KdJenisBahanBakar: "B35",
+					StatusMesin:       initialStatus,
+				})
 			}
-
-			wacbMachines = append(wacbMachines, models.WACBMachineItem{
-				Nomor:             idx + 1,
-				NamaMesin:         m.MachineName,
-				IdMesin:           m.ID,
-				KodeMesinSilm:     m.GeneratorCode,
-				Sn:                m.SerialNumber,
-				Dt:                dtVal,
-				KdJenisBahanBakar: "B35",
-				StatusMesin:       initialStatus,
-			})
-		}
-		if resp.Format != nil {
-			resp.Format.Mesin = wacbMachines
+			if resp.Format != nil {
+				resp.Format.Mesin = wacbMachines
+			}
 		}
 	}
 
@@ -221,11 +254,39 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 		req.KdRegion = "05"
 	}
 
+	// Validasi & Auto-Resolve ID Mesin WACB Resmi:
+	// Jika ada ID mesin lokal seperti "M-xxxx-xx" atau kode mesin default,
+	// cari format WACB resmi untuk unit ini dan petakan kembali ke ID 6-digit WACB resmi.
+	needsResolve := false
+	for _, m := range req.Machines {
+		if strings.HasPrefix(m.IdMesin, "M-") || len(m.IdMesin) > 8 || m.KodeMesinSilm == "PLTD-HSD" || m.KodeMesinSilm == "" {
+			needsResolve = true
+			break
+		}
+	}
+
+	token := c.Get("Authorization")
+	if needsResolve {
+		if wacbFmt, err := h.wacbClient.GetUnitFormat(token, req.KdRegion, "", req.KdUnit); err == nil && wacbFmt != nil && wacbFmt.Format != nil && len(wacbFmt.Format.Mesin) > 0 {
+			for idx := range req.Machines {
+				if idx < len(wacbFmt.Format.Mesin) {
+					official := wacbFmt.Format.Mesin[idx]
+					req.Machines[idx].IdMesin = official.IdMesin
+					if req.Machines[idx].KodeMesinSilm == "" || req.Machines[idx].KodeMesinSilm == "PLTD-HSD" {
+						req.Machines[idx].KodeMesinSilm = official.KodeMesinSilm
+					}
+					if req.Machines[idx].Sn == "" {
+						req.Machines[idx].Sn = official.Sn
+					}
+				}
+			}
+		}
+	}
+
 	// 1. Generate standard WACB message_text
 	messageText := h.messageBuilder.BuildMessageText(&req)
 
 	// 2. Submit to WACB Server (Resilient fallback if WACB is slow or unavailable)
-	token := c.Get("Authorization")
 	syncStatus := "SYNCED"
 	wacbIDStr := ""
 	var wacbSubmitData *models.WACBSubmitData
@@ -710,5 +771,68 @@ func (h *LogsheetHandler) GetMapsKondisi(c *fiber.Ctx) error {
 			"type":     "FeatureCollection",
 			"features": features,
 		},
+	})
+}
+
+// ResyncPending mencari rekaman logsheet dengan status PENDING dan mengirimkannya ulang ke server WACB
+func (h *LogsheetHandler) ResyncPending(c *fiber.Ctx) error {
+	token := c.Get("Authorization")
+	var pendingRecords []models.LogsheetRecord
+	if err := h.db.Where("sync_status = ?", "PENDING").Find(&pendingRecords).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mencari rekaman pending: " + err.Error(),
+		})
+	}
+
+	resyncedCount := 0
+	var errorsList []string
+
+	for _, rec := range pendingRecords {
+		msg := rec.MessageText
+		// Jika pesan masih berisi "id mesin: M-" atau "kode mesin: PLTD-HSD", perbaiki dengan data WACB resmi
+		if strings.Contains(msg, "id mesin: M-") || strings.Contains(msg, "kode mesin: PLTD-HSD") {
+			if wacbFmt, err := h.wacbClient.GetUnitFormat(token, rec.KdRegion, "", rec.KdUnit); err == nil && wacbFmt != nil && wacbFmt.Format != nil && len(wacbFmt.Format.Mesin) > 0 {
+				for idx, m := range wacbFmt.Format.Mesin {
+					oldIdPattern := fmt.Sprintf("id mesin: M-%s-%02d", rec.KdUnit, idx+1)
+					newIdStr := fmt.Sprintf("id mesin: %s", m.IdMesin)
+					msg = strings.ReplaceAll(msg, oldIdPattern, newIdStr)
+
+					if m.KodeMesinSilm != "" {
+						msg = strings.Replace(msg, "kode mesin: PLTD-HSD", fmt.Sprintf("kode mesin: %s", m.KodeMesinSilm), 1)
+					}
+					if m.Sn != "" {
+						// perbaiki nomor seri jika ada
+						msg = strings.Replace(msg, fmt.Sprintf("sn: %s-%s-%02d", rec.NamaUnit, rec.KdUnit, idx+1), fmt.Sprintf("sn: %s", m.Sn), 1)
+					}
+				}
+			}
+		}
+
+		resp, err := h.wacbClient.SubmitLogsheet(token, rec.KdRegion, msg)
+		if err == nil && resp != nil && resp.Data != nil {
+			wacbIDStr := fmt.Sprintf("%d", resp.Data.ID)
+			h.db.Model(&models.LogsheetRecord{}).Where("id = ?", rec.ID).Updates(map[string]interface{}{
+				"sync_status":  "SYNCED",
+				"wacb_id":      wacbIDStr,
+				"message_text": msg,
+				"updated_at":   time.Now(),
+			})
+			resyncedCount++
+		} else {
+			errMsg := "unknown error"
+			if err != nil {
+				errMsg = err.Error()
+			}
+			errorsList = append(errorsList, fmt.Sprintf("Unit %s (%s %s): %s", rec.KdUnit, rec.Tanggal, rec.Jam, errMsg))
+		}
+	}
+
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"message":  fmt.Sprintf("Sinkronisasi selesai: %d dari %d data pending berhasil disinkronkan ke WACB.", resyncedCount, len(pendingRecords)),
+		"resynced": resyncedCount,
+		"total":    len(pendingRecords),
+		"errors":   errorsList,
 	})
 }

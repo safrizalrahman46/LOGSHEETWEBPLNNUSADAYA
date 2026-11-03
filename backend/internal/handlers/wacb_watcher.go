@@ -120,6 +120,48 @@ func (w *WACBWatcher) PollOnce() {
 	if totalNew > 0 {
 		log.Printf("[WATCHER] %d aktivitas logsheet baru terdeteksi di WACB.", totalNew)
 	}
+
+	// Otomatis sinkronkan rekaman pending (jika ada) ke WACB
+	w.resyncPending(token)
+}
+
+// resyncPending memeriksa logsheet_records dengan sync_status = 'PENDING'
+// dan mencoba mengirimkannya kembali ke server WACB setelah memastikan ID mesin valid.
+func (w *WACBWatcher) resyncPending(token string) {
+	var pending []models.LogsheetRecord
+	if err := w.db.Where("sync_status = ?", "PENDING").Find(&pending).Error; err != nil || len(pending) == 0 {
+		return
+	}
+
+	for _, rec := range pending {
+		msg := rec.MessageText
+		if strings.Contains(msg, "id mesin: M-") || strings.Contains(msg, "kode mesin: PLTD-HSD") {
+			if wacbFmt, err := w.wacbClient.GetUnitFormat(token, rec.KdRegion, "", rec.KdUnit); err == nil && wacbFmt != nil && wacbFmt.Format != nil && len(wacbFmt.Format.Mesin) > 0 {
+				for idx, m := range wacbFmt.Format.Mesin {
+					oldIdPattern := fmt.Sprintf("id mesin: M-%s-%02d", rec.KdUnit, idx+1)
+					newIdStr := fmt.Sprintf("id mesin: %s", m.IdMesin)
+					msg = strings.ReplaceAll(msg, oldIdPattern, newIdStr)
+
+					if m.KodeMesinSilm != "" {
+						msg = strings.Replace(msg, "kode mesin: PLTD-HSD", fmt.Sprintf("kode mesin: %s", m.KodeMesinSilm), 1)
+					}
+				}
+			}
+		}
+
+		resp, err := w.wacbClient.SubmitLogsheet(token, rec.KdRegion, msg)
+		if err == nil && resp != nil && resp.Data != nil {
+			wacbIDStr := fmt.Sprintf("%d", resp.Data.ID)
+			w.db.Model(&models.LogsheetRecord{}).Where("id = ?", rec.ID).Updates(map[string]interface{}{
+				"sync_status":  "SYNCED",
+				"wacb_id":      wacbIDStr,
+				"message_text": msg,
+				"updated_at":   time.Now(),
+			})
+			log.Printf("[WATCHER] Logsheet pending ID %d (%s %s %s) berhasil disinkronkan ke WACB (ID %s)",
+				rec.ID, rec.NamaUnit, rec.Tanggal, rec.Jam, wacbIDStr)
+		}
+	}
 }
 
 // processUnit menemukan slot "done" di WACB yang tidak ada di input lokal,

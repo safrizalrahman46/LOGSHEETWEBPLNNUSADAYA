@@ -53,6 +53,24 @@ export default function LogsheetRiwayatPage() {
   // Detail Modal
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<LogsheetHistoryItem | null>(null);
+  const [resyncing, setResyncing] = useState(false);
+
+  const handleResyncPending = async () => {
+    setResyncing(true);
+    try {
+      const res = await apiClient.post<{ success: boolean; message: string; resynced: number }>(
+        "/wacb/resync-pending"
+      );
+      if (res.data?.success) {
+        alert(res.data.message);
+        fetchHistory();
+      }
+    } catch (err: any) {
+      alert("Gagal sinkronisasi: " + (err.response?.data?.message || err.message));
+    } finally {
+      setResyncing(false);
+    }
+  };
 
   const fetchHistory = async () => {
     setLoading(true);
@@ -214,9 +232,22 @@ export default function LogsheetRiwayatPage() {
             </div>
 
             <div className="rounded-2xl border border-amber-200 bg-amber-50/40 p-4 shadow-theme-xs dark:border-amber-900/50 dark:bg-amber-950/20">
-              <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                Pending / Draft Lokal
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                  Pending / Antrean
+                </p>
+                {history.filter((h) => h.sync_status === "PENDING").length > 0 && (
+                  <button
+                    onClick={handleResyncPending}
+                    disabled={resyncing}
+                    className="inline-flex items-center gap-1 rounded-md bg-amber-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-amber-700 disabled:opacity-50 transition-colors shadow-xs"
+                    title="Kirim ulang data pending ke server WACB"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${resyncing ? "animate-spin" : ""}`} />
+                    {resyncing ? "Sinkron..." : "Sinkronkan"}
+                  </button>
+                )}
+              </div>
               <div className="mt-2 flex items-baseline justify-between">
                 <span className="text-2xl font-black text-amber-600 dark:text-amber-400">
                   {history.filter((h) => h.sync_status === "PENDING").length}
@@ -388,15 +419,27 @@ export default function LogsheetRiwayatPage() {
                           </div>
                         </td>
                         <td className="px-5 py-4 text-right">
-                          <button
-                            onClick={() => {
-                              setSelectedItem(item);
-                              setDetailModalOpen(true);
-                            }}
-                            className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-bold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors shadow-theme-xs"
-                          >
-                            Detail Parameter
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {item.sync_status === "PENDING" && (
+                              <button
+                                onClick={handleResyncPending}
+                                disabled={resyncing}
+                                className="rounded-lg bg-amber-500 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-amber-600 disabled:opacity-50 transition-colors shadow-theme-xs"
+                                title="Kirim ulang ke WACB"
+                              >
+                                {resyncing ? "Kirim..." : "Kirim Ulang"}
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                setSelectedItem(item);
+                                setDetailModalOpen(true);
+                              }}
+                              className="rounded-lg border border-gray-200 bg-white px-2.5 py-1 text-[11px] font-bold text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors shadow-theme-xs"
+                            >
+                              Detail Parameter
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
