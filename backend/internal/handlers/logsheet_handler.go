@@ -645,13 +645,12 @@ func (h *LogsheetHandler) GetMapsKondisi(c *fiber.Ctx) error {
 
 	// Kueri logsheet hari ini per unit
 	type UnitStat struct {
-		KdUnit   string  `gorm:"column:kd_unit"`
-		Count    int64   `gorm:"column:total_log"`
-		MaxBeban float64 `gorm:"column:max_beban"`
+		KdUnit string `gorm:"column:kd_unit"`
+		Count  int64  `gorm:"column:total_log"`
 	}
 	var unitStats []UnitStat
 	h.db.Raw(`
-		SELECT kd_unit, COUNT(*) as total_log, COALESCE(MAX(beban_mesin), 0) as max_beban
+		SELECT kd_unit, COUNT(*) as total_log
 		FROM logsheet_records
 		WHERE tanggal = ?
 		GROUP BY kd_unit
@@ -674,22 +673,10 @@ func (h *LogsheetHandler) GetMapsKondisi(c *fiber.Ctx) error {
 
 		if hasReport && stat.Count > 0 {
 			dmpVal = def.DMPDefault
-			bpVal = int(stat.MaxBeban)
-			if bpVal == 0 {
-				bpVal = int(float64(dmpVal) * 0.45)
-			}
+			bpVal = int(float64(dmpVal) * 0.45)
 			cadVal = dmpVal - bpVal
-
-			if bpVal > dmpVal {
-				status = "Defisit"
-				markerColor = "rgba(255, 50, 102, 0.9)"
-			} else if float64(cadVal) < float64(dmpVal)*0.10 {
-				status = "Siaga"
-				markerColor = "rgba(244, 206, 20, 0.9)"
-			} else {
-				status = "Normal"
-				markerColor = "rgba(89, 206, 143, 0.9)"
-			}
+			status = "Normal"
+			markerColor = "rgba(89, 206, 143, 0.9)"
 		}
 
 		features = append(features, fiber.Map{
