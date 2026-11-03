@@ -589,3 +589,139 @@ func (h *LogsheetHandler) SubmitRawMessage(c *fiber.Ctx) error {
 		},
 	})
 }
+
+// -------------------------------------------------------------
+// PETA KONDISI PEMBANGKIT (GEOJSON)
+// -------------------------------------------------------------
+
+type UnitMapDef struct {
+	LocationID string
+	Title      string
+	Area       string
+	Region     string
+	Lng        float64
+	Lat        float64
+	DMPDefault int
+	Machines   int
+}
+
+var kal3UnitsBase = []UnitMapDef{
+	{LocationID: "0264", Title: "ULD BATU AMPAR", Area: "SITE BONTANG", Region: "UP KALIMANTAN 3", Lng: 117.44682066784618, Lat: 0.1264181860152761, DMPDefault: 200, Machines: 2},
+	{LocationID: "0265", Title: "ULD BIDUK-BIDUK", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 118.74533585855046, Lat: 1.2176554585342483, DMPDefault: 350, Machines: 3},
+	{LocationID: "0266", Title: "ULD DATAH BILANG", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 115.45744704083914, Lat: 0.2327263066098236, DMPDefault: 180, Machines: 2},
+	{LocationID: "0271", Title: "ULD KAYAN HULU", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 115.01401277159991, Lat: 1.785820780505856, DMPDefault: 120, Machines: 2},
+	{LocationID: "0272", Title: "ULD KELAY", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 116.7050236707356, Lat: 1.8525048650214258, DMPDefault: 250, Machines: 2},
+	{LocationID: "0274", Title: "ULD KRAYAN", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 115.6879417873041, Lat: 3.911122353813218, DMPDefault: 500, Machines: 4},
+	{LocationID: "0275", Title: "ULD LONG APARI", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 114.22507621026834, Lat: 1.155839165935175, DMPDefault: 150, Machines: 2},
+	{LocationID: "0276", Title: "ULD LONG LAYU", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 115.77235404595652, Lat: 3.621897056783752, DMPDefault: 180, Machines: 2},
+	{LocationID: "0277", Title: "ULD LONG PAHANGAI", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 114.71771796060052, Lat: 0.8855619566650867, DMPDefault: 160, Machines: 2},
+	{LocationID: "0278", Title: "ULD LONG PESO", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 116.7850338460136, Lat: 2.6364348149742227, DMPDefault: 220, Machines: 2},
+	{LocationID: "0279", Title: "ULD LONG SEGAR", Area: "SITE BONTANG", Region: "UP KALIMANTAN 3", Lng: 116.85042805099829, Lat: 0.8101522103817241, DMPDefault: 300, Machines: 3},
+	{LocationID: "0280", Title: "ULD LUMBIS OGONG", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 116.50549494831178, Lat: 4.185555807959563, DMPDefault: 140, Machines: 2},
+	{LocationID: "0281", Title: "ULD MARATUA", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 118.56777255661626, Lat: 2.245239347934099, DMPDefault: 600, Machines: 3},
+	{LocationID: "0282", Title: "ULD MERASA", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 117.25070679770108, Lat: 1.7809394437228494, DMPDefault: 200, Machines: 2},
+	{LocationID: "0283", Title: "ULD MUARA PAHU", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 116.06485027933594, Lat: -0.3256901557215966, DMPDefault: 280, Machines: 2},
+	{LocationID: "0284", Title: "ULD MUARA PANTUAN", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 117.49342276368374, Lat: -0.5734918709545217, DMPDefault: 220, Machines: 2},
+	{LocationID: "0285", Title: "ULD MUARA SIRAN", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 116.59427587886482, Lat: -0.06833044357478173, DMPDefault: 190, Machines: 2},
+	{LocationID: "0286", Title: "ULD DERAWAN", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 118.24147179056298, Lat: 2.2868364761464073, DMPDefault: 750, Machines: 4},
+	{LocationID: "0287", Title: "ULD PA UPAN", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 115.88689559456407, Lat: 3.6262737622289487, DMPDefault: 120, Machines: 2},
+	{LocationID: "0288", Title: "ULD PENYINGGAHAN", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 116.22325865034189, Lat: -0.36259522495678737, DMPDefault: 240, Machines: 2},
+	{LocationID: "0289", Title: "ULD SEDULANG", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 116.81158219467633, Lat: 0.12573784559367238, DMPDefault: 180, Machines: 2},
+	{LocationID: "0290", Title: "ULD SEI MENGGARIS", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 117.26572043459728, Lat: 4.16096400138198, DMPDefault: 450, Machines: 3},
+	{LocationID: "0292", Title: "ULD SENYIUR", Area: "SITE BONTANG", Region: "UP KALIMANTAN 3", Lng: 116.6232157621499, Lat: 0.31236494453854996, DMPDefault: 260, Machines: 2},
+	{LocationID: "0293", Title: "ULD TABANG", Area: "AREA SAMARINDA", Region: "UP KALIMANTAN 3", Lng: 116.01245287327016, Lat: 0.5742501337926801, DMPDefault: 320, Machines: 3},
+	{LocationID: "0294", Title: "ULD TANAH MERAH", Area: "AREA KALTARA", Region: "UP KALIMANTAN 3", Lng: 117.56257007962255, Lat: 3.7279949722965116, DMPDefault: 500, Machines: 3},
+	{LocationID: "0296", Title: "ULD LABANG", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 116.60646, Lat: 4.22157, DMPDefault: 160, Machines: 2},
+	{LocationID: "0297", Title: "ULD MUARA PANTUN", Area: "SITE BONTANG", Region: "UP KALIMANTAN 3", Lng: 116.857558, Lat: 0.893281, DMPDefault: 200, Machines: 2},
+	{LocationID: "0934", Title: "ULD SANDARAN", Area: "AREA BERAU & TARAKAN", Region: "UP KALIMANTAN 3", Lng: 118.44739684631938, Lat: 1.0819870494179864, DMPDefault: 180, Machines: 2},
+	{LocationID: "0935", Title: "PLTD TAU LUMBIS", Area: "AREA BALIKPAPAN", Region: "UP KALIMANTAN 3", Lng: 116.221987, Lat: 4.305725, DMPDefault: 150, Machines: 2},
+	{LocationID: "1168", Title: "PLTD SUNGAI BOH", Area: "SITE BERAU", Region: "UP KALIMANTAN 3", Lng: 115.289661, Lat: 1.50586521, DMPDefault: 200, Machines: 2},
+}
+
+// GetMapsKondisi menyajikan GeoJSON lengkap kondisi pembangkit untuk peta Mapbox dashboard.
+func (h *LogsheetHandler) GetMapsKondisi(c *fiber.Ctx) error {
+	today := time.Now().Format("2006-01-02")
+	reqTanggal := c.Query("tanggal", today)
+
+	// Kueri logsheet hari ini per unit
+	type UnitStat struct {
+		KdUnit   string  `gorm:"column:kd_unit"`
+		Count    int64   `gorm:"column:total_log"`
+		MaxBeban float64 `gorm:"column:max_beban"`
+	}
+	var unitStats []UnitStat
+	h.db.Raw(`
+		SELECT kd_unit, COUNT(*) as total_log, COALESCE(MAX(beban_mesin), 0) as max_beban
+		FROM logsheet_records
+		WHERE tanggal = ?
+		GROUP BY kd_unit
+	`, reqTanggal).Scan(&unitStats)
+
+	statsMap := make(map[string]UnitStat)
+	for _, s := range unitStats {
+		statsMap[s.KdUnit] = s
+	}
+
+	features := make([]fiber.Map, 0, len(kal3UnitsBase))
+	for _, def := range kal3UnitsBase {
+		stat, hasReport := statsMap[def.LocationID]
+
+		status := "Belum Lapor"
+		markerColor := "rgba(182, 187, 196, 0.9)"
+		dmpVal := 0
+		bpVal := 0
+		cadVal := 0
+
+		if hasReport && stat.Count > 0 {
+			dmpVal = def.DMPDefault
+			bpVal = int(stat.MaxBeban)
+			if bpVal == 0 {
+				bpVal = int(float64(dmpVal) * 0.45)
+			}
+			cadVal = dmpVal - bpVal
+
+			if bpVal > dmpVal {
+				status = "Defisit"
+				markerColor = "rgba(255, 50, 102, 0.9)"
+			} else if float64(cadVal) < float64(dmpVal)*0.10 {
+				status = "Siaga"
+				markerColor = "rgba(244, 206, 20, 0.9)"
+			} else {
+				status = "Normal"
+				markerColor = "rgba(89, 206, 143, 0.9)"
+			}
+		}
+
+		features = append(features, fiber.Map{
+			"type": "Feature",
+			"geometry": fiber.Map{
+				"type":        "Point",
+				"coordinates": []float64{def.Lng, def.Lat},
+			},
+			"properties": fiber.Map{
+				"locationId":   def.LocationID,
+				"title":        def.Title,
+				"description":  fmt.Sprintf("Sentral PLTD / ULD %s - Wilayah Kalimantan 3", def.Title),
+				"url_detail":   fmt.Sprintf("/logsheet/matrix?unit=%s", def.LocationID),
+				"group":        "ULD",
+				"region":       def.Region,
+				"area":         def.Area,
+				"marker_color": markerColor,
+				"dmp":          fmt.Sprintf("%d kW", dmpVal),
+				"bp":           fmt.Sprintf("%d kW", bpVal),
+				"cad":          fmt.Sprintf("%d kW", cadVal),
+				"status":       status,
+				"jumlah_mesin": def.Machines,
+			},
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"tanggal": reqTanggal,
+		"geoJson": fiber.Map{
+			"type":     "FeatureCollection",
+			"features": features,
+		},
+	})
+}

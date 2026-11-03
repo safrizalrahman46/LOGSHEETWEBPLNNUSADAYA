@@ -152,7 +152,10 @@ def deploy():
     # Rebuild frontend if necessary
     if frontend_code_changed:
         print("\n[4/4] Mengompilasi ulang Frontend Next.js di VPS & Restart Service...")
-        cmd = "cd /var/www/upkaltimra/frontend && NODE_OPTIONS='--max-old-space-size=2048' npx next build && systemctl restart pln-frontend && systemctl is-active pln-frontend"
+        pkg_install = ""
+        if any("package" in f for f in uploaded_files):
+            pkg_install = "npm install mapbox-gl @types/mapbox-gl && "
+        cmd = f"cd /var/www/upkaltimra/frontend && {pkg_install}NODE_OPTIONS='--max-old-space-size=2048' npx next build && systemctl restart pln-frontend && systemctl is-active pln-frontend"
         _, stdout, stderr = ssh.exec_command(cmd)
         out = stdout.read().decode('utf-8', errors='replace').strip()
         err = stderr.read().decode('utf-8', errors='replace').strip()

@@ -103,6 +103,7 @@ func main() {
 	}
 	api.Get("/v1/format-logsheet-pltd", formatLogsheetHandler)
 	api.Get("/wacb/format-logsheet-pltd", formatLogsheetHandler)
+	api.Get("/wacb/maps-kondisi", logsheetHandler.GetMapsKondisi)
 	api.Post("/v1/logsheet-pltd", logsheetHandler.SubmitRawMessage)
 
 	api.Get("/public/guest/summary", guestHandler.GetPublicSummary)
@@ -188,6 +189,7 @@ func main() {
 	// WACB Proxy & Logsheet
 	wacb := protected.Group("/wacb")
 	wacb.Get("/units", logsheetHandler.GetUnits)
+	wacb.Get("/maps-kondisi", logsheetHandler.GetMapsKondisi)
 	wacb.Get("/format", logsheetHandler.GetUnitFormat)
 	wacb.Post("/submit-logsheet", middleware.RequireRoles(models.RoleOperator, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), logsheetHandler.SubmitLogsheet)
 	wacb.Get("/matrix", logsheetHandler.GetMatrix)

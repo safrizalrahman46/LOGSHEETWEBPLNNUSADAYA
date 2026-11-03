@@ -53,6 +53,7 @@ import {
 import { AppLayout } from "@/layout/AppLayout";
 import { RoleGuard } from "@/components/common/RoleGuard";
 import { TimeSlotMatrix } from "@/components/matrix/TimeSlotMatrix";
+import { PetaKondisiPembangkit } from "@/components/dashboard/PetaKondisiPembangkit";
 import { apiClient } from "@/lib/api";
 import { StatsData } from "@/types";
 
@@ -515,26 +516,24 @@ export default function DashboardPage() {
         moduleName="Dashboard Utama Operasional"
       >
         <div className="space-y-6">
-        {/* Banner Khusus Operator: Pintasan Pengisian Logsheet & Status Shift */}
+        {/* Banner Khusus Operator: Clean Light Theme */}
         {currentUser?.role === "OPERATOR" ? (
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-900 via-teal-800 to-slate-900 p-5 text-white shadow-theme-md sm:p-6">
-            <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-400/20 via-transparent to-transparent pointer-events-none" />
-            
+          <div className="relative overflow-hidden rounded-2xl border border-emerald-200 bg-white p-5 shadow-theme-xs sm:p-6 transition-colors">
             <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-400/20 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-emerald-300 ring-1 ring-emerald-400/30">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wider text-emerald-700 ring-1 ring-emerald-200">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                     Mode Operator • Siaga Pengisian Logsheet
                   </span>
-                  <span className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/90">
+                  <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
                     Unit Bertugas: {activeUnit.nama_unit} ({activeUnit.kd_unit})
                   </span>
                 </div>
-                <h1 className="mt-2 text-xl font-black text-white sm:text-2xl">
+                <h1 className="mt-2 text-xl font-black text-gray-900 sm:text-2xl">
                   Selamat Bertugas, {currentUser.name || "Operator PLTD"}!
                 </h1>
-                <p className="mt-1 text-xs text-white/80 max-w-2xl leading-relaxed">
+                <p className="mt-1 text-xs text-gray-500 max-w-2xl leading-relaxed">
                   Lakukan pencatatan logsheet mesin per 30 menit secara berkala. Klik tombol hijau di bawah untuk langsung membuka formulir pengisian logsheet unit Anda.
                 </p>
               </div>
@@ -543,7 +542,7 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-2.5 lg:shrink-0">
                 <Link
                   href="/logsheet/input"
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-2.5 text-xs font-black text-slate-950 shadow-lg shadow-emerald-950/40 transition-all hover:bg-emerald-300 active:scale-95 animate-pulse"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-black text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
                 >
                   <Plus className="h-4 w-4 stroke-[3]" />
                   <span>+ Input Logsheet Sekarang</span>
@@ -551,7 +550,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/logsheet/riwayat"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/20 px-4 py-2.5 text-xs font-bold text-white ring-1 ring-white/30 transition-all hover:bg-white/30"
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold text-gray-700 shadow-theme-xs transition-all hover:bg-gray-50"
                 >
                   <FileText className="h-4 w-4" />
                   <span>Riwayat Laporan Saya</span>
@@ -559,7 +558,7 @@ export default function DashboardPage() {
 
                 <Link
                   href="/pilih-unit"
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-3.5 py-2.5 text-xs font-semibold text-white/80 ring-1 ring-white/20 transition-all hover:bg-white/20"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-3.5 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-200"
                 >
                   <span>Ganti Unit PLTD</span>
                 </Link>
@@ -567,26 +566,24 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-        /* Supervisor Command Banner: Tinggal Lihat Doang */
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-[#004581] to-slate-900 p-5 text-white shadow-theme-md sm:p-6">
-          <div className="absolute right-0 top-0 h-full w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-400/20 via-transparent to-transparent pointer-events-none" />
-          
+        /* Supervisor Command Banner: Clean Metronic Light Style (No Dark Mode) */
+        <div className="relative overflow-hidden rounded-2xl border border-gray-200/90 bg-white p-5 shadow-theme-xs sm:p-6 transition-colors">
           <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-amber-400/20 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300 ring-1 ring-amber-400/30">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#005daa] ring-1 ring-blue-200">
                   <Eye className="h-3.5 w-3.5" />
                   Mode Supervisor • Monitoring Realtime
                 </span>
-                <span className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/90">
-                  Kalimantan 3 (05) • {activeUnit.nama_unit}
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                  Kalimantan 3 (05) • {activeUnit.nama_unit} ({activeUnit.kd_unit})
                 </span>
               </div>
-              <h1 className="mt-2 text-xl font-black text-white sm:text-2xl">
+              <h1 className="mt-2 text-xl font-black text-gray-900 sm:text-2xl">
                 Command Center Operasional & Keandalan Pembangkit
               </h1>
-              <p className="mt-1 text-xs text-white/80 max-w-2xl">
-                Panel pengawasan menyeluruh tanpa perlu entri manual. Pantau status kesiapan mesin, kurva pembebanan 24 jam, dan persetujuan 1-klik.
+              <p className="mt-1 text-xs text-gray-500 max-w-2xl">
+                Panel pengawasan menyeluruh tanpa perlu entri manual. Pantau status kesiapan mesin, peta kondisi pembangkit 30 unit, kurva pembebanan 24 jam, dan persetujuan 1-klik.
               </p>
             </div>
 
@@ -594,7 +591,7 @@ export default function DashboardPage() {
             <div className="flex flex-wrap items-center gap-2 lg:shrink-0">
               <Link
                 href="/admin/data-io"
-                className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-extrabold text-slate-950 shadow-md transition-all hover:bg-amber-300 active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 px-3.5 py-2 text-xs font-extrabold text-slate-950 shadow-xs transition-all hover:bg-amber-300 active:scale-95"
               >
                 <FileSpreadsheet className="h-4 w-4" />
                 <span>Pusat Data IO</span>
@@ -603,87 +600,95 @@ export default function DashboardPage() {
               {/* Ringkasan Eksekutif PDF */}
               <button
                 onClick={handleExportExecutivePDF}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-white/20 px-3 py-2 text-xs font-bold text-white ring-1 ring-white/30 transition-all hover:bg-white/30"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 shadow-theme-xs transition-all hover:bg-gray-50"
                 title="Cetak Laporan PDF Resmi Ringkasan Command Center"
               >
-                <Printer className="h-4 w-4 text-amber-300" />
+                <Printer className="h-4 w-4 text-amber-500" />
                 <span>Ringkasan (PDF)</span>
               </button>
 
               {/* Export AMC: Excel & PDF */}
-              <div className="inline-flex items-center rounded-xl bg-white/10 p-0.5 ring-1 ring-white/20">
-                <span className="px-2 text-[11px] font-semibold text-white/70">AMC:</span>
+              <div className="inline-flex items-center rounded-xl border border-gray-200 bg-gray-50/80 p-0.5">
+                <span className="px-2 text-[11px] font-semibold text-gray-500">AMC:</span>
                 <button
                   onClick={handleExportAMC}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-700 transition-all hover:bg-white"
                   title="Unduh Excel Laporan Gangguan AMC KIT KALTIMRA 2026"
                 >
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
                   <span>Excel</span>
                 </button>
                 <button
                   onClick={handleExportAMCPDF}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-700 transition-all hover:bg-white"
                   title="Unduh Dokumen PDF Resmi Laporan Gangguan AMC 2026"
                 >
-                  <FileText className="h-3.5 w-3.5 text-rose-300" />
+                  <FileText className="h-3.5 w-3.5 text-rose-500" />
                   <span>PDF</span>
                 </button>
               </div>
 
               {/* Export Logsheet: Excel & PDF */}
-              <div className="inline-flex items-center rounded-xl bg-white/10 p-0.5 ring-1 ring-white/20">
-                <span className="px-2 text-[11px] font-semibold text-white/70">Logsheet:</span>
+              <div className="inline-flex items-center rounded-xl border border-gray-200 bg-gray-50/80 p-0.5">
+                <span className="px-2 text-[11px] font-semibold text-gray-500">Logsheet:</span>
                 <button
                   onClick={handleExportExcel}
                   disabled={downloading}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20 disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-700 transition-all hover:bg-white disabled:opacity-50"
                   title="Unduh Spreadsheet Excel Logsheet 48 Slot"
                 >
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-300" />
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
                   <span>Excel</span>
                 </button>
                 <button
                   onClick={handleExportLogsheetPDF}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white transition-all hover:bg-white/20"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-700 transition-all hover:bg-white"
                   title="Unduh Dokumen PDF Resmi Logsheet 48 Slot"
                 >
-                  <FileText className="h-3.5 w-3.5 text-rose-300" />
+                  <FileText className="h-3.5 w-3.5 text-rose-500" />
                   <span>PDF</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Quick Metrics Pills */}
-          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/10 pt-4 sm:grid-cols-4">
-            <div className="rounded-xl bg-white/5 p-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">Daya Terpasang</p>
-              <p className="mt-0.5 text-lg font-black text-amber-300">9,550 kW</p>
-              <p className="text-[10px] text-white/60">10 Mesin Terinstal</p>
+          {/* Quick Metrics Pills: Pure Light Theme */}
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-4">
+            <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700">Daya Terpasang</p>
+              <p className="mt-0.5 text-xl font-black text-amber-900">9,550 kW</p>
+              <p className="text-[10px] font-medium text-amber-700/80">10 Mesin Terinstal</p>
             </div>
-            <div className="rounded-xl bg-white/5 p-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">Daya Mampu Pasok</p>
-              <p className="mt-0.5 text-lg font-black text-emerald-400">8,100 kW</p>
-              <p className="text-[10px] text-emerald-300/80">Kondisi Normal Andal</p>
+            <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/60 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Daya Mampu Pasok</p>
+              <p className="mt-0.5 text-xl font-black text-emerald-900">8,100 kW</p>
+              <p className="text-[10px] font-medium text-emerald-700/80">Kondisi Normal Andal</p>
             </div>
-            <div className="rounded-xl bg-white/5 p-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">Beban Puncak Sistem</p>
-              <p className="mt-0.5 text-lg font-black text-cyan-300">5,420 kW</p>
-              <p className="text-[10px] text-white/60">Margin +2,680 kW (Aman)</p>
+            <div className="rounded-xl border border-sky-200/80 bg-sky-50/60 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-sky-700">Beban Puncak Sistem</p>
+              <p className="mt-0.5 text-xl font-black text-sky-900">5,420 kW</p>
+              <p className="text-[10px] font-medium text-sky-700/80">Margin +2,680 kW (Aman)</p>
             </div>
-            <div className="rounded-xl bg-white/5 p-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/60">Presensi Shift Geofence</p>
-              <p className="mt-0.5 text-lg font-black text-emerald-300">100% VALID</p>
-              <p className="text-[10px] text-white/60">Radius 250m Terpenuhi</p>
+            <div className="rounded-xl border border-blue-200/80 bg-blue-50/60 p-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-blue-700">Presensi Shift Geofence</p>
+              <p className="mt-0.5 text-xl font-black text-blue-900">100% VALID</p>
+              <p className="text-[10px] font-medium text-blue-700/80">Radius 250m Terpenuhi</p>
             </div>
           </div>
         </div>
         )}
 
+        {/* Peta Kondisi Pembangkit (Mapbox GL - Sesuai Standar WACB) */}
+        <PetaKondisiPembangkit
+          onSelectUnit={(unit) => {
+            setActiveUnit(unit);
+            localStorage.setItem("pln_selected_unit", JSON.stringify(unit));
+          }}
+        />
+
         {/* Floating Toast Notification */}
         {toastMessage && (
-          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-theme-md dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300">
+          <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-900 shadow-theme-md">
             <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
             <p className="text-sm font-bold">{toastMessage}</p>
           </div>
@@ -692,27 +697,27 @@ export default function DashboardPage() {
 
         {/* ================= PERINGATAN OPERASIONAL (HERO) ================= */}
         {statsState === "loading" && (
-          <div className="animate-pulse rounded-2xl border-2 border-error-200 bg-error-50/50 p-6 dark:border-error-500/20 dark:bg-error-500/5">
-            <div className="mb-4 h-5 w-56 rounded bg-error-200/70 dark:bg-error-500/20" />
+          <div className="animate-pulse rounded-2xl border-2 border-error-200 bg-error-50/50 p-6">
+            <div className="mb-4 h-5 w-56 rounded bg-error-200/70" />
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="h-24 rounded-xl bg-error-100/70 dark:bg-error-500/10" />
+                <div key={i} className="h-24 rounded-xl bg-error-100/70" />
               ))}
             </div>
           </div>
         )}
 
         {statsState === "guest" && (
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-gray-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800 dark:bg-gray-900">
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-gray-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                 <LogIn className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-white">
+                <p className="text-sm font-bold text-gray-900">
                   Masuk untuk melihat peringatan operasional
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500">
                   Status mesin, tiket HAR, dan statistik live hanya tersedia setelah login.
                 </p>
               </div>
@@ -727,14 +732,14 @@ export default function DashboardPage() {
         )}
 
         {statsState === "error" && (
-          <div className="flex flex-col items-start gap-3 rounded-2xl border border-warning-200 bg-warning-50 p-5 sm:flex-row sm:items-center sm:justify-between dark:border-warning-500/30 dark:bg-warning-500/10">
+          <div className="flex flex-col items-start gap-3 rounded-2xl border border-warning-200 bg-warning-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <ShieldAlert className="h-6 w-6 text-warning-500" />
               <div>
-                <p className="text-sm font-bold text-warning-700 dark:text-warning-400">
+                <p className="text-sm font-bold text-warning-700">
                   Gagal memuat statistik operasional
                 </p>
-                <p className="text-xs text-warning-600/80 dark:text-warning-400/80">
+                <p className="text-xs text-warning-600/80">
                   Periksa koneksi atau sesi Anda, lalu coba lagi.
                 </p>
               </div>
@@ -749,7 +754,7 @@ export default function DashboardPage() {
         )}
 
         {statsState === "ok" && stats && problemCount > 0 && (
-          <div className="overflow-hidden rounded-3xl border-2 border-error-300 shadow-theme-lg dark:border-error-500/50">
+          <div className="overflow-hidden rounded-3xl border-2 border-error-300 shadow-theme-lg">
             {/* Strip alarm */}
             <div
               className="h-2.5 w-full"
@@ -806,13 +811,13 @@ export default function DashboardPage() {
             </div>
 
             {/* Daftar masalah */}
-            <div className="bg-error-50/80 p-4 sm:p-5 dark:bg-error-500/10">
+            <div className="bg-error-50/80 p-4 sm:p-5">
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {/* Mesin */}
                 {machineAlerts.map((m) => (
                   <div
                     key={m.id}
-                    className="group rounded-2xl border border-error-200 bg-white p-4 transition-shadow hover:shadow-theme-lg dark:border-error-500/30 dark:bg-gray-900/80"
+                    className="group rounded-2xl border border-error-200 bg-white p-4 transition-shadow hover:shadow-theme-lg"
                   >
                     <div className="flex items-start gap-3">
                       <div
@@ -826,7 +831,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm font-extrabold text-gray-900 dark:text-white">
+                          <p className="text-sm font-extrabold text-gray-900">
                             {m.name}
                           </p>
                           <span
@@ -837,16 +842,16 @@ export default function DashboardPage() {
                             {m.detail}
                           </span>
                         </div>
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        <p className="mt-1 text-xs text-gray-500">
                           Unit {m.unit_id} • {m.brand || "Merek -"} • Kapasitas {m.capacity || "-"}
                         </p>
-                        <p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+                        <p className="mt-0.5 text-[11px] text-gray-400">
                           Diperbarui {timeAgo(m.updated_at)}
                         </p>
                       </div>
                       <Link
                         href="/logsheet/matrix"
-                        className="shrink-0 rounded-lg border border-error-200 px-2.5 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10"
+                        className="shrink-0 rounded-lg border border-error-200 px-2.5 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50"
                       >
                         Lihat Matriks
                       </Link>
@@ -860,7 +865,7 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={t.id}
-                      className="rounded-2xl border border-error-200 bg-white p-4 dark:border-error-500/30 dark:bg-gray-900/80"
+                      className="rounded-2xl border border-error-200 bg-white p-4"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-error-600 text-white">
@@ -868,7 +873,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="text-sm font-extrabold text-gray-900 dark:text-white">
+                            <p className="text-sm font-extrabold text-gray-900">
                               {t.ticket_number}
                             </p>
                             <span className="rounded-md bg-error-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
@@ -880,10 +885,10 @@ export default function DashboardPage() {
                               </span>
                             )}
                           </div>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          <p className="mt-1 text-xs text-gray-500">
                             {t.machine_name} • {t.nama_unit} • {t.maintenance_type || "-"}
                           </p>
-                          <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
+                          <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500">
                             {t.fault_description || "Belum ada deskripsi gangguan."}
                           </p>
 
@@ -893,20 +898,20 @@ export default function DashboardPage() {
                               <div key={s} className="flex flex-1 items-center gap-1">
                                 <span
                                   className={`h-2 w-2 shrink-0 rounded-full ${
-                                    i <= step ? "bg-error-600" : "bg-gray-200 dark:bg-gray-700"
+                                    i <= step ? "bg-error-600" : "bg-gray-200"
                                   }`}
                                 />
                                 {i < HAR_STEPS.length - 1 && (
                                   <span
                                     className={`h-0.5 flex-1 rounded ${
-                                      i < step ? "bg-error-600" : "bg-gray-200 dark:bg-gray-700"
+                                      i < step ? "bg-error-600" : "bg-gray-200"
                                     }`}
                                   />
                                 )}
                               </div>
                             ))}
                           </div>
-                          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] font-semibold text-gray-400 dark:text-gray-500">
+                          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] font-semibold text-gray-400">
                             <span>{HAR_STEPS[step]}</span>
                             <span className="min-w-0">
                               Umur tiket {durasi(t.created_at)} • {t.teknisi_name || "teknisi belum ditentukan"}
@@ -927,7 +932,7 @@ export default function DashboardPage() {
                         )}
                         <Link
                           href="/har"
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-error-200 px-3 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-error-200 px-3 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50"
                         >
                           Buka Modul HAR <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
@@ -941,19 +946,19 @@ export default function DashboardPage() {
         )}
 
         {statsState === "ok" && stats && problemCount === 0 && (
-          <div className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-success-200 bg-success-50 px-5 py-4 dark:border-success-500/30 dark:bg-success-500/10">
+          <div className="flex flex-wrap items-center gap-4 rounded-2xl border-2 border-success-200 bg-success-50 px-5 py-4">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-success-600 text-white">
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-sm font-extrabold text-success-700 dark:text-success-400">
+              <p className="text-sm font-extrabold text-success-700">
                 Semua berjalan normal
               </p>
-              <p className="text-xs text-success-600/80 dark:text-success-400/80">
+              <p className="text-xs text-success-600/80">
                 Seluruh mesin beroperasi normal dan tidak ada tiket HAR terbuka.
               </p>
             </div>
-            <span className="ml-auto hidden text-[11px] font-semibold text-success-600/70 dark:text-success-400/70 sm:block">
+            <span className="ml-auto hidden text-[11px] font-semibold text-success-600/70 sm:block">
               Diperbarui otomatis tiap 60 detik
             </span>
           </div>
@@ -962,56 +967,56 @@ export default function DashboardPage() {
         {/* TailAdmin Metric Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
           {/* Card 1: DT */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Daya Terpasang (DT)
               </span>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                 <Zap className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white">9,550 kW</h3>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <h3 className="text-2xl font-black text-gray-900">9,550 kW</h3>
+              <p className="mt-1 text-xs text-gray-500">
                 {stats ? `${stats.machines.total} Unit Mesin Diesel Terinstal` : "10 Unit Mesin Terinstal"}
               </p>
             </div>
           </div>
 
           {/* Card 2: DMP */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Daya Mampu Pasok
               </span>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-50 text-success-600">
                 <TrendingUp className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-black text-success-600 dark:text-success-400">8,100 kW</h3>
-              <p className="mt-1 text-xs font-medium text-success-600 dark:text-success-400">
+              <h3 className="text-2xl font-black text-success-600">8,100 kW</h3>
+              <p className="mt-1 text-xs font-medium text-success-600">
                 Kondisi Suplai Andal & Siap Beban
               </p>
             </div>
           </div>
 
           {/* Card 3: Operasi */}
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 shadow-theme-xs">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Mesin Operasi
               </span>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success-50 text-success-600">
                 <Activity className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+              <h3 className="text-2xl font-black text-gray-900">
                 {stats ? `${operasiCount || 8} Mesin` : "8 Mesin"}
               </h3>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-gray-500">
                 dari {stats?.machines.total ?? 10} mesin terdaftar
               </p>
             </div>
@@ -1021,23 +1026,23 @@ export default function DashboardPage() {
           <div
             className={`rounded-2xl border p-4 sm:p-5 shadow-theme-xs ${
               standbyCount + gangguanCount > 0
-                ? "border-error-200 bg-error-50 dark:border-error-500/30 dark:bg-error-500/10"
-                : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
+                ? "border-error-200 bg-error-50"
+                : "border-gray-200 bg-white"
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold uppercase tracking-wider text-error-600 dark:text-error-400">
+              <span className="text-xs font-semibold uppercase tracking-wider text-error-600">
                 Standby / Gangguan
               </span>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-error-100 text-error-600 dark:bg-error-500/20 dark:text-error-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-error-100 text-error-600">
                 <ShieldAlert className="h-5 w-5" />
               </div>
             </div>
             <div className="mt-3">
-              <h3 className="text-2xl font-black text-error-700 dark:text-error-400">
+              <h3 className="text-2xl font-black text-error-700">
                 {stats ? `${standbyCount || 1} / ${gangguanCount || 1}` : "1 / 1"}
               </h3>
-              <p className="mt-1 text-xs text-error-600/80 dark:text-error-400/80">
+              <p className="mt-1 text-xs text-error-600/80">
                 {stats ? `${standbyCount || 1} Siaga • ${gangguanCount || 1} Gangguan` : "1 Siaga • 1 Gangguan"}
               </p>
             </div>
@@ -1045,20 +1050,20 @@ export default function DashboardPage() {
         </div>
 
         {/* ================= CHART DENGAN TAB ================= */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
-          <div className="flex flex-col gap-3 border-b border-gray-100 pb-4 sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-xs">
+          <div className="flex flex-col gap-3 border-b border-gray-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+              <h3 className="text-sm font-bold text-gray-900">
                 Statistik Operasional
               </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500">
                 {statsState === "ok"
                   ? "Data live dari server, diperbarui tiap 60 detik"
                   : "Statistik membutuhkan sesi login"}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <div className="flex flex-wrap gap-1 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
+              <div className="flex flex-wrap gap-1 rounded-xl bg-gray-100 p-1">
                 {CHART_TABS.map((t) => {
                   const Icon = t.icon;
                   const active = activeChart === t.key && !showAllCharts;
@@ -1071,8 +1076,8 @@ export default function DashboardPage() {
                       }}
                       className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-bold transition-colors ${
                         active
-                          ? "bg-white text-brand-600 shadow-theme-xs dark:bg-gray-900 dark:text-brand-400"
-                          : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                          ? "bg-white text-brand-600 shadow-theme-xs"
+                          : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" />
@@ -1086,8 +1091,8 @@ export default function DashboardPage() {
                 title={showAllCharts ? "Satu chart besar" : "Tampilkan semua chart"}
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-colors ${
                   showAllCharts
-                    ? "border-brand-400 bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"
+                    ? "border-brand-400 bg-brand-50 text-brand-600"
+                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
                 }`}
               >
                 {showAllCharts ? <Maximize2 className="h-4 w-4" /> : <Grid2X2 className="h-4 w-4" />}
@@ -1099,8 +1104,8 @@ export default function DashboardPage() {
             {showAllCharts ? (
               <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                 {CHART_TABS.map((t) => (
-                  <div key={t.key} className="rounded-xl border border-gray-100 p-3 dark:border-gray-800">
-                    <p className="mb-2 text-xs font-bold text-gray-700 dark:text-gray-300">
+                  <div key={t.key} className="rounded-xl border border-gray-100 p-3">
+                    <p className="mb-2 text-xs font-bold text-gray-700">
                       {t.label}
                     </p>
                     {renderChart(t.key)}
@@ -1109,7 +1114,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div>
-                <p className="mb-2 text-xs font-bold text-gray-700 dark:text-gray-300">
+                <p className="mb-2 text-xs font-bold text-gray-700">
                   {chartTitle(activeChart)}
                 </p>
                 {renderChart(activeChart, true)}
@@ -1119,7 +1124,7 @@ export default function DashboardPage() {
         </div>
 
         {/* 48-Slot Matrix Card Container */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900">
+        <div className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-theme-xs">
           <TimeSlotMatrix kdUnit={activeUnit.kd_unit} />
         </div>
         </div>
@@ -1130,7 +1135,7 @@ export default function DashboardPage() {
 
 function EmptyChart({ text }: { text: string }) {
   return (
-    <div className="flex h-72 items-center justify-center text-xs text-gray-400 dark:text-gray-500">
+    <div className="flex h-72 items-center justify-center text-xs text-gray-400">
       {text}
     </div>
   );

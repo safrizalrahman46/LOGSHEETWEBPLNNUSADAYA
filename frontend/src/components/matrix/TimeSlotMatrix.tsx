@@ -90,24 +90,24 @@ export function TimeSlotMatrix({
   return (
     <div className="space-y-4">
       {/* Header Metric Summary */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-gray-800/40 transition-colors">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50/50 p-4 transition-colors">
         <div>
-          <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
+          <h3 className="flex items-center gap-2 text-sm font-bold text-gray-900">
             <Clock className="h-4 w-4 text-brand-500" />
             Matriks Pembebanan 24 Jam (48 Interval)
           </h3>
-          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-500">
             Unit Layanan PLTD • Tanggal: {tanggal}
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-4">
           <div className="text-left sm:text-right">
             <div className="text-xs font-semibold uppercase text-gray-400">Keterisian Hari Ini</div>
-            <div className="text-base font-extrabold text-brand-600 dark:text-brand-400">
-              {doneCount} / 48 Slot <span className="text-xs font-bold text-gray-500 dark:text-gray-400">({percentage}%)</span>
+            <div className="text-base font-extrabold text-brand-600">
+              {doneCount} / 48 Slot <span className="text-xs font-bold text-gray-500">({percentage}%)</span>
             </div>
           </div>
-          <div className="h-2.5 w-24 overflow-hidden rounded-full border border-gray-200 bg-gray-100 dark:border-gray-700 dark:bg-gray-800">
+          <div className="h-2.5 w-24 overflow-hidden rounded-full border border-gray-200 bg-gray-100">
             <div
               className="h-full rounded-full bg-success-500 transition-all duration-500"
               style={{ width: `${percentage}%` }}
@@ -117,7 +117,7 @@ export function TimeSlotMatrix({
       </div>
 
       {/* Grid 48 Slots */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900 transition-colors">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 transition-colors">
         {loading ? (
           <div className="py-16 text-center text-xs font-semibold text-gray-400">
             Memuat status slot pembebanan...
@@ -135,9 +135,9 @@ export function TimeSlotMatrix({
                   onClick={() => handleSlotClick(slot, item)}
                   className={`relative flex flex-col items-center justify-between gap-1 rounded-xl border p-1.5 text-center transition-all active:scale-95 sm:gap-1.5 sm:p-2.5 ${
                     isDone
-                      ? "border-success-300/80 bg-success-50/70 text-success-900 shadow-theme-xs hover:bg-success-100 dark:border-success-800 dark:bg-success-950/40 dark:text-success-300 dark:hover:bg-success-900/50"
-                      : "border-gray-200 bg-gray-50/60 text-gray-600 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-400 dark:hover:bg-gray-800"
-                  } ${isCurrent ? "ring-2 ring-brand-500 ring-offset-1 dark:ring-offset-gray-900" : ""}`}
+                      ? "border-success-300/80 bg-success-50/70 text-success-900 shadow-theme-xs hover:bg-success-100"
+                      : "border-gray-200 bg-gray-50/60 text-gray-600 hover:bg-gray-100"
+                  } ${isCurrent ? "ring-2 ring-brand-500 ring-offset-1" : ""}`}
                 >
                   {isCurrent && (
                     <span className="absolute -top-1.5 -right-1 rounded-full bg-brand-500 px-1 py-0.2 text-[8px] font-extrabold uppercase text-white shadow-theme-xs">
@@ -146,8 +146,8 @@ export function TimeSlotMatrix({
                   )}
                   <span className="text-xs font-extrabold tracking-tight">{slot}</span>
                   {isDone ? (
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-success-700 dark:text-success-400">
-                      <CheckCircle2 className="h-3.5 w-3.5 text-success-600 dark:text-success-400" />
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-success-700">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-success-600" />
                       <span>Done</span>
                     </div>
                   ) : (
@@ -163,20 +163,20 @@ export function TimeSlotMatrix({
       {/* Detail Modal (/getLogsheet) */}
       {selectedSlotDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/60 backdrop-blur-xs p-4">
-          <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl transition-colors dark:border-gray-800 dark:bg-gray-900">
-            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-gray-800/50">
+          <div className="w-full max-w-2xl overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl transition-colors">
+            <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50/80 p-4">
               <div className="flex items-center gap-2.5">
                 <Clock className="h-5 w-5 text-brand-500" />
                 <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Rincian Logsheet Beban Mesin</h4>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  <h4 className="text-sm font-bold text-gray-900">Rincian Logsheet Beban Mesin</h4>
+                  <p className="text-[11px] text-gray-500">
                     Jam: {selectedSlotDetail.jam} WITA • ID Beban: {selectedSlotDetail.idBeban}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedSlotDetail(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -192,20 +192,20 @@ export function TimeSlotMatrix({
                   {selectedSlotDetail.data.beban_mesin.map((m, idx) => (
                     <div
                       key={idx}
-                      className="space-y-2.5 rounded-xl border border-gray-200 bg-gray-50/70 p-3.5 dark:border-gray-800 dark:bg-gray-800/40 transition-colors"
+                      className="space-y-2.5 rounded-xl border border-gray-200 bg-gray-50/70 p-3.5 transition-colors"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Cpu className="h-4 w-4 text-brand-500" />
-                          <span className="text-xs font-bold text-gray-900 dark:text-white">{m.nama_mesin}</span>
+                          <span className="text-xs font-bold text-gray-900">{m.nama_mesin}</span>
                         </div>
                         <span
                           className={`rounded border px-2 py-0.5 text-[10px] font-black uppercase ${
                             m.kd_status === "01"
-                              ? "border-success-300 bg-success-50 text-success-700 dark:border-success-800 dark:bg-success-950/60 dark:text-success-300"
+                              ? "border-success-300 bg-success-50 text-success-700"
                               : m.kd_status === "02"
-                              ? "border-warning-300 bg-warning-50 text-warning-700 dark:border-warning-800 dark:bg-warning-950/60 dark:text-warning-300"
-                              : "border-error-300 bg-error-50 text-error-700 dark:border-error-800 dark:bg-error-950/60 dark:text-error-300"
+                              ? "border-warning-300 bg-warning-50 text-warning-700"
+                              : "border-error-300 bg-error-50 text-error-700"
                           }`}
                         >
                           {m.kd_status === "01" ? "OPERASI" : m.kd_status === "02" ? "STANDBY" : "GANGGUAN"}
@@ -213,37 +213,37 @@ export function TimeSlotMatrix({
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 text-[11px] sm:grid-cols-4">
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Beban</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.beban ?? 0} kW</span>
+                          <span className="font-black text-gray-900">{m.beban ?? 0} kW</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Tegangan</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.teg ?? 0} V</span>
+                          <span className="font-black text-gray-900">{m.teg ?? 0} V</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Frekuensi</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.frequency ?? 0} Hz</span>
+                          <span className="font-black text-gray-900">{m.frequency ?? 0} Hz</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Tek Oli</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.tek_oli ?? 0} Bar</span>
+                          <span className="font-black text-gray-900">{m.tek_oli ?? 0} Bar</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Temp Air</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.tem_air ?? 0} °C</span>
+                          <span className="font-black text-gray-900">{m.tem_air ?? 0} °C</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Stand kWh</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.stand_kwh ?? 0}</span>
+                          <span className="font-black text-gray-900">{m.stand_kwh ?? 0}</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Stand BBM</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.stand_bbm ?? 0}</span>
+                          <span className="font-black text-gray-900">{m.stand_bbm ?? 0}</span>
                         </div>
-                        <div className="rounded-lg border border-gray-200 bg-white p-2 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="rounded-lg border border-gray-200 bg-white p-2">
                           <span className="block text-[9px] font-bold uppercase text-gray-400">Cos Phi</span>
-                          <span className="font-black text-gray-900 dark:text-white">{m.cos_phi ?? "-"}</span>
+                          <span className="font-black text-gray-900">{m.cos_phi ?? "-"}</span>
                         </div>
                       </div>
                     </div>
@@ -256,10 +256,10 @@ export function TimeSlotMatrix({
               )}
             </div>
 
-            <div className="flex justify-end border-t border-gray-200 bg-gray-50/80 p-3.5 dark:border-gray-800 dark:bg-gray-800/50">
+            <div className="flex justify-end border-t border-gray-200 bg-gray-50/80 p-3.5">
               <button
                 onClick={() => setSelectedSlotDetail(null)}
-                className="rounded-xl bg-gray-800 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+                className="rounded-xl bg-gray-800 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-gray-900"
               >
                 Tutup Rincian
               </button>
