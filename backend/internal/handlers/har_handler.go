@@ -360,6 +360,20 @@ func (h *HARHandler) DeleteAMCReport(c *fiber.Ctx) error {
 	})
 }
 
+// ClearAllAMCReports mengosongkan seluruh data gangguan AMC (untuk persiapan launching web dalam keadaan kosong)
+func (h *HARHandler) ClearAllAMCReports(c *fiber.Ctx) error {
+	if err := h.db.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&models.AMCReport{}).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal mengosongkan data gangguan AMC: " + err.Error(),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Seluruh data laporan gangguan AMC berhasil dikosongkan (siap launching).",
+	})
+}
+
 // GetAMCStats mengembalikan ringkasan statistik AMC
 func (h *HARHandler) GetAMCStats(c *fiber.Ctx) error {
 	var total, countOpen, countProgress, countClose int64

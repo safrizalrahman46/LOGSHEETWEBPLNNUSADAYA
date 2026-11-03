@@ -212,6 +212,7 @@ func main() {
 	har.Get("/amc/stats", harHandler.GetAMCStats)
 	har.Post("/amc", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.CreateAMCReport)
 	har.Put("/amc/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.UpdateAMCReport)
+	har.Delete("/amc/clear-all", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.ClearAllAMCReports)
 	har.Delete("/amc/:id", middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), harHandler.DeleteAMCReport)
 
 	// Excel Export & Data Import / Export Suite

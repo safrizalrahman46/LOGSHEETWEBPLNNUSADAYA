@@ -27,6 +27,58 @@ import { RoleGuard } from "@/components/common/RoleGuard";
 import { apiClient } from "@/lib/api";
 import { AMCReport } from "@/types";
 
+const UP3_SENTRALS: Record<string, string[]> = {
+  BONTANG: [
+    "ULD BATU AMPAR",
+    "PLTD LONG SEGAR",
+    "PLTD SENYIUR",
+    "PLTD MUARA PANTUN",
+    "PLTD SANDARAN",
+    "PLTD SANGATA",
+    "PLTD GEMAR BARU",
+    "PLTD KARANGAN DALAM",
+    "PLTD PENGANDAN",
+  ],
+  BERAU: [
+    "ULD KELAY",
+    "ULD BIDUK-BIDUK",
+    "ULD MARATUA",
+    "ULD MERASA",
+    "ULD DERAWAN",
+    "PLTD LABANG",
+    "PLTD LUMBIS OGONG",
+    "PLTD GUNUNG SARI",
+    "PLTD KAYAN HULU",
+  ],
+  SAMARINDA: [
+    "ULD DATAH BILANG",
+    "ULD LONG APARI",
+    "ULD LONG PAHANGAI",
+    "ULD MUARA PAHU",
+    "ULD MUARA PANTUAN",
+    "ULD MUARA SIRAN",
+    "ULD PENYINGGAHAN",
+    "ULD SEDULANG",
+    "ULD TABANG",
+    "PLTD DILANG PUTI",
+    "PLTD JANTUR",
+    "PLTD KELUMPANG",
+    "PLTD MUARA KEDANG",
+  ],
+  KALTARA: [
+    "ULD KRAYAN",
+    "ULD LONG LAYU",
+    "ULD LONG PESO",
+    "ULD PA UPAN",
+    "ULD SEI MENGGARIS",
+    "ULD TANAH MERAH",
+    "PLTD SUNGAI BOH",
+    "PLTD TAU LUMBIS",
+    "PLTD LONG BELUAH",
+    "PLTD SEKATAK BUJI",
+  ],
+};
+
 export default function AmcModulePage() {
   const [reports, setReports] = useState<AMCReport[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +98,10 @@ export default function AmcModulePage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState<AMCReport | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Clear All State (For Launching Clean Slate)
+  const [clearAllModalOpen, setClearAllModalOpen] = useState(false);
+  const [clearingAll, setClearingAll] = useState(false);
 
   const confirmDelete = (report: AMCReport) => {
     setReportToDelete(report);
@@ -70,10 +126,25 @@ export default function AmcModulePage() {
     }
   };
 
+  const handleClearAll = async () => {
+    setClearingAll(true);
+    try {
+      await apiClient.delete("/har/amc/clear-all");
+      fetchReports();
+      setClearAllModalOpen(false);
+      setExpandedId(null);
+      alert("Seluruh data laporan gangguan berhasil dikosongkan (siap launching)!");
+    } catch (err: any) {
+      alert("Gagal mengosongkan data: " + (err.response?.data?.message || err.message));
+    } finally {
+      setClearingAll(false);
+    }
+  };
+
   // New Report State
   const [newReport, setNewReport] = useState<Partial<AMCReport>>({
     periode: "Setelah AMC",
-    up3: "BERAU",
+    up3: "BONTANG",
     sentral: "ULD BATU AMPAR",
     unit_pembangkit: "PLTD BATU AMPAR #01 (DEUTZ)",
     merk: "DEUTZ",
@@ -269,6 +340,18 @@ export default function AmcModulePage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
+              {reports.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setClearAllModalOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50/80 px-3 py-2 text-xs font-bold text-rose-600 shadow-theme-xs transition-colors hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/50"
+                  title="Hapus semua data uji coba laporan gangguan untuk persiapan launching"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-rose-600" />
+                  <span>Kosongkan Data Uji Coba</span>
+                </button>
+              )}
+
               <button
                 onClick={handleExportCSV}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-theme-xs transition-colors hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
@@ -378,6 +461,7 @@ export default function AmcModulePage() {
                 className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
               >
                 <option value="ALL">Semua UP3</option>
+                <option value="BONTANG">UP3 BONTANG</option>
                 <option value="BERAU">UP3 BERAU</option>
                 <option value="SAMARINDA">UP3 SAMARINDA</option>
                 <option value="KALTARA">UP3 KALTARA</option>
@@ -432,8 +516,16 @@ export default function AmcModulePage() {
                 Memuat data gangguan AMC...
               </div>
             ) : filteredReports.length === 0 ? (
-              <div className="py-20 text-center text-xs font-semibold text-gray-400">
-                Tidak ada data gangguan yang sesuai dengan filter.
+              <div className="py-16 text-center px-4">
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                  <FileSpreadsheet className="h-6 w-6" />
+                </div>
+                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                  Belum Ada Data Gangguan (Database Bersih Siap Launching)
+                </p>
+                <p className="mt-1 text-xs text-gray-500 max-w-md mx-auto">
+                  Saat ini tidak ada laporan gangguan aktif. Klik tombol <span className="font-semibold text-brand-600">Catat Gangguan Baru</span> di atas untuk menambahkan laporan, dan data dapat dihapus sewaktu-waktu menggunakan tombol <span className="font-semibold text-rose-600">Hapus</span>.
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -653,9 +745,14 @@ export default function AmcModulePage() {
                       </label>
                       <select
                         value={newReport.up3}
-                        onChange={(e) => setNewReport({ ...newReport, up3: e.target.value })}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const defaultSentral = UP3_SENTRALS[val]?.[0] || "";
+                          setNewReport({ ...newReport, up3: val, sentral: defaultSentral });
+                        }}
                         className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-bold text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
                       >
+                        <option value="BONTANG">UP3 BONTANG</option>
                         <option value="BERAU">UP3 BERAU</option>
                         <option value="SAMARINDA">UP3 SAMARINDA</option>
                         <option value="KALTARA">UP3 KALTARA</option>
@@ -669,11 +766,17 @@ export default function AmcModulePage() {
                       <input
                         type="text"
                         required
+                        list="sentral-options"
                         value={newReport.sentral}
                         onChange={(e) => setNewReport({ ...newReport, sentral: e.target.value })}
                         placeholder="Contoh: ULD BATU AMPAR"
                         className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs font-medium text-gray-800 focus:border-brand-500 focus:outline-hidden dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-200"
                       />
+                      <datalist id="sentral-options">
+                        {(UP3_SENTRALS[newReport.up3 || "BONTANG"] || []).map((s) => (
+                          <option key={s} value={s} />
+                        ))}
+                      </datalist>
                     </div>
 
                     <div>
@@ -1027,6 +1130,58 @@ export default function AmcModulePage() {
                   >
                     <Trash2 className="h-4 w-4" />
                     <span>{deleting ? "Menghapus..." : "Ya, Hapus Laporan"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Konfirmasi Kosongkan Semua Data Uji Coba (Launch Clean Slate) */}
+          {clearAllModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+              <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-gray-800 dark:bg-gray-900 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400">
+                    <Trash2 className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                      Kosongkan Data Uji Coba
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      Persiapan launching web dalam keadaan kosong (0 rekaman).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-900 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 space-y-1.5">
+                  <p className="font-bold">⚠️ Perhatian Khusus Peluncuran Resmi</p>
+                  <p className="leading-relaxed">
+                    Tindakan ini akan menghapus <strong>seluruh ({reports.length}) data laporan gangguan AMC</strong> dari database server. Cocok digunakan agar aplikasi mulai beroperasi dari nol.
+                  </p>
+                </div>
+
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Apakah Anda yakin ingin mengosongkan seluruh database laporan gangguan sekarang?
+                </p>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                  <button
+                    type="button"
+                    disabled={clearingAll}
+                    onClick={() => setClearAllModalOpen(false)}
+                    className="rounded-xl border border-gray-200 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    disabled={clearingAll}
+                    onClick={handleClearAll}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white hover:bg-rose-700 disabled:opacity-50 shadow-theme-xs transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>{clearingAll ? "Mengosongkan..." : "Ya, Kosongkan Semua"}</span>
                   </button>
                 </div>
               </div>
