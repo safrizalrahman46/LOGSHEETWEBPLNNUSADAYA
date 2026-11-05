@@ -52,19 +52,27 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 
 	machineCounts := map[string]int{"operasi": 0, "standby": 0, "gangguan-rusak": 0}
 	machineAlerts := []MachineAlert{}
+	standbyAlerts := []MachineAlert{}
 	for _, m := range machines {
 		machineCounts[m.Status]++
-		if m.Status != "operasi" {
-			label := "Standby"
-			if m.Status == "gangguan-rusak" {
-				label = "Gangguan / Rusak"
-			}
+		if m.Status == "gangguan-rusak" {
 			machineAlerts = append(machineAlerts, MachineAlert{
 				ID:        m.ID,
 				Name:      m.MachineName,
 				UnitID:    m.UnitID,
 				Status:    m.Status,
-				Detail:    label,
+				Detail:    "Gangguan / Rusak",
+				Capacity:  m.Capacity,
+				Brand:     m.Brand,
+				UpdatedAt: m.UpdatedAt,
+			})
+		} else if m.Status == "standby" {
+			standbyAlerts = append(standbyAlerts, MachineAlert{
+				ID:        m.ID,
+				Name:      m.MachineName,
+				UnitID:    m.UnitID,
+				Status:    m.Status,
+				Detail:    "Standby (Siap Operasi)",
 				Capacity:  m.Capacity,
 				Brand:     m.Brand,
 				UpdatedAt: m.UpdatedAt,
@@ -237,6 +245,7 @@ func (h *StatsHandler) Get(c *fiber.Ctx) error {
 				"total":       len(machines),
 				"counts":      machineCounts,
 				"alerts":      machineAlerts,
+				"standby":     standbyAlerts,
 			},
 			"har": fiber.Map{
 				"total":  harTotal,

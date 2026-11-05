@@ -348,6 +348,16 @@ export interface StatsData {
       brand?: string;
       updated_at: string;
     }[];
+    standby?: {
+      id: string;
+      name: string;
+      unit_id: string;
+      status: string;
+      detail: string;
+      capacity: string;
+      brand?: string;
+      updated_at: string;
+    }[];
   };
   har: {
     total: number;
@@ -378,4 +388,27 @@ export interface StatsData {
     failed_sync: number;
   };
   presensi: { today: number; anomaly: number };
+}
+
+export interface PeakLoadReport {
+  id: number;
+  tanggal: string;
+  waktu_beban: string;
+  up3: string;
+  unit_id: string;
+  unit_name: string;
+  dtp: number;
+  dmp: number;
+  beban_puncak: number;
+  cadangan_daya: number;
+  persen_cadangan: number;
+  kondisi: "NORMAL" | "SIAGA" | "DEFISIT";
+  mesin_operasi: number;
+  mesin_standby: number;
+  mesin_gangguan: number;
+  daftar_gangguan?: string;
+  operator_name?: string;
+  catatan?: string;
+  created_at: string;
+  updated_at: string;
 }

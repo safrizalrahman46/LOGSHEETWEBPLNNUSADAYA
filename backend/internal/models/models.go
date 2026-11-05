@@ -271,6 +271,31 @@ type WacbWatchState struct {
 
 // TableName memetakan LogsheetDetail ke tabel logsheets yang sudah ada di DB
 // (GORM default akan membuat logsheet_details, padahal tabel riil bernama logsheets).
+// PeakLoadReport merepresentasikan Laporan Beban Puncak (WBP) Pembangkit PLTD
+type PeakLoadReport struct {
+	ID             uint           `gorm:"primaryKey" json:"id"`
+	Tanggal        string         `gorm:"index;type:varchar(16);not null" json:"tanggal"` // YYYY-MM-DD
+	WaktuBeban     string         `gorm:"type:varchar(32);default:'WBP_MALAM'" json:"waktu_beban"` // WBP_MALAM (18:00 - 22:00), WBP_SIANG (10:00 - 14:00)
+	UP3            string         `gorm:"index;type:varchar(64)" json:"up3"`
+	UnitID         string         `gorm:"index;type:varchar(32)" json:"unit_id"`
+	UnitName       string         `gorm:"type:varchar(128);not null" json:"unit_name"`
+	DTP            float64        `json:"dtp"`             // Daya Terpasang (kW)
+	DMP            float64        `json:"dmp"`             // Daya Mampu Pasok (kW)
+	BebanPuncak    float64        `json:"beban_puncak"`    // Realisasi Beban Puncak (kW)
+	CadanganDaya   float64        `json:"cadangan_daya"`   // DMP - BebanPuncak (kW)
+	PersenCadangan float64        `json:"persen_cadangan"` // (Cadangan / DMP) * 100
+	Kondisi        string         `gorm:"index;type:varchar(32);default:'NORMAL'" json:"kondisi"` // NORMAL, SIAGA, DEFISIT
+	MesinOperasi   int            `json:"mesin_operasi"`
+	MesinStandby   int            `json:"mesin_standby"`
+	MesinGangguan  int            `json:"mesin_gangguan"`
+	DaftarGangguan string         `gorm:"type:text" json:"daftar_gangguan"`
+	OperatorName   string         `gorm:"type:varchar(128)" json:"operator_name"`
+	Catatan        string         `gorm:"type:text" json:"catatan"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
 func (LogsheetDetail) TableName() string {
 	return "logsheets"
 }

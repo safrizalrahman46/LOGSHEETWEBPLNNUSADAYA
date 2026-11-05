@@ -219,6 +219,50 @@ func (h *MachineHandler) Update(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"success": true, "message": "Mesin berhasil diperbarui", "data": m})
 }
 
+// UpdateStatus mengubah status operasional mesin (operasi, standby, gangguan-rusak) secara cepat.
+// PUT /api/admin/machines/:id/status
+func (h *MachineHandler) UpdateStatus(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var m models.Machine
+	if err := h.db.First(&m, "id = ?", id).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"success": false, "message": "Mesin tidak ditemukan"})
+	}
+
+	type StatusReq struct {
+		Status string `json:"status"`
+		Notes  string `json:"notes"`
+	}
+	var req StatusReq
+	if err := c.BodyParser(&req); err != nil || strings.TrimSpace(req.Status) == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"success": false, "message": "Status mesin wajib diisi"})
+	}
+
+	newStatus := allowedMachineStatus(req.Status)
+	m.Status = newStatus
+	switch newStatus {
+	case "operasi":
+		m.ConditionLabel = "Operasi Normal"
+	case "standby":
+		m.ConditionLabel = "Standby Siap Operasi"
+	case "gangguan-rusak":
+		m.ConditionLabel = "Gangguan Operasional"
+	}
+	m.UpdatedAt = time.Now()
+
+	if err := h.db.Save(&m).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"success": false,
+			"message": "Gagal memperbarui status mesin: " + err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Status mesin berhasil diperbarui",
+		"data":    m,
+	})
+}
+
 // Delete menghapus data mesin.
 // DELETE /api/admin/machines/:id
 func (h *MachineHandler) Delete(c *fiber.Ctx) error {

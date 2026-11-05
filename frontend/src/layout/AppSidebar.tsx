@@ -108,6 +108,14 @@ export const AppSidebar: React.FC = () => {
           badgeColor: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400",
         },
         {
+          title: "Laporan Beban Puncak",
+          href: "/laporan/beban-puncak",
+          icon: Zap,
+          roles: ["SUPERADMIN", "ADMIN", "MANAGER", "SUPERVISOR", "TEKNISI", "OPERATOR"],
+          badge: "WBP",
+          badgeColor: "bg-amber-50 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400",
+        },
+        {
           title: "Ganti Unit PLTD",
           href: "/pilih-unit",
           icon: Building2,

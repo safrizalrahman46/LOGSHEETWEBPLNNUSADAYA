@@ -51,6 +51,7 @@ func main() {
 	publicContentHandler := handlers.NewPublicContentHandler(db)
 	uploadHandler := handlers.NewUploadHandler()
 	integrationHandler := handlers.NewIntegrationHandler(db)
+	bebanPuncakHandler := handlers.NewBebanPuncakHandler(db)
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -159,12 +160,20 @@ func main() {
 	protected.Post("/notifications/:id/read", notificationHandler.MarkRead)
 	protected.Post("/notifications", adminOnly, notificationHandler.Create)
 
-	// Data Master (Admin): mesin, logsheet, matrix, statistik dashboard
-	protected.Get("/admin/machines", adminOnly, machineHandler.List)
-	protected.Get("/admin/units", adminOnly, machineHandler.ListUnits)
+	// Data Master (Admin & Operasional): mesin, logsheet, matrix, statistik dashboard
+	opsManagers := middleware.RequireRoles(models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin)
+	protected.Get("/admin/machines", opsManagers, machineHandler.List)
+	protected.Get("/admin/units", opsManagers, machineHandler.ListUnits)
 	protected.Post("/admin/machines", adminOnly, machineHandler.Create)
-	protected.Put("/admin/machines/:id", adminOnly, machineHandler.Update)
+	protected.Put("/admin/machines/:id", opsManagers, machineHandler.Update)
+	protected.Put("/admin/machines/:id/status", opsManagers, machineHandler.UpdateStatus)
 	protected.Delete("/admin/machines/:id", adminOnly, machineHandler.Delete)
+
+	// Laporan Beban Puncak (WBP) Pembangkit PLTD
+	protected.Get("/beban-puncak", opsManagers, bebanPuncakHandler.List)
+	protected.Get("/beban-puncak/summary", opsManagers, bebanPuncakHandler.Summary)
+	protected.Post("/beban-puncak", middleware.RequireRoles(models.RoleOperator, models.RoleTeknisi, models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), bebanPuncakHandler.Create)
+	protected.Delete("/beban-puncak/:id", middleware.RequireRoles(models.RoleSupervisor, models.RoleAdmin, models.RoleSuperadmin), bebanPuncakHandler.Delete)
 
 	protected.Get("/admin/logsheets", adminOnly, masterHandler.ListLogsheets)
 	protected.Post("/admin/logsheets", adminOnly, masterHandler.CreateLogsheet)

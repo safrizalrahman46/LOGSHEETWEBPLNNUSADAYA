@@ -50,6 +50,7 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 		&models.Machine{},
 		&models.Unit{},
 		&models.WacbWatchState{},
+		&models.PeakLoadReport{},
 	)
 	if err != nil {
 		log.Printf("[DATABASE] Warning during AutoMigrate (non-fatal): %v", err)
@@ -69,6 +70,7 @@ func InitDB(cfg *config.Config) (*gorm.DB, error) {
 	seedNotifications(db)
 	seedHARTickets(db)
 	seedAMCReports(db)
+	seedPeakLoadReports(db)
 	seedUnits(db)
 	seedMachines(db)
 	seedLogsheetDetails(db)
@@ -579,6 +581,47 @@ func seedAMCReports(db *gorm.DB) {
 		db.Create(&a)
 	}
 	log.Println("[DATABASE] 5 Data Laporan Gangguan AMC KIT KALTIMRA 2026 seeded.")
+}
+
+func seedPeakLoadReports(db *gorm.DB) {
+	var count int64
+	db.Model(&models.PeakLoadReport{}).Count(&count)
+	if count > 0 {
+		return
+	}
+	todayStr := time.Now().Format("2006-01-02")
+	reports := []models.PeakLoadReport{
+		{
+			Tanggal: todayStr, WaktuBeban: "WBP_MALAM (18:00 - 22:00)", UP3: "BONTANG", UnitID: "0264", UnitName: "ULD BATU AMPAR",
+			DTP: 900, DMP: 760, BebanPuncak: 540, CadanganDaya: 220, PersenCadangan: 28.9, Kondisi: "NORMAL",
+			MesinOperasi: 2, MesinStandby: 1, MesinGangguan: 0, OperatorName: "Syahroni", Catatan: "Kondisi kelistrikan normal aman terkendali saat beban puncak malam.",
+			CreatedAt: time.Now(), UpdatedAt: time.Now(),
+		},
+		{
+			Tanggal: todayStr, WaktuBeban: "WBP_MALAM (18:00 - 22:00)", UP3: "BERAU", UnitID: "0265", UnitName: "ULD BIDUK-BIDUK",
+			DTP: 1384, DMP: 1100, BebanPuncak: 820, CadanganDaya: 280, PersenCadangan: 25.4, Kondisi: "NORMAL",
+			MesinOperasi: 3, MesinStandby: 1, MesinGangguan: 2, DaftarGangguan: "DEUTZ #02 (Kebocoran water pump), MTU #06 (Overhaul)",
+			OperatorName: "Rudi Santoso", Catatan: "Dua unit mesin dalam perbaikan tim HAR, beban puncak dilayani unit operasi.",
+			CreatedAt: time.Now(), UpdatedAt: time.Now(),
+		},
+		{
+			Tanggal: todayStr, WaktuBeban: "WBP_MALAM (18:00 - 22:00)", UP3: "SAMARINDA", UnitID: "0266", UnitName: "ULD TABANG",
+			DTP: 800, DMP: 650, BebanPuncak: 580, CadanganDaya: 70, PersenCadangan: 10.7, Kondisi: "SIAGA",
+			MesinOperasi: 2, MesinStandby: 1, MesinGangguan: 1, DaftarGangguan: "DEUTZ #03 (Vibrasi generator tinggi)",
+			OperatorName: "Taufik Hidayat", Catatan: "Cadangan daya di bawah 15%, status sistem SIAGA.",
+			CreatedAt: time.Now(), UpdatedAt: time.Now(),
+		},
+		{
+			Tanggal: todayStr, WaktuBeban: "WBP_MALAM (18:00 - 22:00)", UP3: "KALTARA", UnitID: "0267", UnitName: "ULD TANAH MERAH",
+			DTP: 1500, DMP: 1250, BebanPuncak: 940, CadanganDaya: 310, PersenCadangan: 24.8, Kondisi: "NORMAL",
+			MesinOperasi: 3, MesinStandby: 2, MesinGangguan: 0, OperatorName: "Ardiansyah", Catatan: "Sistem normal andal.",
+			CreatedAt: time.Now(), UpdatedAt: time.Now(),
+		},
+	}
+	for _, r := range reports {
+		db.Create(&r)
+	}
+	log.Println("[DATABASE] 4 Data Laporan Beban Puncak WBP seeded.")
 }
 
 func seedUnits(db *gorm.DB) {

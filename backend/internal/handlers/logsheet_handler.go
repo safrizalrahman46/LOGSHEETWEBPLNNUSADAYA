@@ -434,6 +434,21 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 				"notes", "updated_at",
 			}),
 		}).Create(&detailRow)
+
+		// Sinkronisasi status mesin di tabel machines agar dashboard selalu update otomatis & real-time
+		condLabel := "Operasi Normal"
+		if mStatus == "standby" {
+			condLabel = "Standby Siap Operasi"
+		} else if mStatus == "gangguan-rusak" {
+			condLabel = "Gangguan Operasional"
+		}
+		h.db.Model(&models.Machine{}).
+			Where("id = ? OR (unit_id = ? AND machine_name ILIKE ?)", machineID, req.KdUnit, "%"+m.NamaMesin+"%").
+			Updates(map[string]interface{}{
+				"status":          mStatus,
+				"condition_label": condLabel,
+				"updated_at":      time.Now(),
+			})
 	}
 
 	NotifyUser(h.db, LocalUserID(c), req.KdUnit, "logsheet", "rendah",

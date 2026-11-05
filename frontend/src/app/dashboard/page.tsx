@@ -12,6 +12,7 @@ import {
   Cpu,
   Wrench,
   CheckCircle2,
+  Power,
   RefreshCw,
   Siren,
   LogIn,
@@ -178,8 +179,36 @@ export default function DashboardPage() {
   const standbyCount = machineCounts["standby"] || 0;
   const gangguanCount = machineCounts["gangguan-rusak"] || 0;
   const machineAlerts = stats?.machines.alerts || [];
+  const standbyMachines = stats?.machines.standby || [];
   const harAlerts = stats?.har.alerts || [];
   const problemCount = machineAlerts.length + harAlerts.length;
+
+  const [alertTab, setAlertTab] = useState<"gangguan" | "har" | "standby">("gangguan");
+  const [updatingMachineId, setUpdatingMachineId] = useState<string | null>(null);
+
+  const handleUpdateMachineStatus = async (
+    machineId: string,
+    machineName: string,
+    newStatus: "operasi" | "standby" | "gangguan-rusak"
+  ) => {
+    setUpdatingMachineId(machineId);
+    try {
+      const res = await apiClient.put(`/admin/machines/${machineId}/status`, {
+        status: newStatus,
+        notes: `Diperbarui ke ${newStatus.toUpperCase()} dari Dashboard`,
+      });
+      if (res.data?.success) {
+        const label = newStatus === "operasi" ? "OPERASI (NORMAL)" : newStatus === "standby" ? "STANDBY" : "GANGGUAN";
+        setToastMessage(`Status ${machineName} berhasil diubah ke ${label}! Jumlah gangguan berkurang.`);
+        setTimeout(() => setToastMessage(null), 5000);
+        fetchStats();
+      }
+    } catch (err: any) {
+      alert("Gagal memperbarui status mesin: " + (err.response?.data?.message || err.message));
+    } finally {
+      setUpdatingMachineId(null);
+    }
+  };
   const lateCount = (stats?.logsheet.late || 0) + (stats?.logsheet.failed_sync || 0);
 
   const pieData = [
@@ -753,7 +782,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {statsState === "ok" && stats && problemCount > 0 && (
+        {statsState === "ok" && stats && (problemCount > 0 || gangguanCount > 0) && (
           <div className="overflow-hidden rounded-3xl border-2 border-error-300 shadow-theme-lg">
             {/* Strip alarm */}
             <div
@@ -772,24 +801,27 @@ export default function DashboardPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/80">
-                    Peringatan Operasional
+                    Peringatan Operasional & Gangguan Pembangkit
                   </p>
                   <h2 className="text-lg font-extrabold text-white sm:text-xl">
-                    {problemCount} masalah perlu ditindaklanjuti
+                    {problemCount} Kendala & Gangguan Perlu Ditindaklanjuti
                   </h2>
+                  <p className="mt-0.5 text-xs text-white/80">
+                    Mesin yang telah selesai diperbaiki / normal dapat langsung ditandai dengan tombol 1-klik di bawah.
+                  </p>
                 </div>
                 <div className="flex items-center gap-4 text-white sm:shrink-0">
                   <div className="text-right">
-                    <p className="text-3xl font-black leading-none">{gangguanCount}</p>
+                    <p className="text-3xl font-black leading-none text-white">{gangguanCount}</p>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">
                       Gangguan
                     </p>
                   </div>
                   <div className="h-9 w-px bg-white/30" />
                   <div className="text-right">
-                    <p className="text-3xl font-black leading-none">{standbyCount}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-white/80">
-                      Standby
+                    <p className="text-3xl font-black leading-none text-amber-200">{standbyCount}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-amber-200/90">
+                      Standby Siaga
                     </p>
                   </div>
                   <div className="h-9 w-px bg-white/30" />
@@ -810,137 +842,303 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Daftar masalah */}
-            <div className="bg-error-50/80 p-4 sm:p-5">
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                {/* Mesin */}
-                {machineAlerts.map((m) => (
-                  <div
-                    key={m.id}
-                    className="group rounded-2xl border border-error-200 bg-white p-4 transition-shadow hover:shadow-theme-lg"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
-                          m.status === "gangguan-rusak"
-                            ? "bg-error-600 text-white"
-                            : "bg-warning-500 text-white"
-                        }`}
-                      >
-                        <Cpu className="h-5 w-5" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm font-extrabold text-gray-900">
-                            {m.name}
-                          </p>
-                          <span
-                            className={`rounded-md px-2 py-0.5 text-[10px] font-extrabold uppercase text-white ${
-                              m.status === "gangguan-rusak" ? "bg-error-600" : "bg-warning-500"
-                            }`}
-                          >
-                            {m.detail}
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs text-gray-500">
-                          Unit {m.unit_id} • {m.brand || "Merek -"} • Kapasitas {m.capacity || "-"}
-                        </p>
-                        <p className="mt-0.5 text-[11px] text-gray-400">
-                          Diperbarui {timeAgo(m.updated_at)}
-                        </p>
-                      </div>
-                      <Link
-                        href="/logsheet/matrix"
-                        className="shrink-0 rounded-lg border border-error-200 px-2.5 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50"
-                      >
-                        Lihat Matriks
-                      </Link>
-                    </div>
-                  </div>
-                ))}
+            {/* Sub-Header Tabs & Quick Actions */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-error-200 bg-white px-5 py-3 dark:border-gray-800 dark:bg-gray-900">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setAlertTab("gangguan")}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition-all ${
+                    alertTab === "gangguan"
+                      ? "bg-error-600 text-white shadow-theme-xs"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+                  }`}
+                >
+                  <Cpu className="h-3.5 w-3.5" />
+                  <span>Mesin Gangguan ({gangguanCount})</span>
+                </button>
 
-                {/* Tiket HAR */}
-                {harAlerts.map((t) => {
-                  const step = HAR_STEP_INDEX[t.status] ?? 0;
-                  return (
-                    <div
-                      key={t.id}
-                      className="rounded-2xl border border-error-200 bg-white p-4"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-error-600 text-white">
-                          <Wrench className="h-5 w-5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p className="text-sm font-extrabold text-gray-900">
-                              {t.ticket_number}
-                            </p>
-                            <span className="rounded-md bg-error-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
-                              {t.status || "OPEN"}
-                            </span>
-                            {t.status === "APPROVED" && (
-                              <span className="rounded-md bg-success-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
-                                Disetujui
-                              </span>
-                            )}
-                          </div>
-                          <p className="mt-1 text-xs text-gray-500">
-                            {t.machine_name} • {t.nama_unit} • {t.maintenance_type || "-"}
-                          </p>
-                          <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500">
-                            {t.fault_description || "Belum ada deskripsi gangguan."}
-                          </p>
+                <button
+                  type="button"
+                  onClick={() => setAlertTab("har")}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition-all ${
+                    alertTab === "har"
+                      ? "bg-error-600 text-white shadow-theme-xs"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+                  }`}
+                >
+                  <Wrench className="h-3.5 w-3.5" />
+                  <span>Tiket HAR ({harAlerts.length})</span>
+                </button>
 
-                          {/* Progres */}
-                          <div className="mt-3 flex items-center gap-1">
-                            {HAR_STEPS.map((s, i) => (
-                              <div key={s} className="flex flex-1 items-center gap-1">
-                                <span
-                                  className={`h-2 w-2 shrink-0 rounded-full ${
-                                    i <= step ? "bg-error-600" : "bg-gray-200"
-                                  }`}
-                                />
-                                {i < HAR_STEPS.length - 1 && (
-                                  <span
-                                    className={`h-0.5 flex-1 rounded ${
-                                      i < step ? "bg-error-600" : "bg-gray-200"
-                                    }`}
-                                  />
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] font-semibold text-gray-400">
-                            <span>{HAR_STEPS[step]}</span>
-                            <span className="min-w-0">
-                              Umur tiket {durasi(t.created_at)} • {t.teknisi_name || "teknisi belum ditentukan"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
-                        {t.status !== "APPROVED" && t.status !== "RESOLVED" && (
-                          <button
-                            onClick={() => handleApproveTicket(t.id, t.ticket_number)}
-                            disabled={approvingId === t.id}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
-                          >
-                            <Check className="h-3.5 w-3.5" />
-                            <span>{approvingId === t.id ? "Menyetujui..." : "1-Klik Setujui Tiket"}</span>
-                          </button>
-                        )}
-                        <Link
-                          href="/har"
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-error-200 px-3 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50"
-                        >
-                          Buka Modul HAR <ArrowRight className="h-3.5 w-3.5" />
-                        </Link>
-                      </div>
-                    </div>
-                  );
-                })}
+                <button
+                  type="button"
+                  onClick={() => setAlertTab("standby")}
+                  className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 font-bold transition-all ${
+                    alertTab === "standby"
+                      ? "bg-amber-500 text-white shadow-theme-xs"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300"
+                  }`}
+                >
+                  <Power className="h-3.5 w-3.5" />
+                  <span>Cadangan Standby ({standbyCount})</span>
+                </button>
               </div>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/laporan/beban-puncak"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 hover:bg-brand-100 transition-colors dark:border-brand-900/50 dark:bg-brand-950/40 dark:text-brand-300"
+                >
+                  <Zap className="h-3.5 w-3.5 text-brand-500" />
+                  <span>Laporan Beban Puncak (WBP)</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  href="/admin/machines"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                  title="Kelola Master Data Mesin"
+                >
+                  <span>Kelola Mesin</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Konten Tab */}
+            <div className="bg-error-50/50 p-4 sm:p-5 dark:bg-gray-950/40">
+              {/* TAB 1: MESIN GANGGUAN */}
+              {alertTab === "gangguan" && (
+                <div>
+                  {machineAlerts.length === 0 ? (
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-8 text-center text-xs text-emerald-800 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-300">
+                      <CheckCircle2 className="mx-auto mb-2 h-8 w-8 text-emerald-600" />
+                      <p className="font-bold text-sm">Semua Mesin Beroperasi Normal!</p>
+                      <p className="mt-1 text-emerald-700/80">Tidak ada mesin berstatus gangguan saat ini.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {machineAlerts.map((m) => (
+                        <div
+                          key={m.id}
+                          className="group rounded-2xl border border-error-200 bg-white p-4 transition-shadow hover:shadow-theme-lg dark:border-gray-800 dark:bg-gray-900"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-error-600 text-white">
+                              <Cpu className="h-5 w-5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-sm font-extrabold text-gray-900 dark:text-white">
+                                  {m.name}
+                                </p>
+                                <span className="rounded-md bg-error-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                                  {m.detail}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Unit {m.unit_id} • {m.brand || "Merek -"} • Kapasitas {m.capacity || "-"}
+                              </p>
+                              <p className="mt-0.5 text-[11px] text-gray-400">
+                                Diperbarui {timeAgo(m.updated_at)}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Tombol Aksi Cepat: Normalisasi / Pindah Standby */}
+                          <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3 dark:border-gray-800">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              <button
+                                type="button"
+                                disabled={updatingMachineId === m.id}
+                                onClick={() => handleUpdateMachineStatus(m.id, m.name, "operasi")}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-xs hover:bg-emerald-700 active:scale-95 disabled:opacity-50 transition-all"
+                                title="Klik jika mesin sudah selesai diperbaiki dan siap beroperasi"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                <span>{updatingMachineId === m.id ? "Memproses..." : "Tandai Normal (Operasi)"}</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                disabled={updatingMachineId === m.id}
+                                onClick={() => handleUpdateMachineStatus(m.id, m.name, "standby")}
+                                className="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-[11px] font-bold text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300"
+                                title="Ubah status menjadi standby cadangan"
+                              >
+                                <Power className="h-3.5 w-3.5" />
+                                <span>Pindah Standby</span>
+                              </button>
+                            </div>
+
+                            <Link
+                              href="/logsheet/matrix"
+                              className="shrink-0 rounded-lg border border-gray-200 px-2.5 py-1.5 text-[11px] font-semibold text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                            >
+                              Lihat Matriks
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 2: TIKET HAR */}
+              {alertTab === "har" && (
+                <div>
+                  {harAlerts.length === 0 ? (
+                    <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900">
+                      <Wrench className="mx-auto mb-2 h-7 w-7 text-gray-400" />
+                      <p className="font-bold text-gray-700 dark:text-gray-300">Tidak Ada Tiket HAR Terbuka</p>
+                      <p className="mt-1">Seluruh tiket pemeliharaan sudah terselesaikan.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      {harAlerts.map((t) => {
+                        const step = HAR_STEP_INDEX[t.status] ?? 0;
+                        return (
+                          <div
+                            key={t.id}
+                            className="rounded-2xl border border-error-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-error-600 text-white">
+                                <Wrench className="h-5 w-5" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-sm font-extrabold text-gray-900 dark:text-white">
+                                    {t.ticket_number}
+                                  </p>
+                                  <span className="rounded-md bg-error-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                                    {t.status || "OPEN"}
+                                  </span>
+                                  {t.status === "APPROVED" && (
+                                    <span className="rounded-md bg-success-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white">
+                                      Disetujui
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                  {t.machine_name} • {t.nama_unit} • {t.maintenance_type || "-"}
+                                </p>
+                                <p className="mt-0.5 line-clamp-2 text-[11px] text-gray-500 dark:text-gray-400">
+                                  {t.fault_description || "Belum ada deskripsi gangguan."}
+                                </p>
+
+                                {/* Progres */}
+                                <div className="mt-3 flex items-center gap-1">
+                                  {HAR_STEPS.map((s, i) => (
+                                    <div key={s} className="flex flex-1 items-center gap-1">
+                                      <span
+                                        className={`h-2 w-2 shrink-0 rounded-full ${
+                                          i <= step ? "bg-error-600" : "bg-gray-200 dark:bg-gray-700"
+                                        }`}
+                                      />
+                                      {i < HAR_STEPS.length - 1 && (
+                                        <span
+                                          className={`h-0.5 flex-1 rounded ${
+                                            i < step ? "bg-error-600" : "bg-gray-200 dark:bg-gray-700"
+                                          }`}
+                                        />
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] font-semibold text-gray-400">
+                                  <span>{HAR_STEPS[step]}</span>
+                                  <span className="min-w-0">
+                                    Umur tiket {durasi(t.created_at)} • {t.teknisi_name || "teknisi belum ditentukan"}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-3 flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 pt-2.5 dark:border-gray-800">
+                              {t.status !== "APPROVED" && t.status !== "RESOLVED" && (
+                                <button
+                                  onClick={() => handleApproveTicket(t.id, t.ticket_number)}
+                                  disabled={approvingId === t.id}
+                                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
+                                >
+                                  <Check className="h-3.5 w-3.5" />
+                                  <span>{approvingId === t.id ? "Menyetujui..." : "1-Klik Setujui Tiket"}</span>
+                                </button>
+                              )}
+                              <Link
+                                href="/har"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-error-200 px-3 py-1.5 text-[11px] font-bold text-error-600 transition-colors hover:bg-error-50 dark:border-error-900/40 dark:hover:bg-error-950/30"
+                              >
+                                Buka Modul HAR <ArrowRight className="h-3.5 w-3.5" />
+                              </Link>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 3: MESIN STANDBY */}
+              {alertTab === "standby" && (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {standbyMachines.length === 0 ? (
+                    <div className="col-span-2 rounded-2xl border border-gray-200 bg-white p-6 text-center text-xs text-gray-500">
+                      Tidak ada mesin standby saat ini.
+                    </div>
+                  ) : (
+                    standbyMachines.map((m) => (
+                      <div
+                        key={m.id}
+                        className="group rounded-2xl border border-amber-200 bg-white p-4 transition-shadow hover:shadow-theme-md dark:border-gray-800 dark:bg-gray-900"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white">
+                            <Power className="h-5 w-5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-sm font-extrabold text-gray-900 dark:text-white">
+                                {m.name}
+                              </p>
+                              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                STANDBY (SIAP OPERASI)
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                              Unit {m.unit_id} • {m.brand || "Merek -"} • Kapasitas {m.capacity || "-"}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-gray-400">
+                              Mesin dalam kondisi sehat & siap dinyalakan saat beban puncak
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-3.5 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-800">
+                          <button
+                            type="button"
+                            disabled={updatingMachineId === m.id}
+                            onClick={() => handleUpdateMachineStatus(m.id, m.name, "operasi")}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white shadow-xs hover:bg-emerald-700 active:scale-95 disabled:opacity-50 transition-all"
+                            title="Aktifkan mesin ini untuk beroperasi"
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span>{updatingMachineId === m.id ? "Memproses..." : "Aktifkan Mesin (Operasi)"}</span>
+                          </button>
+
+                          <Link
+                            href="/logsheet/matrix"
+                            className="text-[11px] font-semibold text-gray-500 hover:text-gray-800"
+                          >
+                            Lihat Matriks
+                          </Link>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
