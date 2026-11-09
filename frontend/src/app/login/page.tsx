@@ -33,8 +33,9 @@ export default function LoginPage() {
       if (!v) return "Username wajib diisi.";
       if (v.length < 3) return "Username minimal 3 karakter.";
       if (v.length > 64) return "Username maksimal 64 karakter.";
-      if (!/^[a-zA-Z0-9._@-]+$/.test(v))
-        return "Username hanya boleh huruf, angka, titik, underscore, minus, atau @.";
+      // Izinkan huruf, angka, spasi, titik, underscore, minus, dan @
+      if (!/^[a-zA-Z0-9._@\s-]+$/.test(v))
+        return "Username hanya boleh huruf, angka, spasi, titik, underscore, minus, atau @.";
       return "";
     }
     if (!value) return "Password wajib diisi.";
@@ -58,8 +59,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Bersihkan username dari spasi ujung dan prefix '@' jika ada
+      const cleanedUsername = username.trim().replace(/^@+/, "");
       const res = await apiClient.post("/auth/login", {
-        username: username.trim(),
+        username: cleanedUsername,
         password,
       });
 

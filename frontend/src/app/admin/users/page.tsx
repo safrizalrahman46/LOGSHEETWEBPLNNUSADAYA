@@ -33,7 +33,7 @@ const columns: CrudColumn[] = [
           {String(row.name || "-")}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          @{String(row.username || "-")}
+          Username: <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{String(row.username || "-")}</span>
         </p>
       </div>
     ),
@@ -57,8 +57,14 @@ const columns: CrudColumn[] = [
 ];
 
 const fields: CrudField[] = [
-  { name: "username", label: "Username", required: true, placeholder: "min. 3 karakter" },
-  { name: "name", label: "Nama Lengkap", required: true, placeholder: "Nama pengguna" },
+  { 
+    name: "username", 
+    label: "Username", 
+    required: true, 
+    placeholder: "Contoh: datahbilang atau DATAH BILANG",
+    hint: "Bisa huruf kecil/kapital, boleh dengan/tanpa spasi. Login sangat fleksibel."
+  },
+  { name: "name", label: "Nama Lengkap", required: true, placeholder: "Contoh: ULD DATAH BILANG" },
   { name: "email", label: "Email", placeholder: "nama@pln.co.id" },
   {
     name: "role",
