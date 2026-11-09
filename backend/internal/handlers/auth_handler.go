@@ -335,6 +335,14 @@ func (h *AuthHandler) CreateUser(c *fiber.Ctx) error {
 		namaUnit = strings.TrimSpace(req.UnitName)
 	}
 
+	// Jika kd_unit terisi tapi nama_unit kosong atau default, ambil dari tabel units resmi WACB
+	if kdUnit != "" && (namaUnit == "" || strings.HasPrefix(namaUnit, "PLTD ")) {
+		var u models.Unit
+		if err := h.db.Table("units").Where("id = ?", kdUnit).First(&u).Error; err == nil && u.Name != "" {
+			namaUnit = u.Name
+		}
+	}
+
 	// Jika nama_unit terisi tapi kd_unit kosong, buatkan kode unit otomatis
 	if namaUnit != "" && kdUnit == "" {
 		cleanCode := strings.ToUpper(strings.ReplaceAll(namaUnit, " ", ""))
@@ -477,6 +485,13 @@ func (h *AuthHandler) UpdateUser(c *fiber.Ctx) error {
 		finalNamaUnit = strings.TrimSpace(req.NamaUnit)
 	} else if req.UnitName != "" {
 		finalNamaUnit = strings.TrimSpace(req.UnitName)
+	}
+	if finalKdUnit != "" && (finalNamaUnit == "" || strings.HasPrefix(finalNamaUnit, "PLTD ")) {
+		var u models.Unit
+		if err := h.db.Table("units").Where("id = ?", finalKdUnit).First(&u).Error; err == nil && u.Name != "" {
+			finalNamaUnit = u.Name
+			updates["nama_unit"] = u.Name
+		}
 	}
 	if finalKdUnit != "" {
 		ensureUnitAndMachinesExists(h.db, finalKdUnit, finalNamaUnit)
