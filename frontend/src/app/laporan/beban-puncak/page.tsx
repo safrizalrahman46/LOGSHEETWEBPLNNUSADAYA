@@ -12,6 +12,7 @@ import {
   RefreshCw,
   Search,
   Download,
+  FileSpreadsheet,
   Trash2,
   ArrowLeft,
   X,
@@ -218,9 +219,38 @@ export default function LaporanBebanPuncakPage() {
     }
   };
 
+    const handleExportExcel = async () => {
+    try {
+      const params: Record<string, string> = {};
+      if (selectedUp3 !== "ALL") params.up3 = selectedUp3;
+      if (selectedKondisi !== "ALL") params.kondisi = selectedKondisi;
+      if (selectedTanggal) params.tanggal = selectedTanggal;
+
+      const res = await apiClient.get("/export/beban-puncak/excel", {
+        params,
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Laporan_Beban_Puncak_PLTD_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal export excel beban puncak:", err);
+      handleExportCSV();
+    }
+  };
+
   const handleExportCSV = () => {
     if (filteredReports.length === 0) return;
     const headers = [
+      "No",
       "Tanggal",
       "Waktu Beban",
       "UP3",
@@ -236,8 +266,17 @@ export default function LaporanBebanPuncakPage() {
       "Mesin Gangguan",
       "Daftar Gangguan",
       "Operator",
+      "Catatan",
     ];
-    const rows = filteredReports.map((r) => [
+
+    const escapeCell = (val: any): string => {
+      if (val === null || val === undefined) return '""';
+      const s = String(val).replace(/"/g, '""');
+      return `"${s}"`;
+    };
+
+    const rows = filteredReports.map((r, idx) => [
+      idx + 1,
       r.tanggal,
       r.waktu_beban,
       r.up3,
@@ -251,19 +290,27 @@ export default function LaporanBebanPuncakPage() {
       r.mesin_operasi,
       r.mesin_standby,
       r.mesin_gangguan,
-      `"${(r.daftar_gangguan || "").replace(/"/g, '""')}"`,
-      r.operator_name || "",
+      r.daftar_gangguan || "-",
+      r.operator_name || "-",
+      r.catatan || "-",
     ]);
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
+
+    const lines = [
+      headers.map(escapeCell).join(";"),
+      ...rows.map((row) => row.map(escapeCell).join(";")),
+    ];
+
+    const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.href = url;
     link.setAttribute("download", `Laporan_Beban_Puncak_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     link.remove();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -293,14 +340,28 @@ export default function LaporanBebanPuncakPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
-              >
-                <Download className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Ekspor CSV</span>
-              </button>
+              {/* Grup Tombol Ekspor Beban Puncak */}
+              <div className="inline-flex items-center rounded-xl border border-gray-200 bg-white p-1 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 gap-1">
+                <button
+                  type="button"
+                  onClick={handleExportExcel}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-98"
+                  title="Unduh Laporan Beban Puncak dalam format Microsoft Excel (.xlsx) Resmi"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span>Unduh Excel (.xlsx)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  title="Unduh Data CSV (UTF-8 BOM, Kompatibel Excel Tanpa Terpotong)"
+                >
+                  <Download className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" />
+                  <span>CSV</span>
+                </button>
+              </div>
 
               <button
                 type="button"

@@ -168,7 +168,7 @@ export default function MatrixPage() {
     const interval = setInterval(() => {
       fetchMatrix(tanggal);
     }, 30000);
-    return () => clearInterval(interval);
+return () => clearInterval(interval);
   }, [autoRefresh, tanggal, fetchMatrix]);
 
   // Filter unit berdasarkan Area & Search Query
@@ -257,6 +257,39 @@ export default function MatrixPage() {
         kdUnit: u.kd_unit,
         jam: slot,
       });
+    }
+  };
+
+  const [exportingMatrix, setExportingMatrix] = useState(false);
+
+  const handleExportMatrixExcel = async () => {
+    setExportingMatrix(true);
+    try {
+      const areaLabel = AREA_OPTIONS.find((a) => a.key === selectedArea)?.label || selectedArea;
+      const res = await apiClient.get("/export/matrix/excel", {
+        params: {
+          tanggal,
+          kd_region: "05",
+          area: areaLabel,
+        },
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `Rekap_Matriks_48Slot_${tanggal}_${selectedArea.replace(/\s+/g, "_")}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal export matriks excel:", err);
+      alert("Gagal mengunduh Excel Matriks 48 Slot.");
+    } finally {
+      setExportingMatrix(false);
     }
   };
 
@@ -381,8 +414,19 @@ export default function MatrixPage() {
                 </div>
               </div>
 
-              {/* Tombol Refresh / Sinkronkan */}
+              {/* Tombol Aksi: Unduh Excel 48 Slot & Refresh */}
               <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleExportMatrixExcel}
+                  disabled={exportingMatrix || loading}
+                  className="flex h-9 items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 text-xs font-bold text-emerald-800 shadow-xs hover:bg-emerald-100 active:scale-95 disabled:opacity-50 transition-all dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
+                  title="Unduh Lembar Kerja Rekap Matriks 48 Slot (24 Jam) Format Excel (.xlsx) Resmi"
+                >
+                  <FileSpreadsheet className={`h-4 w-4 text-emerald-600 ${exportingMatrix ? "animate-spin" : ""}`} />
+                  <span>{exportingMatrix ? "Mengunduh..." : "Unduh Excel 48 Slot"}</span>
+                </button>
+
                 <button
                   onClick={() => fetchMatrix(tanggal)}
                   disabled={loading}

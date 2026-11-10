@@ -39,7 +39,7 @@ func main() {
 	authHandler := handlers.NewAuthHandler(db, cfg, wacbClient)
 	logsheetHandler := handlers.NewLogsheetHandler(db, wacbClient, messageBuilder)
 	harHandler := handlers.NewHARHandler(db)
-	exportHandler := handlers.NewExportHandler(db, excelService)
+	exportHandler := handlers.NewExportHandler(db, excelService, wacbClient)
 	importExportHandler := handlers.NewImportExportHandler(db, excelService)
 	attendanceHandler := handlers.NewAttendanceHandler(db, geofenceService)
 	articleHandler := handlers.NewArticleHandler(db)
@@ -227,6 +227,8 @@ func main() {
 	// Excel Export & Data Import / Export Suite
 	protected.Get("/export/excel", exportHandler.ExportExcel)
 	protected.Get("/export/amc/excel", importExportHandler.ExportAMCExcel)
+	protected.Get("/export/beban-puncak/excel", exportHandler.ExportPeakLoadExcel)
+	protected.Get("/export/matrix/excel", exportHandler.ExportMatrixExcel)
 	protected.Get("/export/har/excel", importExportHandler.ExportHARTicketsExcel)
 	protected.Get("/export/attendance/excel", importExportHandler.ExportAttendanceExcel)
 	protected.Get("/export/machines/excel", importExportHandler.ExportMachinesExcel)

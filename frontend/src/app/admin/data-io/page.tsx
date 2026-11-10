@@ -19,6 +19,7 @@ import {
   FileCheck,
   Printer,
   Table,
+  Zap,
 } from "lucide-react";
 import { apiClient } from "@/lib/api";
 import {
@@ -91,12 +92,34 @@ const EXPORT_LIST: ExportCategory[] = [
     id: "logsheet",
     title: "Rekap Logsheet Pembebanan 48 Slot",
     description:
-      "Data logsheet operasional 24 jam (48 interval), kurva pembebanan sistem, stand kWh, dan analisis SFC bahan bakar.",
+      "Data logsheet operasional 24 jam (48 interval), parameter mesin per jam, stand kWh, stand BBM, dan analisis SFC bahan bakar.",
     endpoint: "/export/excel",
     filename: "Rekap_Logsheet_Operasional.xlsx",
     format: "Excel • PDF • CSV",
     icon: FileText,
     color: "from-cyan-600 to-blue-700",
+  },
+  {
+    id: "beban-puncak",
+    title: "Laporan Beban Puncak (WBP) & Neraca Daya",
+    description:
+      "Rekap realisasi beban puncak siang & malam, DTP, DMP, cadangan daya sistem, dan rincian mesin gangguan seluruh PLTD.",
+    endpoint: "/export/beban-puncak/excel",
+    filename: "Laporan_Beban_Puncak_PLTD_2026.xlsx",
+    format: "Excel • PDF • CSV",
+    icon: Zap,
+    color: "from-purple-600 to-indigo-600",
+  },
+  {
+    id: "matrix",
+    title: "Rekap Matriks Pembebanan 48 Slot (24 Jam)",
+    description:
+      "Monitoring matriks kelengkapan pelaporan 48 interval waktu (00:00 - 23:30) untuk seluruh 30 unit PLTD se-Kalimantan 3.",
+    endpoint: "/export/matrix/excel",
+    filename: "Rekap_Matriks_48Slot_WACB.xlsx",
+    format: "Excel • PDF • CSV",
+    icon: Layers,
+    color: "from-teal-600 to-emerald-700",
   },
 ];
 
@@ -339,6 +362,55 @@ export default function DataIOPage() {
           l.approval_status,
         ]);
         exportToCSV("Rekap_Logsheet_Operasional.csv", headers, rows);
+      } else if (item.id === "beban-puncak") {
+        let records: any[] = [];
+        try {
+          const res = await apiClient.get("/beban-puncak");
+          if (res.data?.data && res.data.data.length > 0) records = res.data.data;
+        } catch {}
+        const headers = ["No", "Tanggal", "Waktu Beban", "UP3", "Unit Sentral", "DTP (kW)", "DMP (kW)", "Beban Puncak (kW)", "Cadangan (kW)", "% Cadangan", "Kondisi", "Mesin Operasi", "Mesin Standby", "Mesin Gangguan", "Daftar Gangguan", "Operator"];
+        const rows = records.map((r: any, i) => [
+          i + 1,
+          r.tanggal || "-",
+          r.waktu_beban || "-",
+          r.up3 || "-",
+          r.unit_name || "-",
+          r.dtp || 0,
+          r.dmp || 0,
+          r.beban_puncak || 0,
+          r.cadangan_daya || 0,
+          (r.persen_cadangan || 0) + "%",
+          r.kondisi || "NORMAL",
+          r.mesin_operasi || 0,
+          r.mesin_standby || 0,
+          r.mesin_gangguan || 0,
+          r.daftar_gangguan || "-",
+          r.operator_name || "-",
+        ]);
+        exportToCSV("Laporan_Beban_Puncak_PLTD_2026.csv", headers, rows);
+      } else if (item.id === "matrix") {
+        const today = new Date().toISOString().slice(0, 10);
+        let units: any[] = [];
+        try {
+          const res = await apiClient.get("/wacb/matrix", { params: { tanggal: today } });
+          if (res.data?.data && res.data.data.length > 0) units = res.data.data;
+        } catch {}
+        const headers = ["No", "Kode Unit", "Nama Unit", "Jam Ops"];
+        for (let h = 0; h < 24; h++) {
+          const hh = String(h).padStart(2, "0");
+          headers.push(`${hh}:00`, `${hh}:30`);
+        }
+        const rows = units.map((u: any, i) => {
+          const rowData: any[] = [i + 1, u.kd_unit, u.nama_unit, u.jam_operasional];
+          for (let h = 0; h < 24; h++) {
+            const hh = String(h).padStart(2, "0");
+            const s1 = u.logsheet_pltd?.[`${hh}:00`]?.status === "done" ? "DONE" : "-";
+            const s2 = u.logsheet_pltd?.[`${hh}:30`]?.status === "done" ? "DONE" : "-";
+            rowData.push(s1, s2);
+          }
+          return rowData;
+        });
+        exportToCSV(`Rekap_Matriks_48Slot_${today}.csv`, headers, rows);
       }
       showNotification("success", `File CSV untuk ${item.title} berhasil diunduh.`);
     } catch (err: unknown) {
