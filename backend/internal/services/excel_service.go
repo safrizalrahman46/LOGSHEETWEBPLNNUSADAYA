@@ -137,7 +137,7 @@ func (s *ExcelService) GenerateAMCExcel(records []models.AMCReport) ([]byte, err
 		Alignment: &excelize.Alignment{Horizontal: "left", Vertical: "center"},
 	})
 
-	f.SetCellValue(sheet, "A1", "LAPORAN GANGGUAN AMC KIT KALTIMRA 2026 - PLN NUSANTARA DAYA")
+	f.SetCellValue(sheet, "A1", "LAPORAN GANGGUAN AMC KIT KALTIMRA 2026 - PT PLN SERVICES")
 	f.SetCellStyle(sheet, "A1", "A1", titleStyle)
 
 	headers := []string{

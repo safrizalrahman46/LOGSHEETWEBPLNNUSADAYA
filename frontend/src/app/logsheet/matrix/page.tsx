@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Calendar,
+  AlertTriangle,
   CheckCircle2,
   Clock,
   Download,
@@ -606,12 +607,41 @@ export default function MatrixPage() {
                   </div>
                 ) : detailModal.data?.beban_mesin && detailModal.data.beban_mesin.length > 0 ? (
                   <div className="space-y-4">
+                    {/* Alert Ringkasan Catatan Gangguan Mesin jika ada */}
+                    {detailModal.data.beban_mesin.some((bm) => bm.kd_status !== "01" && bm.kd_status !== "02") && (
+                      <div className="rounded-xl border border-rose-300 bg-rose-50/90 p-4 shadow-xs dark:border-rose-900/60 dark:bg-rose-950/40 space-y-2">
+                        <div className="flex items-center gap-2 font-bold text-sm text-rose-900 dark:text-rose-200">
+                          <AlertTriangle className="h-4 w-4 text-rose-600 animate-pulse shrink-0" />
+                          <span>Peringatan Gangguan Mesin pada Jam Ini ({detailModal.data.beban_mesin.filter((bm) => bm.kd_status !== "01" && bm.kd_status !== "02").length} Unit Gangguan):</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mt-1.5">
+                          {detailModal.data.beban_mesin
+                            .filter((bm) => bm.kd_status !== "01" && bm.kd_status !== "02")
+                            .map((gm, i) => (
+                              <div key={i} className="rounded-lg bg-white p-3 border border-rose-200 shadow-xs dark:bg-gray-800 dark:border-rose-800">
+                                <div className="flex items-center justify-between font-bold text-xs text-gray-900 dark:text-white">
+                                  <span className="truncate pr-2">{gm.nama_mesin}</span>
+                                  <span className="shrink-0 rounded bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-900/60 dark:text-rose-300">
+                                    GANGGUAN
+                                  </span>
+                                </div>
+                                <div className="mt-1.5 text-xs text-rose-800 dark:text-rose-200 font-semibold bg-rose-50/90 dark:bg-rose-950/70 p-2 rounded border border-rose-100 dark:border-rose-900/40">
+                                  <span className="text-gray-500 dark:text-gray-400 font-normal">Catatan / Alasan Gangguan: </span>
+                                  <span className="font-bold underline decoration-rose-400">{gm.keterangan && gm.keterangan !== "-" ? gm.keterangan : "Gangguan Operasional Mesin (Daya 0 kW)"}</span>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="rounded-xl border border-gray-200 overflow-hidden dark:border-gray-800">
                       <table className="w-full text-left text-xs">
                         <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold border-b border-gray-200 dark:border-gray-700">
                           <tr>
                             <th className="px-3 py-2.5">Mesin</th>
                             <th className="px-3 py-2.5">Status</th>
+                            <th className="px-3 py-2.5 min-w-[180px]">Catatan / Keterangan Gangguan</th>
                             <th className="px-3 py-2.5 text-right">Beban (kW)</th>
                             <th className="px-3 py-2.5 text-right">Stand kWh</th>
                             <th className="px-3 py-2.5 text-right">Stand BBM (L)</th>
@@ -626,13 +656,27 @@ export default function MatrixPage() {
                           {detailModal.data.beban_mesin.map((bm, mIdx) => {
                             const isOp = bm.kd_status === "01";
                             const isSt = bm.kd_status === "02";
+                            const isGg = !isOp && !isSt;
                             return (
-                              <tr key={mIdx} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                              <tr
+                                key={mIdx}
+                                className={
+                                  isGg
+                                    ? "bg-rose-50/60 hover:bg-rose-100/60 dark:bg-rose-950/20 dark:hover:bg-rose-950/40 border-l-4 border-l-rose-500"
+                                    : "hover:bg-gray-50 dark:hover:bg-gray-800/40"
+                                }
+                              >
                                 <td className="px-3 py-2.5 font-bold text-gray-900 dark:text-white">
                                   {bm.nama_mesin}
                                   <div className="text-[10px] font-normal text-gray-400">
                                     ID: {bm.id_mesin} {bm.no_seri ? `• SN: ${bm.no_seri}` : ""}
                                   </div>
+                                  {isGg && (
+                                    <div className="mt-1 text-[11px] font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                                      <AlertTriangle className="h-3 w-3 inline text-rose-500 shrink-0" />
+                                      <span>{bm.keterangan && bm.keterangan !== "-" ? bm.keterangan : "Gangguan"}</span>
+                                    </div>
+                                  )}
                                 </td>
                                 <td className="px-3 py-2.5">
                                   <span
@@ -646,6 +690,22 @@ export default function MatrixPage() {
                                   >
                                     {isOp ? "OPERASI" : isSt ? "STANDBY" : "GANGGUAN"}
                                   </span>
+                                </td>
+                                <td className="px-3 py-2.5">
+                                  {isGg ? (
+                                    <div className="inline-flex items-center gap-1.5 rounded-md bg-rose-100 px-2.5 py-1 text-xs font-bold text-rose-900 border border-rose-200 dark:bg-rose-950 dark:text-rose-300 dark:border-rose-900">
+                                      <AlertTriangle className="h-3 w-3 shrink-0 text-rose-600" />
+                                      <span>{bm.keterangan && bm.keterangan !== "-" ? bm.keterangan : "Gangguan Operasional Mesin"}</span>
+                                    </div>
+                                  ) : isSt ? (
+                                    <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+                                      {bm.keterangan && bm.keterangan !== "-" ? bm.keterangan : "Standby Siap Operasi"}
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                                      {bm.keterangan && bm.keterangan !== "-" ? bm.keterangan : "Beroperasi Normal"}
+                                    </span>
+                                  )}
                                 </td>
                                 <td className="px-3 py-2.5 text-right font-bold text-gray-800 dark:text-gray-200">
                                   {bm.beban ?? 0}

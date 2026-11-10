@@ -20,12 +20,14 @@ import {
   Check,
   X,
   FileSpreadsheet,
+  FileText,
   Trash2,
 } from "lucide-react";
 import { AppLayout } from "@/layout/AppLayout";
 import { RoleGuard } from "@/components/common/RoleGuard";
 import { apiClient } from "@/lib/api";
 import { AMCReport } from "@/types";
+import { exportAMCPDF } from "@/lib/exportUtils";
 
 const UP3_SENTRALS: Record<string, string[]> = {
   BONTANG: [
@@ -256,9 +258,38 @@ export default function AmcModulePage() {
     return { total, open, inProgress, closed, totalDowntime };
   }, [reports]);
 
+  // 1. Ekspor Excel (.xlsx) Resmi dari Backend (dengan styling & auto-fit columns)
+  const handleExportExcel = async () => {
+    try {
+      const params: Record<string, string> = {};
+      if (selectedStatus !== "ALL") params.status = selectedStatus;
+      if (selectedPrioritas !== "ALL") params.prioritas = selectedPrioritas;
+
+      const res = await apiClient.get("/export/amc/excel", {
+        params,
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `LAPORAN_GANGGUAN_AMC_KIT_KALTIMRA_${new Date().toISOString().slice(0, 10)}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Gagal export excel server, fallback ke export client:", err);
+      handleExportCSV();
+    }
+  };
+
+  // 2. Ekspor CSV / Excel Spreadsheet aman via Blob (100% aman dari truncate karakter '#' atau koma)
   const handleExportCSV = () => {
     const headers = [
-      "ID",
+      "NO",
       "PERIODE",
       "UP3",
       "SENTRAL",
@@ -280,40 +311,61 @@ export default function AmcModulePage() {
       "STATUS",
     ];
 
-    const rows = filteredReports.map((r) => [
-      r.id,
-      `"${r.periode}"`,
-      `"${r.up3}"`,
-      `"${r.sentral}"`,
-      `"${r.unit_pembangkit}"`,
-      `"${r.merk}"`,
-      `"${r.tipe}"`,
-      `"${r.serial_number}"`,
-      r.dtp,
-      r.dmp,
-      `"${r.prioritas}"`,
-      `"${(r.indikasi_gangguan || "").replace(/"/g, '""')}"`,
-      `"${(r.dampak_mesin || "").replace(/"/g, '""')}"`,
-      `"${r.waktu_kejadian}"`,
-      `"${(r.rencana_tindak_lanjut || "").replace(/"/g, '""')}"`,
-      `"${(r.list_material || "").replace(/"/g, '""')}"`,
-      `"${(r.progres || "").replace(/"/g, '""')}"`,
-      `"${r.pic}"`,
-      r.lama_gangguan_jam,
-      `"${r.status}"`,
+    const escapeCell = (val: any): string => {
+      if (val === null || val === undefined) return '""';
+      const s = String(val).replace(/"/g, '""');
+      return `"${s}"`;
+    };
+
+    const rows = filteredReports.map((r, idx) => [
+      idx + 1,
+      r.periode || "Saat AMC",
+      r.up3 || "-",
+      r.sentral || "-",
+      r.unit_pembangkit || "-",
+      r.merk || "-",
+      r.tipe || "-",
+      r.serial_number || "-",
+      r.dtp || 0,
+      r.dmp || 0,
+      r.prioritas || "-",
+      r.indikasi_gangguan || "-",
+      r.dampak_mesin || "-",
+      r.waktu_kejadian ? new Date(r.waktu_kejadian).toLocaleString("id-ID") : "-",
+      r.rencana_tindak_lanjut || "-",
+      r.list_material || "-",
+      r.progres || "-",
+      r.pic || "-",
+      r.lama_gangguan_jam || 0,
+      r.status || "OPEN",
     ]);
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const lines = [
+      headers.map(escapeCell).join(";"),
+      ...rows.map((row) => row.map(escapeCell).join(";")),
+    ];
 
-    const encodedUri = encodeURI(csvContent);
+    const blob = new Blob(["\uFEFF" + lines.join("\r\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `LAPORAN_GANGGUAN_AMC_KIT_KALTIMRA_2026.csv`);
+    link.href = url;
+    link.setAttribute("download", `LAPORAN_GANGGUAN_AMC_KIT_KALTIMRA_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // 3. Ekspor PDF Resmi Landscape Berita Acara Gangguan AMC
+  const handleExportPDF = () => {
+    try {
+      exportAMCPDF(filteredReports);
+    } catch (err) {
+      console.error("Gagal export PDF AMC:", err);
+      alert("Gagal memproses PDF AMC.");
+    }
   };
 
   return (
@@ -352,13 +404,38 @@ export default function AmcModulePage() {
                 </button>
               )}
 
-              <button
-                onClick={handleExportCSV}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-theme-xs transition-colors hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
-              >
-                <Download className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Ekspor CSV</span>
-              </button>
+              {/* Grup Tombol Ekspor Data Gangguan AMC */}
+              <div className="inline-flex items-center rounded-xl border border-gray-200 bg-white p-1 shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 gap-1">
+                <button
+                  type="button"
+                  onClick={handleExportExcel}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-emerald-700 active:scale-98"
+                  title="Unduh Lembar Kerja Microsoft Excel (.xlsx) Resmi dengan Format & Kolom Lengkap"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span>Unduh Excel (.xlsx)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                  title="Unduh Data CSV (Kompatibel Excel dengan UTF-8 BOM Tanpa Terpotong)"
+                >
+                  <Download className="h-3.5 w-3.5 text-gray-600 dark:text-gray-400" />
+                  <span>CSV</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportPDF}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/50"
+                  title="Cetak Berita Acara Rekapitulasi Gangguan AMC (PDF Landscape Resmi)"
+                >
+                  <FileText className="h-3.5 w-3.5 text-rose-600" />
+                  <span>PDF Resmi</span>
+                </button>
+              </div>
 
               <button
                 onClick={() => setCreateModalOpen(true)}

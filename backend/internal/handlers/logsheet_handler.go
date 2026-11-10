@@ -534,6 +534,63 @@ func (h *LogsheetHandler) GetDetail(c *fiber.Ctx) error {
 			"message": "Gagal mengambil detail beban: " + err.Error(),
 		})
 	}
+
+	// Enrich Catatan Gangguan & Keterangan dari database lokal (amc_reports & logsheet_details)
+	if resp != nil && resp.Data != nil && len(resp.Data.BebanMesin) > 0 {
+		unitName := ""
+		if resp.Data.BebanUld != nil {
+			unitName = resp.Data.BebanUld.NamaUnit
+		}
+
+		// Cari tiket gangguan AMC aktif untuk unit / sentral ini
+		var amcList []models.AMCReport
+		h.db.Where("(sentral ILIKE ? OR unit_pembangkit ILIKE ? OR sentral ILIKE ? OR unit_pembangkit ILIKE ?) AND deleted_at IS NULL",
+			"%"+kdUnit+"%", "%"+kdUnit+"%", "%"+unitName+"%", "%"+unitName+"%").
+			Order("id desc").Find(&amcList)
+
+		// Cari catatan logsheet lokal yang pernah diinput
+		var localDetails []models.LogsheetDetail
+		h.db.Where("unit_id = ?", kdUnit).Order("submitted_at desc").Limit(30).Find(&localDetails)
+
+		for i := range resp.Data.BebanMesin {
+			bm := &resp.Data.BebanMesin[i]
+			isGangguan := bm.KdStatus == "03" || bm.KdStatus == "04" || (bm.Beban != nil && *bm.Beban == 0 && bm.KdStatus != "02")
+
+			// 1. Cek catatan dari logsheet lokal jika ada
+			for _, ld := range localDetails {
+				if (ld.MachineID == bm.IdMesin || strings.Contains(strings.ToLower(bm.NamaMesin), strings.ToLower(ld.MachineName))) && ld.Notes != "" {
+					if bm.Keterangan == "" || bm.Keterangan == "-" || bm.Keterangan == "Beroperasi Normal" {
+						bm.Keterangan = ld.Notes
+					}
+					break
+				}
+			}
+
+			// 2. Jika status mesin gangguan, cari catatan spesifik dari AMC reports
+			if isGangguan {
+				for _, ar := range amcList {
+					machineNumMatch := false
+					for _, num := range []string{"#01", "#02", "#03", "#04", "#05", "#06", "#07", "#08", "#09", "#10", "UNIT 1", "UNIT 2", "UNIT 3"} {
+						if strings.Contains(strings.ToUpper(bm.NamaMesin), num) && strings.Contains(strings.ToUpper(ar.UnitPembangkit), num) {
+							machineNumMatch = true
+							break
+						}
+					}
+					if machineNumMatch || (ar.SerialNumber != "" && bm.NoSeri != "" && strings.EqualFold(ar.SerialNumber, bm.NoSeri)) {
+						if ar.IndikasiGangguan != "" {
+							bm.Keterangan = ar.IndikasiGangguan
+						}
+						break
+					}
+				}
+
+				if bm.Keterangan == "" || bm.Keterangan == "-" {
+					bm.Keterangan = "Gangguan Operasional Mesin"
+				}
+			}
+		}
+	}
+
 	return c.JSON(resp)
 }
 
