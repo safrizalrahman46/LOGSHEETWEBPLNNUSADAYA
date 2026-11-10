@@ -5,8 +5,8 @@ import { CORP_SINGLE_PAGES, getCorpDoc } from "@/lib/corp-content";
 const SLUG = "privacy-policy";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - PT PLN Nusa Daya",
-  description: "Kebijakan Privasi PT PLN Nusa Daya",
+  title: "Privacy Policy - PT PLN Services",
+  description: "Kebijakan Privasi PT PLN Services",
 };
 
 export default function PrivacyPolicyPage() {

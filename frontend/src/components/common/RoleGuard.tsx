@@ -55,7 +55,7 @@ export function RoleGuard({ allowedRoles, children, fallback, moduleName }: Role
       <AuthRequiredState
         moduleName={moduleName}
         title="Mohon Login Terlebih Dahulu"
-        description="Fitur ini memerlukan autentikasi resmi. Silakan masuk menggunakan akun personil PLN Nusa Daya untuk membuka fitur ini."
+        description="Fitur ini memerlukan autentikasi resmi. Silakan masuk menggunakan akun personil PLN Services untuk membuka fitur ini."
       />
     );
   }

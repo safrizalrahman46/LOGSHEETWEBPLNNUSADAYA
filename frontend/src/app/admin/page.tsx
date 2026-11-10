@@ -182,7 +182,7 @@ export default function AdminHubPage() {
                     Pusat Kontrol Administrasi & Tata Kelola
                   </span>
                   <span className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-semibold text-white/90">
-                    PLN Nusa Daya Kalimantan 3 (Region 05)
+                    PLN Services Kalimantan 3 (Region 05)
                   </span>
                 </div>
                 <h1 className="mt-2 text-xl font-black text-white sm:text-2xl">

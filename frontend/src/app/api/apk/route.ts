@@ -6,7 +6,7 @@ const releaseFilePath = path.join(process.cwd(), "public", "downloads", "apk", "
 const apkDir = path.join(process.cwd(), "public", "downloads", "apk");
 
 const defaultRelease = {
-  appName: "PLN Nusa Daya Mobile (WACB & HAR)",
+  appName: "PLN Services Mobile (WACB & HAR)",
   packageName: "com.plnnusadaya.logsheet",
   version: "v1.0.0",
   buildNumber: "1",
@@ -18,7 +18,7 @@ const defaultRelease = {
   releaseDate: "19 Oktober 2026",
   minAndroid: "Android 8.0 (Oreo) atau lebih tinggi",
   isActive: true,
-  developer: "Tim Developer PT PLN Nusa Daya",
+  developer: "Tim Developer PT PLN Services",
   changelog: [
     "Pencatatan Logsheet Mesin Pembangkit 48-slot secara real-time dan terverifikasi",
     "Monitoring tiket gangguan HAR (Pemeliharaan) dan pelaporan AMC terpadu",
@@ -55,7 +55,7 @@ const defaultRelease = {
       id: "har",
       targetRole: "TIM PEMELIHARAAN (HAR) & TEKNISI AMC",
       roleBadge: "Khusus Tim Pemeliharaan / HAR",
-      appName: "PLN Nusa Daya HAR (Pemeliharaan & Gangguan)",
+      appName: "PLN Services HAR (Pemeliharaan & Gangguan)",
       badgeColor: "#b45309",
       badgeBg: "#fef3c7",
       themeGradient: "linear-gradient(135deg, #d97706, #92400e)",
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       const formData = await req.formData();
       const file = formData.get("apkFile") as File | null;
       const targetApk = (formData.get("targetApk") as string) || "logsheet"; // "logsheet" | "har" | "general"
-      const appName = (formData.get("appName") as string) || (targetApk === "har" ? "PLN Nusa Daya HAR" : "PLN Logsheet PLTD");
+      const appName = (formData.get("appName") as string) || (targetApk === "har" ? "PLN Services HAR" : "PLN Logsheet PLTD");
       const version = (formData.get("version") as string) || "v1.0.0";
       const buildNumber = (formData.get("buildNumber") as string) || "1";
       const minAndroid = (formData.get("minAndroid") as string) || "Android 8.0 (Oreo) ke atas";

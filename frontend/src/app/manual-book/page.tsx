@@ -56,7 +56,7 @@ export default function ManualBookPage() {
       content: (
         <div className="space-y-4 text-slate-700 leading-relaxed text-sm">
           <p>
-            Portal Web <strong>PLN Nusa Daya — WACB PLTD Logsheet & HAR Portal</strong> adalah pusat komando digital terintegrasi yang menghubungkan operasional pencatatan beban mesin pembangkit 48-slot (<em>WACB</em>) dengan manajemen pemeliharaan mesin (<em>HAR</em>) dan tiket gangguan AMC pada seluruh unit PLTD di lingkungan PT PLN Nusa Daya.
+            Portal Web <strong>PLN Services — WACB PLTD Logsheet & HAR Portal</strong> adalah pusat komando digital terintegrasi yang menghubungkan operasional pencatatan beban mesin pembangkit 48-slot (<em>WACB</em>) dengan manajemen pemeliharaan mesin (<em>HAR</em>) dan tiket gangguan AMC pada seluruh unit PLTD di lingkungan PT PLN Services.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 my-4">
             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -116,7 +116,7 @@ export default function ManualBookPage() {
       summary: "Navigasi landing page, spesifikasi APK mobile untuk operator dan teknisi, serta instalasi QR code.",
       image: {
         src: "/docs/images/01_landing_hero.png",
-        alt: "Beranda Utama Portal PLN Nusa Daya",
+        alt: "Beranda Utama Portal PLN Services",
         caption: "Tampilan Beranda Utama (Landing Page) dengan Hero Banner dan Navigasi Korporat",
         highlights: [
           { num: 1, label: "Top Navigation", desc: "Akses cepat ke Dashboard, Matriks, HAR, Unit, dan Download Mobile App." },
@@ -271,7 +271,7 @@ export default function ManualBookPage() {
               <FileText className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div>
                 <strong className="text-red-900">1. Cetak Berita Acara PDF (Landscape A4):</strong>
-                <p className="text-red-700 mt-0.5">Memuat logo PLN Nusa Daya, rekapitulasi 48 slot jam operasi mesin, catatan temuan lapangan, dan blok pengesahan resmi bertanda tangan digital Operator Shift, Supervisor Operasi, dan Manajer Unit.</p>
+                <p className="text-red-700 mt-0.5">Memuat logo PLN Services, rekapitulasi 48 slot jam operasi mesin, catatan temuan lapangan, dan blok pengesahan resmi bertanda tangan digital Operator Shift, Supervisor Operasi, dan Manajer Unit.</p>
               </div>
             </div>
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-start gap-2">
@@ -437,7 +437,7 @@ export default function ManualBookPage() {
 
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-900 flex items-center justify-between">
             <div>
-              <span className="font-bold">Bantuan Teknis IT PLN Nusa Daya:</span>
+              <span className="font-bold">Bantuan Teknis IT PLN Services:</span>
               <p className="text-blue-700 mt-0.5">Ext. 4410 / (0542) 887-1234 — Siaga 24 Jam Non-Stop</p>
             </div>
             <Link
@@ -479,19 +479,29 @@ export default function ManualBookPage() {
               </div>
               <div>
                 <h1 className="text-sm font-extrabold text-slate-900 tracking-tight">MANUAL BOOK PORTAL WEB</h1>
-                <p className="text-[11px] text-slate-500">PT PLN Nusa Daya — WACB PLTD & HAR Pembangkit</p>
+                <p className="text-[11px] text-slate-500">PT PLN Services — WACB PLTD & HAR Pembangkit</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <a
+              href="/docs/Buku Panduan Pengguna - LOGSHEET WEB PLN SERVICES.pdf"
+              download="Buku Panduan Pengguna - LOGSHEET WEB PLN SERVICES.pdf"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition-all"
+              title="Unduh Buku Panduan Resmi PDF (35 Halaman Edisi Revisi Terbaru 2026)"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Unduh PDF Resmi</span>
+              <span className="sm:hidden">PDF</span>
+            </a>
             <button
               onClick={() => window.print()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-100 rounded-lg shadow-sm transition-all"
-              title="Cetak atau Simpan sebagai PDF"
+              title="Cetak Halaman Manual"
             >
               <Printer className="w-3.5 h-3.5 text-slate-600" />
-              <span className="hidden sm:inline">Cetak PDF</span>
+              <span className="hidden sm:inline">Cetak</span>
             </button>
             <a
               href="/#mobile-app"

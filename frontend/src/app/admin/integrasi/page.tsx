@@ -320,7 +320,7 @@ export default function IntegrasiPage() {
       const res = await apiClient.post("/integration/notifications/push", {
         source: pushSource,
         title: pushTitle,
-        description: pushDesc || "Notifikasi pengujian interkoneksi ekosistem 3 aplikasi PLN Nusa Daya.",
+        description: pushDesc || "Notifikasi pengujian interkoneksi ekosistem 3 aplikasi PLN Services.",
         priority: pushPriority,
         type: pushSource === "PLN_HAR" ? "har" : pushSource === "PLN_NUSA_DAYA_APPS" ? "logsheet" : "general",
         unit_id: pushUnit,
@@ -366,7 +366,7 @@ export default function IntegrasiPage() {
                 </span>
               </div>
               <h1 className="mt-2.5 text-xl font-black text-white sm:text-2xl">
-                Konektivitas & Integrasi Data 3 Aplikasi PLN Nusa Daya
+                Konektivitas & Integrasi Data 3 Aplikasi PLN Services
               </h1>
               <p className="mt-1.5 text-xs text-white/80 max-w-2xl leading-relaxed">
                 Sinkronisasi data real-time dua arah yang menghubungkan <strong>LOGSHEETWEBPLNNUSADAYA</strong> (Portal Pusat Supervisi) dengan <strong>PLN_HAR</strong> (Modul Pemeliharaan & AMC) dan <strong>PLN_NUSA_DAYA_APPS</strong> (Aplikasi Operator Lapangan 48-Slot Matrix).
@@ -1056,7 +1056,7 @@ export default function IntegrasiPage() {
                   className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-800"
                 >
                   <option value="PLN_HAR">PLN HAR (Modul Pemeliharaan & Tiket Mesin)</option>
-                  <option value="PLN_NUSA_DAYA_APPS">PLN Nusa Daya Apps (Operator Mobile Lapangan)</option>
+                  <option value="PLN_NUSA_DAYA_APPS">PLN Services Apps (Operator Mobile Lapangan)</option>
                   <option value="LOGSHEETWEBPLNNUSADAYA">LOGSHEETWEB (Portal Web Pusat Supervisi)</option>
                 </select>
               </div>
@@ -1298,7 +1298,7 @@ export default function IntegrasiPage() {
             <div className="rounded-xl border border-gray-100 p-4 bg-slate-50">
               <div className="flex items-center gap-2 font-bold text-xs text-emerald-700">
                 <Database className="h-4 w-4" />
-                <span>PLN Nusa Daya Apps (:5000)</span>
+                <span>PLN Services Apps (:5000)</span>
               </div>
               <ul className="mt-2.5 space-y-1.5 text-xs text-gray-600 font-mono">
                 <li className="flex items-center justify-between">

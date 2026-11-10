@@ -16,9 +16,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const page = getCorpPage(GROUP, slug);
-  if (!page) return { title: "Halaman Tidak Ditemukan - PT PLN Nusa Daya" };
+  if (!page) return { title: "Halaman Tidak Ditemukan - PT PLN Services" };
   return {
-    title: `${page.item.label} - Laporan Manajemen - PT PLN Nusa Daya`,
+    title: `${page.item.label} - Laporan Manajemen - PT PLN Services`,
     description: page.doc.title,
   };
 }

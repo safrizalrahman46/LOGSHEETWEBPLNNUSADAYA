@@ -298,7 +298,7 @@ export default function DetailBeritaPage() {
                 className="w-full max-h-[500px] object-cover object-center transition-transform duration-500 hover:scale-101"
               />
               <div className="p-3 text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50/90 dark:bg-gray-900/90 border-t border-gray-100 dark:border-gray-800 italic flex items-center justify-between">
-                <span>Dokumentasi Pelaksanaan Lapangan • PT PLN Nusa Daya</span>
+                <span>Dokumentasi Pelaksanaan Lapangan • PT PLN Services</span>
                 <span className="font-mono text-[10px]">WACB DIGIKIT</span>
               </div>
             </div>

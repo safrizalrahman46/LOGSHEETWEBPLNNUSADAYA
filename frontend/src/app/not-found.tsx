@@ -65,7 +65,7 @@ export default function NotFound() {
       {/* Support footer */}
       <div className="relative z-10 mt-8 text-xs text-gray-400 flex items-center justify-center gap-1.5">
         <HelpCircle className="h-3.5 w-3.5" />
-        <span>Sistem Informasi Logsheet & Operasional PLTD • PT PLN Nusa Daya</span>
+        <span>Sistem Informasi Logsheet & Operasional PLTD • PT PLN Services</span>
       </div>
     </div>
   );

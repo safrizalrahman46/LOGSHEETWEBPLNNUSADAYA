@@ -36,13 +36,13 @@ export default function WilayahKerjaPage() {
   const [selectedOffice, setSelectedOffice] = useState<string | null>("pusat");
 
   const kantorPusat = {
-    name: "PT Pelayanan Listrik Nasional Nusa Daya",
+    name: "PT PLN Services",
     subtitle: "Kantor Pusat",
     address: "Jln. Letjen ZA Maulani RT 41 No 78, Damai Bahagia, Kec. Balikpapan Selatan",
     city: "Kota Balikpapan",
     province: "Kalimantan Timur",
     phone: "(0542) 8975052",
-    email: "plnnd@plnnusadaya.co.id",
+    email: "plnnd@plnservices.co.id",
   };
 
   const regionalOffices: RegionalOffice[] = [
@@ -55,7 +55,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Pontianak",
       province: "Kalimantan Barat",
       postalCode: "78116",
-      email: "kal1@plnnusadaya.co.id",
+      email: "kal1@plnservices.co.id",
       region: "Kalimantan",
     },
     {
@@ -67,7 +67,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Banjar Baru",
       province: "Kalimantan Selatan",
       postalCode: "70714",
-      email: "kal2@plnnusadaya.co.id",
+      email: "kal2@plnservices.co.id",
       region: "Kalimantan",
     },
     {
@@ -79,7 +79,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Balikpapan",
       province: "Kalimantan Timur",
       postalCode: "76113",
-      email: "kal3@plnnusadaya.co.id",
+      email: "kal3@plnservices.co.id",
       region: "Kalimantan",
     },
     {
@@ -91,7 +91,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Manado",
       province: "Sulawesi Utara",
       postalCode: "95123",
-      email: "sul1@plnnusadaya.co.id",
+      email: "sul1@plnservices.co.id",
       region: "Sulawesi",
     },
     {
@@ -103,7 +103,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Makassar",
       province: "Sulawesi Selatan",
       postalCode: "90223",
-      email: "sul2@plnnusadaya.co.id",
+      email: "sul2@plnservices.co.id",
       region: "Sulawesi",
     },
     {
@@ -115,7 +115,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Mataram",
       province: "Nusa Tenggara Barat",
       postalCode: "83127",
-      email: "nusra@plnnusadaya.co.id",
+      email: "nusra@plnservices.co.id",
       region: "Nusa Tenggara",
     },
     {
@@ -127,7 +127,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Ambon",
       province: "Maluku",
       postalCode: "97127",
-      email: "maluku@plnnusadaya.co.id",
+      email: "maluku@plnservices.co.id",
       region: "Maluku",
     },
     {
@@ -139,7 +139,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Ternate",
       province: "Maluku Utara",
       postalCode: "97728",
-      email: "malut@plnnusadaya.co.id",
+      email: "malut@plnservices.co.id",
       region: "Maluku",
     },
     {
@@ -151,7 +151,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Jayapura",
       province: "Papua",
       postalCode: "99223",
-      email: "papua@plnnusadaya.co.id",
+      email: "papua@plnservices.co.id",
       region: "Papua",
     },
     {
@@ -163,7 +163,7 @@ export default function WilayahKerjaPage() {
       city: "Kota Jakarta Selatan",
       province: "DKI Jakarta",
       postalCode: "12160",
-      email: "plnnd@plnnusadaya.co.id",
+      email: "plnnd@plnservices.co.id",
       region: "Jawa",
     },
   ];
@@ -223,7 +223,7 @@ export default function WilayahKerjaPage() {
             />
             <img
               src="/images/logo/LOGO-PLN.png"
-              alt="PLN Nusa Daya"
+              alt="PLN Services"
               className="h-10 w-auto object-contain"
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -246,7 +246,7 @@ export default function WilayahKerjaPage() {
             Profil &gt; Kontak Kami &amp; Wilayah Kerja
           </p>
           <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-            Jaringan operasional aset ketenagalistrikan PT PLN Nusa Daya tersebar strategis di Kawasan Tengah dan Timur Indonesia.
+            Jaringan operasional aset ketenagalistrikan PT PLN Services tersebar strategis di Kawasan Tengah dan Timur Indonesia.
           </p>
         </div>
 
@@ -349,7 +349,7 @@ export default function WilayahKerjaPage() {
               <div className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-sky-50/50 via-white to-sky-50/30 p-2 sm:p-4 border border-sky-100/80">
                 <img
                   src="/images/peta-wilayah-kerja.png"
-                  alt="Peta Wilayah Kerja PT PLN Nusa Daya"
+                  alt="Peta Wilayah Kerja PT PLN Services"
                   className="w-full h-auto object-contain max-h-[460px] drop-shadow-md rounded-xl"
                   onError={(e) => {
                     e.currentTarget.onerror = null;
@@ -432,7 +432,7 @@ export default function WilayahKerjaPage() {
         <div className="mb-8">
           <div className="text-center mb-8">
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
-              Kantor Regional PT Pelayanan Listrik Nasional Nusa Daya
+              Kantor Regional PT PLN Services
             </h2>
             <p className="text-xs text-slate-500 mt-1">
               Unit Pelaksana Pengelolaan Aset Ketenagalistrikan Wilayah Tengah dan Timur
@@ -515,7 +515,7 @@ export default function WilayahKerjaPage() {
 
       {/* Footer */}
       <footer className="mt-20 border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500">
-        <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+        <p>© Copyright {new Date().getFullYear()} <strong>PT PLN Services</strong>. All Rights Reserved</p>
       </footer>
 
     </div>

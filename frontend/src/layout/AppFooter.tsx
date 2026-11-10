@@ -27,16 +27,16 @@ export const AppFooter: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white shadow-theme-xs ring-1 ring-gray-200 dark:bg-gray-800 dark:ring-gray-700 overflow-hidden">
               <img
-                src="/images/logo/LOGO-PLN.png"
-                alt="Logo PLN"
-                className="h-5 w-5 object-contain"
+                src="/images/logo/logo-pln-services-transparent.png"
+                alt="Logo PLN Services"
+                className="h-5 w-auto object-contain"
                 onError={(e) => {
                   const img = e.currentTarget;
                   if (!img.src.includes("plnt.png")) img.src = "/images/plnt.png";
                 }}
               />
             </div>
-            <span className="font-bold text-gray-800 dark:text-gray-200">PT PLN NUSA DAYA</span>
+            <span className="font-bold text-gray-800 dark:text-gray-200">PT PLN SERVICES</span>
           </div>
           <span className="hidden sm:inline text-gray-300 dark:text-gray-700">|</span>
           <p className="text-[11px]">

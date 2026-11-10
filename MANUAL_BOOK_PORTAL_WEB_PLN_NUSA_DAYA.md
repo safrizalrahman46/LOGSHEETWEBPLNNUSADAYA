@@ -1,12 +1,12 @@
 # MANUAL BOOK PANDUAN PENGGUNA
 ## PORTAL WEB LOGSHEET WACB & PEMELIHARAAN (HAR) PLTD
-### PT PLN NUSA DAYA — SISTEM KONTROL OPERASI & PEMELIHARAAN TERPADU
+### PT PLN SERVICES — SISTEM KONTROL OPERASI & PEMELIHARAAN TERPADU
 
 ---
 
 ```
 ========================================================================================
-                      PT PLN NUSA DAYA — KANTOR PUSAT & OPERASI
+                      PT PLN SERVICES — KANTOR PUSAT & OPERASI
             PANDUAN OPERASIONAL RESMI PORTAL WEB LOGSHEET & HAR PEMBANGKIT
                        Versi 2.4.0 — Edisi Korporat 2026
 ========================================================================================
@@ -63,7 +63,7 @@
 # BAB 1: PENGENALAN SISTEM & ARSITEKTUR PORTAL
 
 ### 1.1 Latar Belakang & Tujuan
-Portal Web **PLN Nusa Daya — WACB PLTD Logsheet & HAR Portal** merupakan sistem pusat komando digital yang mengintegrasikan seluruh aktivitas pencatatan logsheet operasional beban mesin 48-slot (*WACB*) dan proses pemeliharaan berkala (*Preventive & Corrective Maintenance*) pada seluruh unit Pembangkit Listrik Tenaga Diesel (PLTD) di lingkungan PT PLN Nusa Daya.
+Portal Web **PLN Services — WACB PLTD Logsheet & HAR Portal** merupakan sistem pusat komando digital yang mengintegrasikan seluruh aktivitas pencatatan logsheet operasional beban mesin 48-slot (*WACB*) dan proses pemeliharaan berkala (*Preventive & Corrective Maintenance*) pada seluruh unit Pembangkit Listrik Tenaga Diesel (PLTD) di lingkungan PT PLN Services.
 
 Tujuan implementasi sistem ini adalah:
 1. **Transparansi & Akurasi Real-Time:** Menghilangkan pencatatan kertas manual rentan rusak atau hilang dengan basis data relasional PostgreSQL berkecepatan tinggi.
@@ -77,7 +77,7 @@ Tujuan implementasi sistem ini adalah:
 
 ```
 +-----------------------------------------------------------------------------------+
-|                           PORTAL PUSAT PLN NUSA DAYA                              |
+|                           PORTAL PUSAT PLN SERVICES                              |
 |                       (Web Next.js 15 + Go Fiber + PostgreSQL)                    |
 |                                                                                   |
 |  - Dashboard Monitoring 24 Jam               - Pusat Rilis & Upload APK           |
@@ -91,7 +91,7 @@ Tujuan implementasi sistem ini adalah:
            |                                                             |
 +--------------------------+                               +--------------------------+
 |      APLIKASI 1:         |                               |       APLIKASI 2:        |
-|  PLN LOGSHEET & WACB     |                               |   PLN NUSA DAYA HAR      |
+|  PLN LOGSHEET & WACB     |                               |   PLN SERVICES HAR      |
 |     (Operator PLTD)      |                               |   (Teknisi HAR & AMC)    |
 |                          |                               |                          |
 | • Pencatatan Beban 48-Jam|                               | • Form Job Card P1 - P6  |
@@ -126,11 +126,11 @@ Sesuai arahan dan identitas korporat resmi PT PLN (Persero), sistem antarmuka we
 ### 2.1 Antarmuka Beranda Publik
 Pengguna dapat mengakses beranda publik portal tanpa harus login terlebih dahulu melalui peramban: `http://localhost:3000/`.
 
-![Antarmuka Beranda Utama PLN Nusa Daya](images/01_landing_hero.png)
+![Antarmuka Beranda Utama PLN Services](images/01_landing_hero.png)
 
 #### Keterangan Fitur Halaman Beranda:
 1. **Bilah Navigasi Atas (Top Navigation Bar):**
-   - Logo resmi PT PLN Nusa Daya dan identitas sistem.
+   - Logo resmi PT PLN Services dan identitas sistem.
    - Menu Cepat: Beranda, Dashboard Operasi, Matriks Logsheet, HAR Mesin, Tata Kelola, Profil Unit, dan Pusat Bantuan.
    - Tombol **"Aplikasi Mobile"** yang langsung melompat ke bagian unduhan APK.
    - Tombol **"Masuk Sistem"** untuk mengarahkan pengguna ke form autentikasi.
@@ -156,7 +156,7 @@ Untuk mengunduh berkas installer aplikasi Android bagi operator dan teknisi lapa
    - **Fitur Utama:** Form logsheet matriks 48-slot harian, presensi berbasis GPS radius 250m, mode penyimpanan offline mandiri.
    - **Tombol Aksi:** Klik **"Unduh APK Logsheet (64.3 MB)"** untuk langsung mengunduh binary installer ke komputer atau smartphone.
 
-2. **Aplikasi 2: PLN Nusa Daya HAR (Pemeliharaan & Gangguan AMC)**
+2. **Aplikasi 2: PLN Services HAR (Pemeliharaan & Gangguan AMC)**
    - **Target Pengguna:** Tim Pemeliharaan (HAR), Teknisi Mekanik/Elektrik, dan Koordinator AMC.
    - **Ukuran Berkas:** 47.2 MB (Format `.apk`).
    - **Versi:** v1.0.0 (Build 1) — Android 8.0 (Oreo) atau lebih tinggi.
@@ -257,7 +257,7 @@ Tersedia 4 format ekspor berkas data yang dapat diunduh dalam 1 kali klik:
 Prosedur mencetak Berita Acara PDF resmi:
 1. Klik tombol **"Cetak Berita Acara PDF"** pada bilah aksi.
 2. Sistem otomatis mengompilasi lembar kerja berformat **Landscape A4** yang memuat:
-   - Kop Surat Resmi: *PT PLN NUSA DAYA — DIVISI OPERASI & PEMELIHARAAN*.
+   - Kop Surat Resmi: *PT PLN SERVICES — DIVISI OPERASI & PEMELIHARAAN*.
    - Tabel Lengkap 48 Slot Jam Operasi dengan indikator rata-rata beban (kW) dan suhu mesin.
    - Kolom Evaluasi Gangguan dan Temuan Lapangan.
    - Blok Pengesahan Resmi bertanda tangan digital:
@@ -457,7 +457,7 @@ Segenap personel operator, teknisi, dan supervisor wajib menerapkan kaidah Kesel
 ### 10.2 Pertanyaan yang Sering Diajukan (FAQ) & Penyelesaian Kendala
 
 #### Q1: Mengapa saat mengklik tombol Download APK di ponsel muncul peringatan "File mungkin berbahaya"?
-> **Jawaban:** Peringatan tersebut adalah mekanisme keamanan standar sistem Android untuk aplikasi yang diunduh langsung dari server portal korporat PLN (di luar Google Play Store). Pilih opsi **"Tetap Download"** / **"Lanjutkan"**, lalu buka file dan pilih **"Instal"**. Berkas APK ini aman dan telah diverifikasi oleh tim IT PLN Nusa Daya.
+> **Jawaban:** Peringatan tersebut adalah mekanisme keamanan standar sistem Android untuk aplikasi yang diunduh langsung dari server portal korporat PLN (di luar Google Play Store). Pilih opsi **"Tetap Download"** / **"Lanjutkan"**, lalu buka file dan pilih **"Instal"**. Berkas APK ini aman dan telah diverifikasi oleh tim IT PLN Services.
 
 #### Q2: Apa yang harus dilakukan jika sinyal internet di unit PLTD terputus saat teknisi mencatat data?
 > **Jawaban:** Aplikasi mobile dilengkapi fitur *Offline First Local Storage*. Teknisi tetap dapat mencatat logsheet dan checklist pemeliharaan secara normal. Seluruh data tersimpan aman di memori lokal ponsel dan akan otomatis disinkronkan ke server web pusat begitu ponsel mendapatkan koneksi internet kembali.
@@ -477,14 +477,14 @@ Bila Anda membutuhkan asistensi teknis lebih lanjut, pemulihan akun, atau pelapo
 ```
 ========================================================================================
                       TIM PENGEMBANG & DUKUNGAN TEKNIS IT
-                           PT PLN NUSA DAYA (PERSERO)
+                           PT PLN SERVICES (PERSERO)
 ========================================================================================
   • Helpdesk Operasional  : Ext. 4410 / (0542) 887-1234
-  • Email Dukungan Resmi  : it-support@plnnusadaya.co.id / helpdesk.wacb@pln.co.id
+  • Email Dukungan Resmi  : it-support@plnservices.co.id / helpdesk.wacb@pln.co.id
   • Portal Tiket Masalah  : http://localhost:3000/admin/integrasi
   • Waktu Layanan Operasi : 24 Jam Non-Stop / 7 Hari Seminggu (Siaga Kelistrikan)
 ========================================================================================
 ```
 
 ---
-*Dokumen ini diterbitkan secara resmi oleh Divisi Operasi dan Pemeliharaan Pembangkit Tenaga Listrik PT PLN Nusa Daya. Seluruh hak cipta dilindungi oleh undang-undang korporat.*
+*Dokumen ini diterbitkan secara resmi oleh Divisi Operasi dan Pemeliharaan Pembangkit Tenaga Listrik PT PLN Services. Seluruh hak cipta dilindungi oleh undang-undang korporat.*

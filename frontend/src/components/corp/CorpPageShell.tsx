@@ -166,7 +166,7 @@ export default function CorpPageShell({ doc, crumbs, related = [] }: CorpPageShe
             <CorpDocBody doc={doc} />
 
             <div className="corp-note">
-              <span>🔒 Dokumen Resmi PT PLN Nusa Daya (PLN Group)</span>
+              <span>🔒 Dokumen Resmi PT PLN Services (PLN Group)</span>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <Link href="/" className="corp-btn ghost">← Kembali ke Beranda</Link>
                 <Link href="/berita" className="corp-btn">Lihat Berita Terkini</Link>
@@ -193,16 +193,16 @@ export default function CorpPageShell({ doc, crumbs, related = [] }: CorpPageShe
         <div className="corp-footer-grid">
           <div>
             <img
-              src="/images/logo/LOGO-PLN.png"
+              src="/images/logo/logo-pln-services-transparent.png"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = "/images/plnt.png";
               }}
-              alt="PLN Nusa Daya"
+              alt="PLN Services"
               style={{ height: 44, width: "auto", objectFit: "contain", marginBottom: 14 }}
             />
             <p>
-              PT Pelayanan Listrik Nasional Nusa Daya — anak perusahaan PT PLN (Persero) yang mengelola aset
+              PT PLN Services — anak perusahaan PT PLN (Persero) yang mengelola aset
               ketenagalistrikan, jasa O&M pembangkit, transmisi, distribusi, dan pelayanan pelanggan di Kawasan
               Timur Indonesia.
             </p>
@@ -227,14 +227,14 @@ export default function CorpPageShell({ doc, crumbs, related = [] }: CorpPageShe
                   Jln. Letjen ZA Maulani RT 41 No 78, Balikpapan — Kalimantan Timur
                 </a>
               </li>
-              <li><a href="mailto:plnnd@plnnusadaya.co.id">plnnd@plnnusadaya.co.id</a></li>
+              <li><a href="mailto:plnnd@plnservices.co.id">plnnd@plnservices.co.id</a></li>
               <li><a href="tel:+625428975052">Telp (0542) 8975052</a></li>
             </ul>
           </div>
         </div>
 
         <div className="corp-copy">
-          © Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All
+          © Copyright {new Date().getFullYear()} <strong>PT PLN Services</strong>. All
           Rights Reserved
         </div>
       </footer>

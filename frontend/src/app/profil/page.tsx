@@ -371,7 +371,7 @@ export default function ProfilPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nama@nusadaya.pln.co.id"
+                    placeholder="nama@services.pln.co.id"
                     className={inputClass}
                   />
                 </div>

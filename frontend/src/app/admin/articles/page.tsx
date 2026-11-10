@@ -142,7 +142,7 @@ export default function AdminArticlesPage() {
                 CMS Berita & Publikasi Korporat
               </h1>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Kelola artikel, pengumuman K3, dan publikasi operasional PLN Nusa Daya Kalimantan 3.
+                Kelola artikel, pengumuman K3, dan publikasi operasional PLN Services Kalimantan 3.
               </p>
             </div>
 

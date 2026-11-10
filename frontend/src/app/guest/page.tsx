@@ -535,7 +535,7 @@ export default function GuestDashboardPage() {
                 isInline
                 moduleName={previewLockedModal}
                 title="Mohon Login Terlebih Dahulu"
-                description={`Akses Terkunci — Fitur "${previewLockedModal}" ini khusus untuk personil resmi PT PLN Nusa Daya (Operator Pembangkit, Teknisi HAR, Supervisor, atau Administrator).`}
+                description={`Akses Terkunci — Fitur "${previewLockedModal}" ini khusus untuk personil resmi PT PLN Services (Operator Pembangkit, Teknisi HAR, Supervisor, atau Administrator).`}
               />
             </div>
           </div>

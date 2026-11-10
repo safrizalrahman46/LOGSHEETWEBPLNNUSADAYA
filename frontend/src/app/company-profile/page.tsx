@@ -120,7 +120,7 @@ export default function CompanyProfilePage() {
             />
             <img
               src="/images/logo/LOGO-PLN.png"
-              alt="PLN Nusa Daya"
+              alt="PLN Services"
               className="h-10 w-auto object-contain"
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -140,7 +140,7 @@ export default function CompanyProfilePage() {
             Company Profile
           </h1>
           <p className="mt-1 text-sm font-semibold text-slate-500">
-            PT Pelayanan Listrik Nasional Nusa Daya
+            PT PLN Services
           </p>
 
           {/* "Buka PDF" button matching reference Image 3 */}
@@ -342,7 +342,7 @@ export default function CompanyProfilePage() {
 
       {/* Footer */}
       <footer className="mt-16 border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
-        <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+        <p>© Copyright {new Date().getFullYear()} <strong>PT PLN Services</strong>. All Rights Reserved</p>
       </footer>
 
     </div>

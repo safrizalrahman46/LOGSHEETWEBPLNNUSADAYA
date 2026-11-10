@@ -1,5 +1,5 @@
 /* ============================================================
-   PT PLN NUSA DAYA — Corporate navigation & document content
+   PT PLN SERVICES — Corporate navigation & document content
    Single source of truth shared by:
    - landing page (src/app/page.tsx)
    - every dedicated header page (/profil, /tata-kelola,
@@ -31,20 +31,20 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Profil > Tentang Kami",
       category: "Tentang Kami",
       badge: "Sejarah & Transformasi Korporasi",
-      title: "PT Pelayanan Listrik Nasional Nusa Daya (PLN Nusa Daya)",
+      title: "PT PLN Services (PLN Services)",
       sk1: "Surat Keputusan Direksi PT PLN (Persero) No. 258-1/010/DIR/2003 tanggal 17 Oktober 2003 & Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003",
       sk2: "Keputusan RUPS Sirkuler No. 109/DIR/2016 tanggal 30 November 2016 & Anggaran Dasar Perubahan No. 5 tanggal 7 Desember 2016",
       paragraph1:
-        "PT Pelayanan Listrik Nasional Nusa Daya (PT PLN Nusa Daya) atau disingkat PLN ND adalah salah satu Anak Perusahaan PT PLN (Persero) yang berkedudukan di Pulau Tarakan Provinsi Kalimantan Utara, dibentuk berdasarkan Surat Keputusan Direksi PT PLN (Persero) No. 258-1/010/DIR/2003 tanggal 17 Oktober 2003 dan disahkan berdasarkan Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003. PT PLN Nusa Daya telah menjalankan bisnis penyediaan dan penjualan tenaga listrik yang terintegrasi mulai dari tahun 2003 sampai dengan tahun 2016 dengan menerapkan tarif regional yang berbeda dari tarif dasar listrik (TDL) Nasional di Pulau Tarakan.",
+        "PT PLN Services (PT PLN Services) atau disingkat PLN ND adalah salah satu Anak Perusahaan PT PLN (Persero) yang berkedudukan di Pulau Tarakan Provinsi Kalimantan Utara, dibentuk berdasarkan Surat Keputusan Direksi PT PLN (Persero) No. 258-1/010/DIR/2003 tanggal 17 Oktober 2003 dan disahkan berdasarkan Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003. PT PLN Services telah menjalankan bisnis penyediaan dan penjualan tenaga listrik yang terintegrasi mulai dari tahun 2003 sampai dengan tahun 2016 dengan menerapkan tarif regional yang berbeda dari tarif dasar listrik (TDL) Nasional di Pulau Tarakan.",
       paragraph2:
-        "Mengantisipasi dinamika bisnis PT PLN Nusa Daya, maka berdasarkan Keputusan RUPS Sirkuler No. 109/DIR/2016 pada tanggal 30 November 2016 dan berdasarkan keputusan RUPS tersebut yang dikukuhkan dalam Anggaran Dasar PT PLN Nusa Daya Perubahan No. 5 tanggal 7 Desember 2016, pemegang saham menugaskan PT PLN Nusa Daya untuk melaksanakan pengelolaan Jasa Operasi & Pemeliharaan Pembangkit (KIT), Jasa Operasi & Pemeliharaan Transmisi, Jasa Operasi & Pemeliharaan Distribusi (YANTEK) serta Pelayanan Pelanggan (BILLMAN) di Wilayah Indonesia Timur yang mencakup Kalimantan, Sulawesi, Nusa Tenggara, Maluku dan Papua, dengan Kedudukan Kantor pusat PT PLN Nusa Daya di Kota Balikpapan Kalimantan Timur.",
+        "Mengantisipasi dinamika bisnis PT PLN Services, maka berdasarkan Keputusan RUPS Sirkuler No. 109/DIR/2016 pada tanggal 30 November 2016 dan berdasarkan keputusan RUPS tersebut yang dikukuhkan dalam Anggaran Dasar PT PLN Services Perubahan No. 5 tanggal 7 Desember 2016, pemegang saham menugaskan PT PLN Services untuk melaksanakan pengelolaan Jasa Operasi & Pemeliharaan Pembangkit (KIT), Jasa Operasi & Pemeliharaan Transmisi, Jasa Operasi & Pemeliharaan Distribusi (YANTEK) serta Pelayanan Pelanggan (BILLMAN) di Wilayah Indonesia Timur yang mencakup Kalimantan, Sulawesi, Nusa Tenggara, Maluku dan Papua, dengan Kedudukan Kantor pusat PT PLN Services di Kota Balikpapan Kalimantan Timur.",
     },
     "Visi Misi": {
       type: "visi-misi",
       breadcrumbs: "Profil > Visi & Misi",
       category: "Visi & Misi",
       badge: "Arah Strategis Korporasi",
-      title: "Visi dan Misi PT PLN Nusa Daya",
+      title: "Visi dan Misi PT PLN Services",
       visi: "Menjadi Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia dan tumbuh berkelanjutan.",
       misi: [
         "Memberikan nilai tambah yang optimal kepada PLN Group dengan memastikan ketersediaan layanan dan keberlangsungan usaha (securing business sustainibility), optimasi dan efisiensi biaya (optimizing cost efficiency) dan keunggulan kompetensi dalam industri ketenagalistrikan (leading industry capabilities).",
@@ -108,7 +108,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Profil > Profil Direksi",
       category: "Kepemimpinan",
       badge: "Jajaran Direksi",
-      title: "Profil Direksi PT PLN Nusa Daya",
+      title: "Profil Direksi PT PLN Services",
       direksiList: [
         {
           name: "Agung Nugraha",
@@ -120,8 +120,8 @@ export const corporateDocuments: Record<string, CorpDoc> = {
             "S1 Listrik, UNIVERSITAS GADJAH MADA (1992)",
           ],
           careers: [
-            "Direktur Utama - PT PLN Nusa Daya (2026-sekarang)",
-            "Komisaris Utama - PT PLN Nusa Daya (2023-2026)",
+            "Direktur Utama - PT PLN Services (2026-sekarang)",
+            "Komisaris Utama - PT PLN Services (2023-2026)",
             "EVP Operasi Distribusi Sumatera dan Kalimantan - PT PLN (PERSERO) KANTOR PUSAT PT PLN (PERSERO) (2022 – 2024)",
             "General Manager - PT PLN (Persero) Unit Induk Distribusi Jawa Barat (2019 - 2022)",
             "General Manager - PT PLN (Persero) Unit Induk Distribusi Jawa Tengah dan DI Yogyakarta (2017 - 2019)",
@@ -139,7 +139,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
             "S2 Bidang Ekonomi Lainnya Universitas Sam Ratulangi (2016)",
           ],
           careers: [
-            "Direktur Operasi dan Pengembangan Usaha - PT PLN Nusa Daya (2026-Sekarang)",
+            "Direktur Operasi dan Pengembangan Usaha - PT PLN Services (2026-Sekarang)",
             "Direktur Sumber Daya Manusia - PT Haleyora Powerindo (2022-2026)",
             "Manajer Unit Pelaksana Pelayanan Pelanggan Pasuruan - PT PLN (Persero) Unit Induk Distribusi Jawa Timur PT PLN (Persero) (2021-2022)",
             "Manajer Unit Pelaksana Pelayanan Pelanggan Sidoarjo - PT PLN (Persero) Unit Induk Distribusi Jawa Timur PT PLN (Persero) (2018-2021)",
@@ -158,7 +158,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
             "S2 Teknik Lainnya Institut Teknologi Bandung (2011)",
           ],
           careers: [
-            "Direktur Keuangan, Manajemen Risiko, dan Human Capital - PT PLN Nusa Daya (2026-Sekarang)",
+            "Direktur Keuangan, Manajemen Risiko, dan Human Capital - PT PLN Services (2026-Sekarang)",
             "Vice President Pembayaran Terpusat 2 - PT PLN (Persero) Kantor Pusat PT PLN (Persero) (2024-2026)",
             "Senior Manager Keuangan - PT PLN (Persero) Unit Induk Distribusi Jawa Barat PT PLN (Persero) (2022-2024)",
             "Senior Manager Keuangan, Komunikasi, dan Umum - PT PLN (Persero) Unit Induk Penyaluran dan Pusat Pengatur Beban Sumatera PT PLN (Persero) (2021-2022)",
@@ -172,7 +172,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Profil > Profil Komisaris",
       category: "Pengawasan",
       badge: "Dewan Komisaris",
-      title: "Profil Dewan Komisaris PT PLN Nusa Daya",
+      title: "Profil Dewan Komisaris PT PLN Services",
       komisarisList: [
         {
           name: "PLT. Agtaria Adriana",
@@ -185,7 +185,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
             "S2 Akutansi Universitas Indonesia (2026)",
           ],
           careers: [
-            "Komisaris Utama - PT PLN Nusa Daya (2026-Sekarang)",
+            "Komisaris Utama - PT PLN Services (2026-Sekarang)",
             "Direktur Investigasi - Alchemist Group (2021-2026)",
             "Peneliti - Basel Institute for Governance (2023-2024)",
             "Co-Source Audit Internal - PT Surveyor Indonesia (2023-2024)",
@@ -200,7 +200,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
           pobDob: "Bandung, 19 Desember 1963",
           education: ["-"],
           careers: [
-            "Komisaris - PT PLN Nusa Daya (2026-Sekarang)",
+            "Komisaris - PT PLN Services (2026-Sekarang)",
           ],
         },
       ],
@@ -210,7 +210,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Profil > Wilayah Kerja",
       category: "Jangkauan Operasi",
       badge: "Peta & 9 Unit Pelaksana",
-      title: "Wilayah Kerja Operasional PT PLN Nusa Daya",
+      title: "Wilayah Kerja Operasional PT PLN Services",
       mapImg: "/images/peta-wilayah-kerja.png",
       kantorPusat: "Balikpapan (Kalimantan Timur)",
       kantorOperasional: "Jakarta Selatan (DKI Jakarta)",
@@ -231,7 +231,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Profil > Company Profile",
       category: "Publikasi Korporat",
       badge: "Dokumen Resmi 2026",
-      title: "Company Profile PT PLN Nusa Daya",
+      title: "Company Profile PT PLN Services",
       pdfUrl: "/company-profile.pdf",
       flipbookUrl: "/company-profile",
     },
@@ -242,7 +242,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       badge: "PLN Group",
       title: "Portofolio & Afiliasi PLN Group",
       content: [
-        "Sebagai salah satu lini terdepan PT PLN (Persero), PT PLN Nusa Daya bersinergi dengan seluruh entitas subholding dan afiliasi PLN Group di seluruh Indonesia.",
+        "Sebagai salah satu lini terdepan PT PLN (Persero), PT PLN Services bersinergi dengan seluruh entitas subholding dan afiliasi PLN Group di seluruh Indonesia.",
         "Fokus sinergi mencakup transfer teknologi pembangkitan ramah lingkungan, penyediaan suku cadang mesin, rekayasa teknik transmisi, dan integrasi rantai pasok bahan bakar energi primer.",
       ],
     },
@@ -251,7 +251,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       breadcrumbs: "Tata Kelola > Board Manual",
       category: "Tata Kelola",
       badge: "Dokumen Resmi GCG",
-      title: "Board Manual PT PLN Nusa Daya",
+      title: "Board Manual PT PLN Services",
       content: [
         "Board Manual merupakan pedoman tata kerja Direksi dan Dewan Komisaris yang mengatur hubungan kerja, pembagian tugas, fungsi koordinasi, dan wewenang pengambilan keputusan.",
         "Disusun berdasarkan prinsip transparansi, kepatuhan regulasi Kementerian BUMN, dan Anggaran Dasar Perusahaan yang sah.",
@@ -265,7 +265,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       title: "Code of Conduct (Pedoman Perilaku)",
       content: [
         "Pedoman Perilaku (Code of Conduct) memuat norma integritas, larangan benturan kepentingan (conflict of interest), pencegahan gratifikasi dan penyuapan, serta kewajiban menjaga kerahasiaan aset informasi.",
-        "Wajib dipatuhi oleh seluruh jajaran Direksi, Dewan Komisaris, dan seluruh insan PT PLN Nusa Daya.",
+        "Wajib dipatuhi oleh seluruh jajaran Direksi, Dewan Komisaris, dan seluruh insan PT PLN Services.",
       ],
     },
     "Pedoman GCG": {
@@ -286,7 +286,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       badge: "Annual Report 2025/2026",
       title: "Laporan Tahunan (Annual Report)",
       content: [
-        "Laporan Tahunan menyajikan kilas kinerja komprehensif PT PLN Nusa Daya, audit laporan keuangan independen dengan opini Wajar Tanpa Pengecualian (WTP), dan tinjauan pencapaian target operasional.",
+        "Laporan Tahunan menyajikan kilas kinerja komprehensif PT PLN Services, audit laporan keuangan independen dengan opini Wajar Tanpa Pengecualian (WTP), dan tinjauan pencapaian target operasional.",
         "Dokumen ini mencerminkan komitmen keterbukaan informasi publik kepada pemegang saham dan masyarakat luas.",
       ],
     },
@@ -320,7 +320,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       title: "Whistle Blowing System (WBS)",
       content: [
         "Whistle Blowing System merupakan mekanisme pelaporan pelanggaran etika, indikasi korupsi, penipuan, atau pelanggaran hukum yang terjamin kerahasiaan dan perlindungan bagi pelapor.",
-        "Saluran resmi WBS tersedia melalui portal daring, email khusus kepatuhan: wbs@plnnusadaya.co.id, dan nomor pengaduan terenkripsi.",
+        "Saluran resmi WBS tersedia melalui portal daring, email khusus kepatuhan: wbs@plnservices.co.id, dan nomor pengaduan terenkripsi.",
       ],
     },
     "Drups": {
@@ -396,7 +396,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       badge: "E-Procurement PLN",
       title: "Informasi Pengadaan Barang & Jasa Resmi",
       content: [
-        "Pengumuman tender, prakualifikasi penyedia, dan seleksi pengadaan barang/jasa PT PLN Nusa Daya diselenggarakan secara transparan melalui portal E-Procurement PLN Group.",
+        "Pengumuman tender, prakualifikasi penyedia, dan seleksi pengadaan barang/jasa PT PLN Services diselenggarakan secara transparan melalui portal E-Procurement PLN Group.",
         "Menjunjung tinggi prinsip adil, akuntabel, bebas suap, dan mengutamakan Tingkat Komponen Dalam Negeri (TKDN).",
       ],
     },
@@ -418,7 +418,7 @@ export const corporateDocuments: Record<string, CorpDoc> = {
       badge: "UU No. 27/2022 PDP",
       title: "Kebijakan Privasi (Privacy Policy)",
       content: [
-        "PT PLN Nusa Daya berkomitmen penuh melindungi hak privasi dan kerahasiaan data pribadi pengguna situs web dan portal logsheet.",
+        "PT PLN Services berkomitmen penuh melindungi hak privasi dan kerahasiaan data pribadi pengguna situs web dan portal logsheet.",
         "Data pengguna hanya diproses untuk kepentingan operasional resmi, autentikasi keamanan, dan pelaporan internal tanpa dibagikan kepada pihak ketiga tanpa persetujuan.",
       ],
     },
@@ -492,7 +492,7 @@ export const navLinks: CorpNavItem[] = [
     label: "Media",
     href: "#",
     children: [
-      { label: "Berita PLN Nusa Daya", href: "news" },
+      { label: "Berita PLN Services", href: "news" },
       { label: "Portal Artikel & Blog", href: "/berita" },
     ],
   },

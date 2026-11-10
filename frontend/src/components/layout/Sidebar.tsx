@@ -120,7 +120,7 @@ export function Sidebar() {
           ⚡
         </div>
         <div>
-          <h1 className="text-sm font-black tracking-wider text-slate-900 dark:text-white">PLN NUSA DAYA</h1>
+          <h1 className="text-sm font-black tracking-wider text-slate-900 dark:text-white">PLN SERVICES</h1>
           <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             WACB Control Room
           </p>

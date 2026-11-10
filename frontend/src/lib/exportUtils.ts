@@ -54,7 +54,7 @@ export function exportToCSV(
 }
 
 /**
- * Corporate Header for PLN Nusa Daya PDF Documents
+ * Corporate Header for PLN Services PDF Documents
  */
 function addPLNHeader(
   doc: jsPDF,
@@ -194,7 +194,7 @@ function addPLNFooterAndSignatures(
     doc.setFontSize(7);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      `Dokumen Resmi PLN Nusa Daya • No: ${docNumber} • Rahasia & Terbatas`,
+      `Dokumen Resmi PLN Services • No: ${docNumber} • Rahasia & Terbatas`,
       14,
       pageHeight - 6
     );

@@ -106,12 +106,12 @@ export default function LoginPage() {
       {/* Main container: 2-column layout matching reference Image 1 */}
       <div className="relative z-10 w-full max-w-5xl flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20">
         
-        {/* Left Side: Illustration + PLN Nusadaya Title */}
+        {/* Left Side: Illustration + PLN Services Title */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left max-w-sm">
           <div className="relative mb-4 drop-shadow-sm flex justify-center">
             <img
               src="/images/wacb-illustration-transparent.png"
-              alt="PLN Nusadaya Illustration"
+              alt="PLN Services Illustration"
               className="w-48 sm:w-56 h-auto object-contain transition-transform hover:scale-105 duration-300"
               onError={(e) => {
                 e.currentTarget.onerror = null;
@@ -120,10 +120,10 @@ export default function LoginPage() {
             />
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800 dark:text-white font-sans">
-            PLN Nusadaya
+            PLN Services
           </h1>
           <p className="mt-2 text-sm text-slate-500 dark:text-gray-400 leading-relaxed">
-            Platform untuk mendukung pelaporan operasional pembangkit PLN Nusa Daya.
+            Platform untuk mendukung pelaporan operasional pembangkit PLN Services.
           </p>
 
           {/* Quick links to guest monitoring & GPS Attendance */}
@@ -150,11 +150,11 @@ export default function LoginPage() {
         <div className="w-full max-w-[400px]">
           <div className="rounded-[28px] bg-white p-8 sm:p-9 shadow-[0_20px_50px_rgba(20,50,90,0.07)] border border-slate-100/90 dark:bg-gray-900 dark:border-gray-800 dark:shadow-none relative">
             
-            {/* Header: PLN Nusa Daya Logo */}
+            {/* Header: PLN Services Logo */}
             <div className="flex justify-center mb-4">
               <img
-                src="/images/logo/LOGO-PLN.png"
-                alt="PLN Nusa Daya"
+                src="/images/logo/logo-pln-services-transparent.png"
+                alt="PLN Services"
                 className="h-12 w-auto object-contain"
                 onError={(e) => {
                   e.currentTarget.onerror = null;
@@ -168,7 +168,7 @@ export default function LoginPage() {
               Selamat Datang
             </h2>
             <p className="mt-1 text-xs text-center text-slate-500 dark:text-gray-400">
-              Silakan login untuk melanjutkan akses ke sistem PLN Nusa Daya.
+              Silakan login untuk melanjutkan akses ke sistem PLN Services.
             </p>
 
             {/* Session Expired Notice */}
@@ -305,7 +305,7 @@ export default function LoginPage() {
             {/* Footer Copyright inside card */}
             <div className="mt-6 text-center">
               <p className="text-[10.5px] text-slate-400 dark:text-gray-500">
-                © {new Date().getFullYear()} PLN Nusa Daya. All rights reserved.
+                © {new Date().getFullYear()} PLN Services. All rights reserved.
               </p>
             </div>
           </div>

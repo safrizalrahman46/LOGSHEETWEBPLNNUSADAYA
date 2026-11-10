@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "@/components/common/Providers";
 
 export const metadata: Metadata = {
-  title: "PLN Nusa Daya - WACB PLTD Logsheet & HAR Portal",
+  title: "PLN Services - WACB PLTD Logsheet & HAR Portal",
   description: "Aplikasi Web Enterprise Pelaporan Operasional PLTD & Pemeliharaan Mesin Kalimantan 3",
   icons: {
     icon: "/images/logo/LOGO-PLN.png",

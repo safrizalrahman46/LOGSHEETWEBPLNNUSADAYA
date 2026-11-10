@@ -8,8 +8,8 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import { apiClient } from "@/lib/api";
 
 /* ============================================================
-   PT PLN NUSA DAYA — Official Web Portal & Corporate Landing
-   Pixel-perfect replica matching https://plnnusadaya.co.id
+   PT PLN SERVICES — Official Web Portal & Corporate Landing
+   Pixel-perfect replica matching https://plnservices.co.id
    ============================================================ */
 
 // Nilai default counter (dipakai bila API statistik belum siap/ gagal)
@@ -45,7 +45,7 @@ export default function HomePage() {
 
   // APK Mobile Release Data (Official Developer Release)
   const [apkInfo, setApkInfo] = useState<any>({
-    appName: "PLN Nusa Daya Mobile (WACB & HAR)",
+    appName: "PLN Services Mobile (WACB & HAR)",
     version: "v1.0.0",
     buildNumber: "1",
     fileUrl: "/downloads/apk/pln-nusadaya-mobile-v1.0.0.apk",
@@ -94,22 +94,22 @@ export default function HomePage() {
       img: "/images/news-190.jpg",
       category: "KORPORAT",
       date: "04 Jun 2026",
-      author: "Humas PLN Nusa Daya",
+      author: "Humas PLN Services",
       title: "Amandemen Kontrak Transmisi dan Distribusi Wilayah Maluku",
-      excerpt: "Pada 4 Juni 2026, PLN Nusa Daya bersama PLN UIW Maluku dan Maluku Utara menandatangani amandemen kontrak strategis guna memperkuat keandalan pasokan energi dan optimasi mutu layanan pelanggan di Maluku.",
-      content: "Pada 4 Juni 2026, PT PLN Nusa Daya bersama PLN UIW Maluku dan Maluku Utara resmi melaksanakan penandatanganan amandemen kontrak strategis operasional jaringan transmisi dan distribusi tenaga listrik.\n\nLangkah ini merupakan bagian dari peta jalan transformasi keandalan sistem interkoneksi di wilayah Maluku, memastikan kontinuitas pasokan listrik 24 jam tanpa padam bagi sektor industri, pariwisata, dan pemukiman warga.",
-      href: "https://plnnusadaya.co.id/190/new",
+      excerpt: "Pada 4 Juni 2026, PLN Services bersama PLN UIW Maluku dan Maluku Utara menandatangani amandemen kontrak strategis guna memperkuat keandalan pasokan energi dan optimasi mutu layanan pelanggan di Maluku.",
+      content: "Pada 4 Juni 2026, PT PLN Services bersama PLN UIW Maluku dan Maluku Utara resmi melaksanakan penandatanganan amandemen kontrak strategis operasional jaringan transmisi dan distribusi tenaga listrik.\n\nLangkah ini merupakan bagian dari peta jalan transformasi keandalan sistem interkoneksi di wilayah Maluku, memastikan kontinuitas pasokan listrik 24 jam tanpa padam bagi sektor industri, pariwisata, dan pemukiman warga.",
+      href: "https://plnservices.co.id/190/new",
     },
     {
       id: 189,
       img: "/images/news-189.jpg",
       category: "CSR & KEBERLANJUTAN",
       date: "02 Jun 2026",
-      author: "CSR PLN Nusa Daya",
-      title: "Qurban Berkelanjutan PLN Nusa Daya Berbagi Keberkahan",
-      excerpt: "Program “Qurban Berkelanjutan” menjadi wujud kepedulian sosial PLN Nusa Daya dalam berbagi berkah dan menyejahterakan masyarakat di sekitar ring-1 pembangkit listrik wilayah kerja Kalimantan & Indonesia Timur.",
-      content: "Melalui inisiatif 'Qurban Berkelanjutan', PT PLN Nusa Daya mendistribusikan ratusan paket hewan qurban ke berbagai desa binaan di sekitar instalasi pembangkit.\n\nProgram ini mengintegrasikan kepedulian sosial dengan pemberdayaan peternak lokal serta pemanfaatan kemasan ramah lingkungan nir-plastik sebagai komitmen ESG perusahaan.",
-      href: "https://plnnusadaya.co.id/189/new",
+      author: "CSR PLN Services",
+      title: "Qurban Berkelanjutan PLN Services Berbagi Keberkahan",
+      excerpt: "Program “Qurban Berkelanjutan” menjadi wujud kepedulian sosial PLN Services dalam berbagi berkah dan menyejahterakan masyarakat di sekitar ring-1 pembangkit listrik wilayah kerja Kalimantan & Indonesia Timur.",
+      content: "Melalui inisiatif 'Qurban Berkelanjutan', PT PLN Services mendistribusikan ratusan paket hewan qurban ke berbagai desa binaan di sekitar instalasi pembangkit.\n\nProgram ini mengintegrasikan kepedulian sosial dengan pemberdayaan peternak lokal serta pemanfaatan kemasan ramah lingkungan nir-plastik sebagai komitmen ESG perusahaan.",
+      href: "https://plnservices.co.id/189/new",
     },
     {
       id: 188,
@@ -117,10 +117,10 @@ export default function HomePage() {
       category: "OPERASIONAL",
       date: "28 Mei 2026",
       author: "Divisi Operasi KIT",
-      title: "Siaga Idul Adha: PLN Nusa Daya Pastikan Keandalan Pembangkit",
-      excerpt: "Siaga Penuh untuk Terangnya Hari Raya Idul Adha 1447 H. Tim teknis PLN Nusa Daya menyiagakan 25.000+ personil dan posko siaga 24 jam untuk menjamin kontinuitas pasokan listrik tanpa padam selama perayaan.",
-      content: "Menyambut perayaan Idul Adha 1447 H, PT PLN Nusa Daya menetapkan masa siaga kelistrikan dengan posko kontrol 24 jam di 9 Unit Pelaksana.\n\nSeluruh armada Pelayanan Teknik (Yantek) dan teknisi pembangkit dilengkapi peralatan diagnostik digital WACB untuk mitigasi dini anomali sistem secara real-time.",
-      href: "https://plnnusadaya.co.id/188/new",
+      title: "Siaga Idul Adha: PLN Services Pastikan Keandalan Pembangkit",
+      excerpt: "Siaga Penuh untuk Terangnya Hari Raya Idul Adha 1447 H. Tim teknis PLN Services menyiagakan 25.000+ personil dan posko siaga 24 jam untuk menjamin kontinuitas pasokan listrik tanpa padam selama perayaan.",
+      content: "Menyambut perayaan Idul Adha 1447 H, PT PLN Services menetapkan masa siaga kelistrikan dengan posko kontrol 24 jam di 9 Unit Pelaksana.\n\nSeluruh armada Pelayanan Teknik (Yantek) dan teknisi pembangkit dilengkapi peralatan diagnostik digital WACB untuk mitigasi dini anomali sistem secara real-time.",
+      href: "https://plnservices.co.id/188/new",
     },
     {
       id: 187,
@@ -129,9 +129,9 @@ export default function HomePage() {
       date: "20 Mei 2026",
       author: "Sekretariat Perusahaan",
       title: "Top CSR Awards 2026: Dedikasi Terbaik Energi Berkelanjutan",
-      excerpt: "PT PLN Nusa Daya meraih dua penghargaan bergengsi dalam Top CSR Awards 2026 atas komitmen kuat dalam elektrifikasi hijau, pemberdayaan UMKM lokal, dan tata kelola lingkungan terpadu.",
-      content: "Apresiasi Top CSR Awards 2026 menegaskan keberhasilan PLN Nusa Daya dalam menyelaraskan pertumbuhan bisnis ketenagalistrikan dengan prinsip keberlanjutan global.\n\nDewan juri mengapresiasi inovasi program elektrifikasi pedesaan terpencil berbasis energi bersih dan konservasi keanekaragaman hayati sekitar PLTD.",
-      href: "https://plnnusadaya.co.id/187/new",
+      excerpt: "PT PLN Services meraih dua penghargaan bergengsi dalam Top CSR Awards 2026 atas komitmen kuat dalam elektrifikasi hijau, pemberdayaan UMKM lokal, dan tata kelola lingkungan terpadu.",
+      content: "Apresiasi Top CSR Awards 2026 menegaskan keberhasilan PLN Services dalam menyelaraskan pertumbuhan bisnis ketenagalistrikan dengan prinsip keberlanjutan global.\n\nDewan juri mengapresiasi inovasi program elektrifikasi pedesaan terpencil berbasis energi bersih dan konservasi keanekaragaman hayati sekitar PLTD.",
+      href: "https://plnservices.co.id/187/new",
     },
     {
       id: 186,
@@ -140,9 +140,9 @@ export default function HomePage() {
       date: "15 Mei 2026",
       author: "Divisi SDM & Budaya",
       title: "Hari Kebangkitan Nasional ke-118: Bangkit Menuju Kemandirian Energi",
-      excerpt: "Upacara Hari Kebangkitan Nasional ke-118 diikuti seluruh insan PT PLN Nusa Daya dengan semangat transformasi digital dan penguatan tata nilai AKHLAK dalam mengawal ketahanan energi nasional.",
-      content: "Memperingati Hari Kebangkitan Nasional, segenap jajaran PT PLN Nusa Daya meneguhkan komitmen sebagai pelopor keandalan energi di Kalimantan dan Kawasan Timur Indonesia.\n\nPengembangan talenta muda, sertifikasi kompetensi ketenagalistrikan berstandar internasional, dan adopsi digital logsheet menjadi pilar utama kebangkitan korporasi.",
-      href: "https://plnnusadaya.co.id/186/new",
+      excerpt: "Upacara Hari Kebangkitan Nasional ke-118 diikuti seluruh insan PT PLN Services dengan semangat transformasi digital dan penguatan tata nilai AKHLAK dalam mengawal ketahanan energi nasional.",
+      content: "Memperingati Hari Kebangkitan Nasional, segenap jajaran PT PLN Services meneguhkan komitmen sebagai pelopor keandalan energi di Kalimantan dan Kawasan Timur Indonesia.\n\nPengembangan talenta muda, sertifikasi kompetensi ketenagalistrikan berstandar internasional, dan adopsi digital logsheet menjadi pilar utama kebangkitan korporasi.",
+      href: "https://plnservices.co.id/186/new",
     },
   ];
 
@@ -209,7 +209,7 @@ export default function HomePage() {
               month: "short",
               year: "numeric",
             }),
-            author: a.author || "Admin PLN Nusa Daya",
+            author: a.author || "Admin PLN Services",
             title: a.title,
             excerpt: a.excerpt || (a.content ? a.content.slice(0, 150) + "..." : ""),
             content: a.content || a.excerpt,
@@ -361,7 +361,7 @@ export default function HomePage() {
     {
       num: "01",
       badge: "⚡ O&M Pembangkit",
-      link: "https://plnnusadaya.co.id/amc-pembangkit",
+      link: "https://plnservices.co.id/amc-pembangkit",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
@@ -379,7 +379,7 @@ export default function HomePage() {
     {
       num: "02",
       badge: "🌐 Grid Transmisi",
-      link: "https://plnnusadaya.co.id/amc-transmisi",
+      link: "https://plnservices.co.id/amc-transmisi",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <circle cx="12" cy="12" r="3" />
@@ -397,7 +397,7 @@ export default function HomePage() {
     {
       num: "03",
       badge: "🔌 Jaringan Distribusi",
-      link: "https://plnnusadaya.co.id/amc-distribusi",
+      link: "https://plnservices.co.id/amc-distribusi",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -414,7 +414,7 @@ export default function HomePage() {
     {
       num: "04",
       badge: "🏭 Power Supply IPP",
-      link: "https://plnnusadaya.co.id/drups",
+      link: "https://plnservices.co.id/drups",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
@@ -432,7 +432,7 @@ export default function HomePage() {
     {
       num: "05",
       badge: "👥 Customer Care",
-      link: "https://plnnusadaya.co.id/listriqu",
+      link: "https://plnservices.co.id/listriqu",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -452,7 +452,7 @@ export default function HomePage() {
     {
       num: "06",
       badge: "🌱 Beyond kWh",
-      link: "https://plnnusadaya.co.id/beyond-kwh",
+      link: "https://plnservices.co.id/beyond-kwh",
       icon: (
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="w-6 h-6">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -1806,26 +1806,26 @@ export default function HomePage() {
         <div className="about-container-corp">
           <div className="about-text-corp">
             <p>
-              PT Pelayanan Listrik Nasional Nusa Daya (PT PLN Nusa Daya) atau disingkat PLN ND adalah salah satu Anak
+              PT PLN Services (PT PLN Services) atau disingkat PLN ND adalah salah satu Anak
               Perusahaan PT PLN (Persero) yang berkedudukan di Pulau Tarakan Provinsi Kalimantan Utara, dibentuk berdasarkan
               Surat Keputusan Direksi PT PLN (Persero) No. 258-1/010/DIR/2003 tanggal 17 Oktober 2003 dan disahkan
-              berdasarkan Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003. PT PLN Nusa Daya telah
+              berdasarkan Akta Notaris H Haryanto SH, MBA No. 18 tanggal 15 Desember 2003. PT PLN Services telah
               menjalankan bisnis penyediaan dan penjualan tenaga listrik yang terintegrasi mulai dari tahun 2003 sampai dengan
               tahun 2016 dengan menerapkan tarif regional yang berbeda dari tarif dasar listrik (TDL) Nasional di Pulau Tarakan.
             </p>
           </div>
           <div className="about-text-corp">
             <p>
-              Mengantisipasi dinamika bisnis PT PLN Nusa Daya, maka berdasarkan Keputusan RUPS Sirkuler No. 109/DIR/2016
+              Mengantisipasi dinamika bisnis PT PLN Services, maka berdasarkan Keputusan RUPS Sirkuler No. 109/DIR/2016
               pada tanggal 30 November 2016 dan berdasarkan keputusan RUPS tersebut yang dikukuhkan dalam Anggaran
-              Dasar PT PLN Nusa Daya Perubahan No. 5 tanggal 7 Desember 2016, pemegang saham menugaskan PT PLN Nusa
+              Dasar PT PLN Services Perubahan No. 5 tanggal 7 Desember 2016, pemegang saham menugaskan PT PLN Nusa
               Daya untuk melaksanakan pengelolaan Jasa Operasi &amp; Pemeliharaan Pembangkit (KIT), Jasa Operasi &amp; Pemeliharaan
               Transmisi, Jasa Operasi &amp; Pemeliharaan Distribusi (YANTEK) serta Pelayanan Pelanggan (BILLMAN) di Wilayah
               Indonesia Timur yang mencakup Kalimantan, Sulawesi, Nusa Tenggara, Maluku dan Papua, dengan Kedudukan
-              Kantor pusat PT PLN Nusa Daya di Kota Balikpapan Kalimantan Timur.
+              Kantor pusat PT PLN Services di Kota Balikpapan Kalimantan Timur.
             </p>
             <a
-              href="https://plnnusadaya.co.id/#about"
+              href="https://plnservices.co.id/#about"
               target="_blank"
               rel="noreferrer"
               style={{
@@ -1855,7 +1855,7 @@ export default function HomePage() {
           <div>
             <img
               src="/images/hero-img3.png"
-              alt="PLN Nusa Daya Power Assets"
+              alt="PLN Services Power Assets"
               style={{ width: "100%", maxWidth: 460, height: "auto", display: "block", margin: "0 auto", filter: "drop-shadow(0 14px 28px rgba(0,0,0,0.06))" }}
             />
           </div>
@@ -2005,7 +2005,7 @@ export default function HomePage() {
             <span className="section-line-corp"></span>
           </div>
           <p className="section-subtitle-corp" style={{ margin: 0 }}>
-            Kabar Terkini, Agenda Korporasi, dan Informasi Strategis Ketenagalistrikan PT PLN Nusa Daya
+            Kabar Terkini, Agenda Korporasi, dan Informasi Strategis Ketenagalistrikan PT PLN Services
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", justifyContent: "center", marginTop: 4 }}>
             <Link
@@ -2123,7 +2123,7 @@ export default function HomePage() {
                           target="_blank"
                           rel="noreferrer"
                           style={{ fontSize: 12, color: "var(--corp-meta)", textDecoration: "none" }}
-                          title="Buka sumber resmi PLN Nusa Daya"
+                          title="Buka sumber resmi PLN Services"
                         >
                           🌐 Sumber
                         </a>
@@ -2312,7 +2312,7 @@ export default function HomePage() {
             <span className="section-line-corp"></span>
           </div>
           <p className="section-subtitle-corp">
-            Paket instalasi Android (.apk) mandiri terverifikasi untuk Operator Mesin Pembangkit dan Tim Pemeliharaan (HAR) PT PLN Nusa Daya
+            Paket instalasi Android (.apk) mandiri terverifikasi untuk Operator Mesin Pembangkit dan Tim Pemeliharaan (HAR) PT PLN Services
           </p>
         </div>
 
@@ -2748,7 +2748,7 @@ export default function HomePage() {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   <polyline points="9 12 11 14 15 10" />
                 </svg>
-                <span>Paket resmi internal PT PLN Nusa Daya • Terverifikasi aman, bebas virus dan malware</span>
+                <span>Paket resmi internal PT PLN Services • Terverifikasi aman, bebas virus dan malware</span>
               </div>
             </div>
 
@@ -2974,7 +2974,7 @@ export default function HomePage() {
           {/* Column 1: Info & Socials */}
           <div>
             <h3 style={{ fontSize: 22, fontWeight: 800, color: "var(--corp-heading)", lineHeight: 1.3, marginBottom: 14 }}>
-              PT Pelayanan Listrik<br />Nasional Nusa Daya
+              PT Pelayanan Listrik<br />Nasional Services
             </h3>
             <p style={{ fontSize: 14, color: "var(--corp-muted)", lineHeight: 1.7, marginBottom: 24 }}>
               Perusahaan Pengelola Aset Ketenagalistrikan Terkemuka di Wilayah Tengah dan Timur Indonesia dan tumbuh berkelanjutan
@@ -3012,7 +3012,7 @@ export default function HomePage() {
               <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--corp-icon-bg)", color: "#1a9de1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
               </div>
-              <p>plnnd@plnnusadaya.co.id</p>
+              <p>plnnd@plnservices.co.id</p>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 14, color: "var(--corp-body)" }}>
@@ -3080,7 +3080,7 @@ export default function HomePage() {
               <div style={{ background: "#ecfdf5", border: "1px solid #6ee7b7", borderRadius: 12, padding: 24, textAlign: "center", color: "#065f46" }}>
                 <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
                 <p style={{ fontWeight: 600 }}>Pesan Anda telah terkirim!</p>
-                <p style={{ fontSize: 13, marginTop: 4 }}>Tim PLN Nusa Daya akan segera menghubungi Anda.</p>
+                <p style={{ fontSize: 13, marginTop: 4 }}>Tim PLN Services akan segera menghubungi Anda.</p>
               </div>
             )}
           </div>
@@ -3088,7 +3088,7 @@ export default function HomePage() {
 
         {/* Footer copyright */}
         <div style={{ borderTop: "1px solid var(--corp-border2)", marginTop: 60, paddingTop: 28, textAlign: "center", fontSize: 13.5, color: "var(--corp-muted)" }}>
-          <p>© Copyright {new Date().getFullYear()} <strong>PT Pelayanan Listrik Nasional Nusa Daya</strong>. All Rights Reserved</p>
+          <p>© Copyright {new Date().getFullYear()} <strong>PT PLN Services</strong>. All Rights Reserved</p>
         </div>
       </section>
 
@@ -3211,7 +3211,7 @@ export default function HomePage() {
                   📅 {selectedArticle.date}
                 </span>
                 <span style={{ fontSize: "12.5px", color: "var(--corp-muted)" }}>
-                  ✍️ {selectedArticle.author || "Redaksi PLN Nusa Daya"}
+                  ✍️ {selectedArticle.author || "Redaksi PLN Services"}
                 </span>
               </div>
 
@@ -3264,11 +3264,11 @@ export default function HomePage() {
                       textDecoration: "none",
                     }}
                   >
-                    Buka Halaman Resmi plnnusadaya.co.id ↗
+                    Buka Halaman Resmi plnservices.co.id ↗
                   </a>
                 ) : (
                   <span style={{ fontSize: "12.5px", color: "var(--corp-meta)" }}>
-                    Publikasi Resmi PLN Nusa Daya
+                    Publikasi Resmi PLN Services
                   </span>
                 )}
 
@@ -3361,7 +3361,7 @@ export default function HomePage() {
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, paddingTop: 16, borderTop: "1px solid var(--corp-border2)" }}>
                 <span style={{ fontSize: 12, color: "var(--corp-muted)" }}>
-                  &#128274; Portofolio Operasional Resmi PT PLN Nusa Daya
+                  &#128274; Portofolio Operasional Resmi PT PLN Services
                 </span>
                 <button
                   type="button"

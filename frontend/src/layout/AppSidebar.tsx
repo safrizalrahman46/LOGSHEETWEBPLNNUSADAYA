@@ -390,20 +390,20 @@ export const AppSidebar: React.FC = () => {
       {/* Brand Header */}
       <div className="flex h-18 items-center px-4 sm:px-5 border-b border-gray-200 dark:border-gray-800 justify-between">
         <Link href="/" className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1 border border-gray-100 dark:border-gray-800 dark:bg-gray-800 shadow-theme-xs">
+          <div className="flex h-10 w-auto shrink-0 items-center justify-center rounded-xl bg-white px-2 py-1 border border-gray-100 dark:border-gray-800 dark:bg-gray-800 shadow-theme-xs">
             <img
-              src="/images/logo/LOGO-PLN.png"
-              alt="PLN Logo"
-              width={32}
+              src="/images/logo/logo-pln-services-transparent.png"
+              alt="PLN Services Logo"
+              width={80}
               height={32}
               className="h-8 w-auto object-contain"
-              style={{ width: 32, height: 32, objectFit: "contain" }}
+              style={{ width: "auto", height: 32, objectFit: "contain" }}
             />
           </div>
           {isWide && (
             <div className="overflow-hidden">
               <h1 className="text-sm font-black tracking-wider text-gray-900 dark:text-white leading-tight whitespace-nowrap">
-                PLN NUSA DAYA
+                PLN SERVICES
               </h1>
               <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
                 WACB Kalimantan 3

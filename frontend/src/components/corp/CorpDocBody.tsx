@@ -4,7 +4,7 @@ import Link from "next/link";
 import { CorpDoc } from "@/lib/corp-content";
 
 /* ============================================================
-   Corporate document body — renders the authentic PLN Nusa Daya
+   Corporate document body — renders the authentic PLN Services
    layout for a single doc (visi-misi, tata-nilai, standard, ...)
    ============================================================ */
 
@@ -544,7 +544,7 @@ export default function CorpDocBody({ doc }: CorpDocBodyProps) {
 
                   <div style={{ textAlign: "center" }}>
                     <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-                      Company Profile resmi PT PLN Nusa Daya edisi 2026 (43 Halaman Komprehensif)
+                      Company Profile resmi PT PLN Services edisi 2026 (43 Halaman Komprehensif)
                     </p>
                   </div>
 

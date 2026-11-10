@@ -386,7 +386,7 @@ export default function AdminApkPage() {
               <div className="mt-3">
                 <span className="text-xl font-black text-gray-900">{currentApkItem?.releaseDate || "Terbaru"}</span>
               </div>
-              <p className="mt-1 text-xs text-gray-500">Rilis Resmi PT PLN Nusa Daya</p>
+              <p className="mt-1 text-xs text-gray-500">Rilis Resmi PT PLN Services</p>
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs">
@@ -723,7 +723,7 @@ export default function AdminApkPage() {
                     <ol className="list-decimal pl-4 space-y-0.5 text-[11.5px] leading-relaxed">
                       <li>Buka file APK yang telah diunduh di aplikasi File Manager HP.</li>
                       <li>Jika muncul konfirmasi keamanan, pilih <em>&quot;Izinkan penginstalan dari sumber ini&quot;</em>.</li>
-                      <li>Selesaikan proses instalasi dan login dengan kredensial WACB PLN Nusa Daya.</li>
+                      <li>Selesaikan proses instalasi dan login dengan kredensial WACB PLN Services.</li>
                     </ol>
                   </div>
                 </div>

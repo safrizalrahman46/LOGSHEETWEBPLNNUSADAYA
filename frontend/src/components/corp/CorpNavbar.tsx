@@ -259,16 +259,16 @@ export default function CorpNavbar({ activeSection = "" }: CorpNavbarProps) {
               </svg>
               <span>Download APK</span>
             </span>
-            <a href="https://plnnusadaya.co.id/aku-jago" target="_blank" rel="noreferrer" title="Aku Jago">
+            <a href="https://plnservices.co.id/aku-jago" target="_blank" rel="noreferrer" title="Aku Jago">
               <img src="/images/aku-jago.png" alt="Aku Jago" className="logo-akujago-corp" />
             </a>
             <img
-              src="/images/logo/LOGO-PLN.png"
+              src="/images/logo/logo-pln-services-transparent.png"
               onError={(e) => {
                 e.currentTarget.onerror = null;
                 e.currentTarget.src = "/images/plnt.png";
               }}
-              alt="PLN Nusa Daya"
+              alt="PLN Services"
               className="logo-pln-corp"
             />
             <Link href={isLoggedIn ? "/dashboard" : "/login"} className="btn-login-corp">

@@ -26,7 +26,7 @@ interface AuthRequiredStateProps {
 
 export function AuthRequiredState({
   title = "Mohon Login Terlebih Dahulu",
-  description = "Akses Terkunci — Halaman atau fitur ini khusus untuk personil resmi PT PLN Nusa Daya (Operator Pembangkit, Teknisi HAR, Supervisor, atau Administrator).",
+  description = "Akses Terkunci — Halaman atau fitur ini khusus untuk personil resmi PT PLN Services (Operator Pembangkit, Teknisi HAR, Supervisor, atau Administrator).",
   moduleName,
   redirectUrl,
   isInline = false,
@@ -141,7 +141,7 @@ export function AuthRequiredState({
       {/* Footer Support Info */}
       <div className="relative z-10 mt-8 text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1.5">
         <HelpCircle className="h-3.5 w-3.5" />
-        <span>Belum memiliki akun resmi? Hubungi Administrator IT Unit Pelaksana PLN Nusa Daya.</span>
+        <span>Belum memiliki akun resmi? Hubungi Administrator IT Unit Pelaksana PLN Services.</span>
       </div>
     </div>
   );

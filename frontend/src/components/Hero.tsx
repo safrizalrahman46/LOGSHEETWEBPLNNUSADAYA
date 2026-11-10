@@ -64,7 +64,7 @@ export default function Hero({ onGetStarted }: HeroProps) {
               PT Pelayanan Listrik
             </span>
             <span className="block text-[#005daa] dark:text-[#38bdf8] mt-1">
-              Nasional Nusa Daya
+              Nasional Services
             </span>
           </h1>
 
