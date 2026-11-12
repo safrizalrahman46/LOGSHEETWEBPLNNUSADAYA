@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,6 +17,31 @@ import (
 	"pln-logsheet-backend/internal/models"
 	"pln-logsheet-backend/internal/services"
 )
+
+func cleanSN(s string) string {
+	s = strings.TrimSpace(s)
+	s = strings.TrimSuffix(s, ".0")
+	var b strings.Builder
+	for _, r := range strings.ToUpper(s) {
+		if (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func extractMachineNum(name string) int {
+	re := regexp.MustCompile(`#(\d+)`)
+	m := re.FindStringSubmatch(name)
+	if len(m) > 1 {
+		val, err := strconv.Atoi(m[1])
+		if err == nil {
+			return val
+		}
+	}
+	return -1
+}
+
 
 type LogsheetHandler struct {
 	db             *gorm.DB
@@ -135,12 +161,13 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 
 	// Cek apakah ada mesin terdaftar di database untuk unit ini
 	type DBMachineInfo struct {
-		ID            string `gorm:"column:id"`
-		MachineName   string `gorm:"column:machine_name"`
-		SerialNumber  string `gorm:"column:serial_number"`
-		GeneratorCode string `gorm:"column:generator_code"`
-		Capacity      string `gorm:"column:capacity"`
-		Status        string `gorm:"column:status"`
+		ID             string `gorm:"column:id"`
+		MachineName    string `gorm:"column:machine_name"`
+		SerialNumber   string `gorm:"column:serial_number"`
+		GeneratorCode  string `gorm:"column:generator_code"`
+		Capacity       string `gorm:"column:capacity"`
+		Status         string `gorm:"column:status"`
+		ConditionLabel string `gorm:"column:condition_label"`
 	}
 	var dbMachines []DBMachineInfo
 	if err := h.db.Table("machines").Where("unit_id = ?", kdUnit).Order("id ASC").Find(&dbMachines).Error; err == nil && len(dbMachines) > 0 {
@@ -148,27 +175,111 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 		// JANGAN pernah mengganti IdMesin atau KodeMesinSilm dengan ID lokal ("M-xxxx-xx"),
 		// karena WACB akan menolak pelaporan dengan error "ID mesin tidak ditemukan"!
 		if resp.Format != nil && len(resp.Format.Mesin) > 0 {
+			usedDBMap := make(map[string]bool)
+
 			for idx := range resp.Format.Mesin {
-				if idx < len(dbMachines) {
-					m := dbMachines[idx]
-					if m.MachineName != "" {
-						resp.Format.Mesin[idx].NamaMesin = m.MachineName
-					}
-					// Update status
-					switch strings.ToLower(m.Status) {
-					case "standby":
-						resp.Format.Mesin[idx].StatusMesin = "STANDBY"
-					case "gangguan-rusak", "rusak", "gangguan":
-						resp.Format.Mesin[idx].StatusMesin = "GANGGUAN"
-					default:
-						resp.Format.Mesin[idx].StatusMesin = "OPERASI"
+				wm := &resp.Format.Mesin[idx]
+				wID := wm.IdMesin
+				wSNClean := cleanSN(wm.Sn)
+				wNum := extractMachineNum(wm.NamaMesin)
+
+				var matched *DBMachineInfo
+
+				// 1. Cocokkan berdasarkan generator_code / IdMesin resmi
+				for i := range dbMachines {
+					dm := &dbMachines[i]
+					if !usedDBMap[dm.ID] && dm.GeneratorCode != "" && dm.GeneratorCode == wID {
+						matched = dm
+						break
 					}
 				}
+
+				// 2. Cocokkan berdasarkan Serial Number (SN)
+				if matched == nil && wSNClean != "" {
+					for i := range dbMachines {
+						dm := &dbMachines[i]
+						if !usedDBMap[dm.ID] {
+							dmSNClean := cleanSN(dm.SerialNumber)
+							if dmSNClean != "" && (dmSNClean == wSNClean || strings.Contains(dmSNClean, wSNClean) || strings.Contains(wSNClean, dmSNClean)) {
+								matched = dm
+								break
+							}
+						}
+					}
+				}
+
+				// 3. Cocokkan berdasarkan nomor tag mesin (#01, #02, dst.)
+				if matched == nil && wNum > 0 {
+					for i := range dbMachines {
+						dm := &dbMachines[i]
+						if !usedDBMap[dm.ID] {
+							dmNum := extractMachineNum(dm.MachineName)
+							if dmNum == wNum {
+								matched = dm
+								break
+							}
+						}
+					}
+				}
+
+				// Jika ditemukan kecocokan dari master mesin Kinerja
+				if matched != nil {
+					usedDBMap[matched.ID] = true
+					wm.NamaMesin = matched.MachineName
+					if matched.SerialNumber != "" {
+						wm.Sn = matched.SerialNumber
+					}
+					cleanCap := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(matched.Capacity), "kw", ""))
+					if val, err := strconv.Atoi(cleanCap); err == nil && val > 0 {
+						wm.Dt = val
+					} else if fval, ferr := strconv.ParseFloat(cleanCap, 64); ferr == nil && fval > 0 {
+						wm.Dt = int(math.Round(fval))
+					}
+
+					switch strings.ToLower(matched.Status) {
+					case "standby":
+						wm.StatusMesin = "STANDBY"
+					case "gangguan-rusak", "rusak", "gangguan":
+						wm.StatusMesin = "GANGGUAN"
+					default:
+						wm.StatusMesin = "OPERASI"
+					}
+				} else {
+					if wm.StatusMesin == "" {
+						wm.StatusMesin = "OPERASI"
+					}
+				}
+			}
+
+			// Sort urutan mesin secara natural berdasarkan nomor mesin (#01, #02, ... #09)
+			sort.SliceStable(resp.Format.Mesin, func(i, j int) bool {
+				numI := extractMachineNum(resp.Format.Mesin[i].NamaMesin)
+				numJ := extractMachineNum(resp.Format.Mesin[j].NamaMesin)
+				if numI > 0 && numJ > 0 && numI != numJ {
+					return numI < numJ
+				}
+				if numI > 0 && numJ <= 0 {
+					return true
+				}
+				if numI <= 0 && numJ > 0 {
+					return false
+				}
+				return resp.Format.Mesin[i].Nomor < resp.Format.Mesin[j].Nomor
+			})
+
+			for i := range resp.Format.Mesin {
+				resp.Format.Mesin[i].Nomor = i + 1
 			}
 		} else {
 			// Hanya gunakan dbMachines jika WACB offline/tidak memiliki data mesin
 			var wacbMachines []models.WACBMachineItem
-			for idx, m := range dbMachines {
+			activeIdx := 0
+			for _, m := range dbMachines {
+				if strings.EqualFold(m.ConditionLabel, "RUSAK PERMANEN") {
+					continue
+				}
+				activeIdx++
+
 				dtVal := 1000
 				cleanCap := strings.TrimSpace(strings.ReplaceAll(strings.ToLower(m.Capacity), "kw", ""))
 				if val, err := strconv.Atoi(cleanCap); err == nil && val > 0 {
@@ -190,14 +301,14 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 				idMesin := m.ID
 				kodeMesin := m.GeneratorCode
 				if strings.HasPrefix(idMesin, "M-") || len(idMesin) > 8 {
-					idMesin = fmt.Sprintf("%s%02d", kdUnit, idx+1)
+					idMesin = fmt.Sprintf("%s%02d", kdUnit, activeIdx)
 				}
 				if kodeMesin == "" || kodeMesin == "PLTD-HSD" {
-					kodeMesin = fmt.Sprintf("225551403%s%d", kdUnit, idx+1)
+					kodeMesin = fmt.Sprintf("225551403%s%d", kdUnit, activeIdx)
 				}
 
 				wacbMachines = append(wacbMachines, models.WACBMachineItem{
-					Nomor:             idx + 1,
+					Nomor:             activeIdx,
 					NamaMesin:         m.MachineName,
 					IdMesin:           idMesin,
 					KodeMesinSilm:     kodeMesin,
@@ -269,14 +380,46 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 	if needsResolve {
 		if wacbFmt, err := h.wacbClient.GetUnitFormat(token, req.KdRegion, "", req.KdUnit); err == nil && wacbFmt != nil && wacbFmt.Format != nil && len(wacbFmt.Format.Mesin) > 0 {
 			for idx := range req.Machines {
-				if idx < len(wacbFmt.Format.Mesin) {
-					official := wacbFmt.Format.Mesin[idx]
-					req.Machines[idx].IdMesin = official.IdMesin
-					if req.Machines[idx].KodeMesinSilm == "" || req.Machines[idx].KodeMesinSilm == "PLTD-HSD" {
-						req.Machines[idx].KodeMesinSilm = official.KodeMesinSilm
+				rm := &req.Machines[idx]
+				rmNum := extractMachineNum(rm.NamaMesin)
+				rmSN := cleanSN(rm.Sn)
+
+				var matchedOfficial *models.WACBMachineItem
+
+				// Cocokkan berdasarkan SN
+				if matchedOfficial == nil && rmSN != "" {
+					for i := range wacbFmt.Format.Mesin {
+						off := &wacbFmt.Format.Mesin[i]
+						if offSN := cleanSN(off.Sn); offSN != "" && (offSN == rmSN || strings.Contains(offSN, rmSN) || strings.Contains(rmSN, offSN)) {
+							matchedOfficial = off
+							break
+						}
 					}
-					if req.Machines[idx].Sn == "" {
-						req.Machines[idx].Sn = official.Sn
+				}
+
+				// Cocokkan berdasarkan nomor tag mesin
+				if matchedOfficial == nil && rmNum > 0 {
+					for i := range wacbFmt.Format.Mesin {
+						off := &wacbFmt.Format.Mesin[i]
+						if extractMachineNum(off.NamaMesin) == rmNum {
+							matchedOfficial = off
+							break
+						}
+					}
+				}
+
+				// Fallback jika sama-sama berurutan
+				if matchedOfficial == nil && idx < len(wacbFmt.Format.Mesin) {
+					matchedOfficial = &wacbFmt.Format.Mesin[idx]
+				}
+
+				if matchedOfficial != nil {
+					rm.IdMesin = matchedOfficial.IdMesin
+					if rm.KodeMesinSilm == "" || rm.KodeMesinSilm == "PLTD-HSD" {
+						rm.KodeMesinSilm = matchedOfficial.KodeMesinSilm
+					}
+					if rm.Sn == "" {
+						rm.Sn = matchedOfficial.Sn
 					}
 				}
 			}

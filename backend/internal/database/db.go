@@ -2,8 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -11,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 
 	"pln-logsheet-backend/internal/config"
@@ -709,8 +712,58 @@ func seedUnits(db *gorm.DB) {
 func seedMachines(db *gorm.DB) {
 	var count int64
 	db.Model(&models.Machine{}).Count(&count)
-	if count > 0 {
+	if count >= 100 {
 		return
+	}
+
+	// Coba load master machines dari data/master_machines.json jika ada
+	if dataBytes, err := os.ReadFile("data/master_machines.json"); err == nil && len(dataBytes) > 0 {
+		var jsonMachines []struct {
+			ID                string `json:"id"`
+			UnitID            string `json:"unit_id"`
+			UP3               string `json:"up3"`
+			MachineName       string `json:"machine_name"`
+			Brand             string `json:"brand"`
+			MachineType       string `json:"machine_type"`
+			SerialNumber      string `json:"serial_number"`
+			GeneratorCode     string `json:"generator_code"`
+			OwnershipStatus   string `json:"ownership_status"`
+			PerformanceLabel  string `json:"performance_label"`
+			Capacity          string `json:"capacity"`
+			AvailableCapacity string `json:"available_capacity"`
+			DispatchCapacity  string `json:"dispatch_capacity"`
+			Status            string `json:"status"`
+			ConditionLabel    string `json:"condition_label"`
+		}
+		if err := json.Unmarshal(dataBytes, &jsonMachines); err == nil && len(jsonMachines) > 0 {
+			for _, jm := range jsonMachines {
+				m := models.Machine{
+					ID:                jm.ID,
+					UnitID:            jm.UnitID,
+					UP3:               jm.UP3,
+					MachineName:       jm.MachineName,
+					Brand:             jm.Brand,
+					MachineType:       jm.MachineType,
+					SerialNumber:      jm.SerialNumber,
+					GeneratorCode:     jm.GeneratorCode,
+					OwnershipStatus:   jm.OwnershipStatus,
+					PerformanceLabel:  jm.PerformanceLabel,
+					Capacity:          jm.Capacity,
+					AvailableCapacity: jm.AvailableCapacity,
+					DispatchCapacity:  jm.DispatchCapacity,
+					Status:            jm.Status,
+					ConditionLabel:    jm.ConditionLabel,
+					CreatedAt:         time.Now(),
+					UpdatedAt:         time.Now(),
+				}
+				db.Clauses(clause.OnConflict{
+					Columns:   []clause.Column{{Name: "id"}},
+					UpdateAll: true,
+				}).Create(&m)
+			}
+			log.Printf("[DATABASE] %d Master machines from Kinerja_10 seeded successfully.", len(jsonMachines))
+			return
+		}
 	}
 
 	machines := []models.Machine{
