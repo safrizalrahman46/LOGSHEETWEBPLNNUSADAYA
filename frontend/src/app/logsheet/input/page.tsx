@@ -191,15 +191,27 @@ function LogsheetList({ onAdd, refreshToken }: { onAdd: () => void; refreshToken
   const [error, setError] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [detail, setDetail] = useState<LogsheetHistoryItem | null>(null);
+  const [serverStats, setServerStats] = useState<{ total: number; today: number; pending: number } | null>(null);
 
   const fetchHistory = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await apiClient.get<{ success: boolean; data: LogsheetHistoryItem[] }>(
-        "/wacb/history"
-      );
+      const res = await apiClient.get<{
+        success: boolean;
+        data: LogsheetHistoryItem[];
+        total_count?: number;
+        today_count?: number;
+        pending_count?: number;
+      }>("/wacb/history?limit=500");
       setRecords(res.data?.data || []);
+      if (res.data?.total_count !== undefined) {
+        setServerStats({
+          total: res.data.total_count,
+          today: res.data.today_count ?? 0,
+          pending: res.data.pending_count ?? 0,
+        });
+      }
     } catch {
       setError("Gagal memuat daftar logsheet. Tekan tombol muat ulang.");
     } finally {
@@ -223,13 +235,17 @@ function LogsheetList({ onAdd, refreshToken }: { onAdd: () => void; refreshToken
     : records;
 
   const today = new Date().toISOString().substring(0, 10);
-  const todayCount = records.filter((r) => r.tanggal === today).length;
-  const pendingCount = records.filter((r) => r.sync_status !== "SYNCED").length;
+  const fallbackTodayCount = records.filter((r) => r.tanggal === today).length;
+  const fallbackPendingCount = records.filter((r) => r.sync_status !== "SYNCED").length;
+
+  const totalDisplay = serverStats ? serverStats.total : records.length;
+  const todayDisplay = serverStats ? serverStats.today : fallbackTodayCount;
+  const pendingDisplay = serverStats ? serverStats.pending : fallbackPendingCount;
 
   const chips = [
-    { label: "Total Logsheet", value: records.length, tone: "text-gray-900 dark:text-white" },
-    { label: "Hari Ini", value: todayCount, tone: "text-brand-600 dark:text-brand-400" },
-    { label: "Belum Sinkron", value: pendingCount, tone: "text-warning-600 dark:text-warning-400" },
+    { label: "Total Logsheet", value: totalDisplay, tone: "text-gray-900 dark:text-white" },
+    { label: "Hari Ini", value: todayDisplay, tone: "text-brand-600 dark:text-brand-400" },
+    { label: "Belum Sinkron", value: pendingDisplay, tone: "text-warning-600 dark:text-warning-400" },
   ];
 
   return (

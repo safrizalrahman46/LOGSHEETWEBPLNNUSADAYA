@@ -710,12 +710,6 @@ func seedUnits(db *gorm.DB) {
 }
 
 func seedMachines(db *gorm.DB) {
-	var count int64
-	db.Model(&models.Machine{}).Count(&count)
-	if count >= 100 {
-		return
-	}
-
 	// Coba load master machines dari data/master_machines.json jika ada
 	if dataBytes, err := os.ReadFile("data/master_machines.json"); err == nil && len(dataBytes) > 0 {
 		var jsonMachines []struct {
@@ -764,6 +758,12 @@ func seedMachines(db *gorm.DB) {
 			log.Printf("[DATABASE] %d Master machines from Kinerja_10 seeded successfully.", len(jsonMachines))
 			return
 		}
+	}
+
+	var count int64
+	db.Model(&models.Machine{}).Count(&count)
+	if count >= 100 {
+		return
 	}
 
 	machines := []models.Machine{

@@ -185,22 +185,13 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 
 				var matched *DBMachineInfo
 
-				// 1. Cocokkan berdasarkan generator_code / IdMesin resmi
-				for i := range dbMachines {
-					dm := &dbMachines[i]
-					if !usedDBMap[dm.ID] && dm.GeneratorCode != "" && dm.GeneratorCode == wID {
-						matched = dm
-						break
-					}
-				}
-
-				// 2. Cocokkan berdasarkan Serial Number (SN)
-				if matched == nil && wSNClean != "" {
+				// 1. Cocokkan berdasarkan Serial Number (SN) jika SN valid (> 3 digit dan bukan "0")
+				if matched == nil && wSNClean != "" && wSNClean != "0" && len(wSNClean) >= 4 {
 					for i := range dbMachines {
 						dm := &dbMachines[i]
 						if !usedDBMap[dm.ID] {
 							dmSNClean := cleanSN(dm.SerialNumber)
-							if dmSNClean != "" && (dmSNClean == wSNClean || strings.Contains(dmSNClean, wSNClean) || strings.Contains(wSNClean, dmSNClean)) {
+							if dmSNClean != "" && dmSNClean != "0" && (dmSNClean == wSNClean || strings.Contains(dmSNClean, wSNClean) || strings.Contains(wSNClean, dmSNClean)) {
 								matched = dm
 								break
 							}
@@ -208,7 +199,7 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 					}
 				}
 
-				// 3. Cocokkan berdasarkan nomor tag mesin (#01, #02, dst.)
+				// 2. Cocokkan berdasarkan nomor tag mesin (#01, #02, dst.)
 				if matched == nil && wNum > 0 {
 					for i := range dbMachines {
 						dm := &dbMachines[i]
@@ -218,6 +209,21 @@ func (h *LogsheetHandler) GetUnitFormat(c *fiber.Ctx) error {
 								matched = dm
 								break
 							}
+						}
+					}
+				}
+
+				// 3. Cocokkan berdasarkan generator_code / IdMesin resmi
+				if matched == nil && wID != "" {
+					for i := range dbMachines {
+						dm := &dbMachines[i]
+						if !usedDBMap[dm.ID] && dm.GeneratorCode != "" && dm.GeneratorCode == wID {
+							// Cegah unit PLTS / non-diesel mengambil alih mesin diesel
+							if strings.Contains(strings.ToUpper(dm.MachineName), "PLTS") && !strings.Contains(strings.ToUpper(wm.NamaMesin), "PLTS") {
+								continue
+							}
+							matched = dm
+							break
 						}
 					}
 				}
@@ -386,11 +392,11 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 
 				var matchedOfficial *models.WACBMachineItem
 
-				// Cocokkan berdasarkan SN
-				if matchedOfficial == nil && rmSN != "" {
+				// Cocokkan berdasarkan SN jika valid
+				if matchedOfficial == nil && rmSN != "" && rmSN != "0" && len(rmSN) >= 4 {
 					for i := range wacbFmt.Format.Mesin {
 						off := &wacbFmt.Format.Mesin[i]
-						if offSN := cleanSN(off.Sn); offSN != "" && (offSN == rmSN || strings.Contains(offSN, rmSN) || strings.Contains(rmSN, offSN)) {
+						if offSN := cleanSN(off.Sn); offSN != "" && offSN != "0" && (offSN == rmSN || strings.Contains(offSN, rmSN) || strings.Contains(rmSN, offSN)) {
 							matchedOfficial = off
 							break
 						}
@@ -402,6 +408,17 @@ func (h *LogsheetHandler) SubmitLogsheet(c *fiber.Ctx) error {
 					for i := range wacbFmt.Format.Mesin {
 						off := &wacbFmt.Format.Mesin[i]
 						if extractMachineNum(off.NamaMesin) == rmNum {
+							matchedOfficial = off
+							break
+						}
+					}
+				}
+
+				// Cocokkan berdasarkan IdMesin jika ada
+				if matchedOfficial == nil && rm.IdMesin != "" {
+					for i := range wacbFmt.Format.Mesin {
+						off := &wacbFmt.Format.Mesin[i]
+						if off.IdMesin == rm.IdMesin {
 							matchedOfficial = off
 							break
 						}
@@ -739,22 +756,61 @@ func (h *LogsheetHandler) GetDetail(c *fiber.Ctx) error {
 
 func (h *LogsheetHandler) GetHistory(c *fiber.Ctx) error {
 	var records []models.LogsheetRecord
-	query := h.db.Order("id desc").Limit(100)
+	query := h.db.Order("id desc")
 
-	if kdUnit := c.Query("kd_unit"); kdUnit != "" {
+	kdUnit := c.Query("kd_unit")
+	tanggal := c.Query("tanggal")
+
+	if kdUnit != "" {
 		query = query.Where("kd_unit = ?", kdUnit)
 	}
-	if tanggal := c.Query("tanggal"); tanggal != "" {
+	if tanggal != "" {
 		query = query.Where("tanggal = ?", tanggal)
 	}
 
-	query.Find(&records)
+	// Hitung total data riil dari database (bukan dibatasi limit pagination)
+	var totalRecords int64
+	var todayRecords int64
+	var pendingRecords int64
+
+	now := time.Now()
+	todayStr := now.Format("2006-01-02")
+
+	countQuery := h.db.Model(&models.LogsheetRecord{})
+	if kdUnit != "" {
+		countQuery = countQuery.Where("kd_unit = ?", kdUnit)
+	}
+	countQuery.Count(&totalRecords)
+
+	todayQuery := h.db.Model(&models.LogsheetRecord{}).Where("tanggal = ?", todayStr)
+	if kdUnit != "" {
+		todayQuery = todayQuery.Where("kd_unit = ?", kdUnit)
+	}
+	todayQuery.Count(&todayRecords)
+
+	pendingQuery := h.db.Model(&models.LogsheetRecord{}).Where("sync_status != ?", "SYNCED")
+	if kdUnit != "" {
+		pendingQuery = pendingQuery.Where("kd_unit = ?", kdUnit)
+	}
+	pendingQuery.Count(&pendingRecords)
+
+	limit := 500
+	if l := c.Query("limit"); l != "" {
+		if val, err := strconv.Atoi(l); err == nil && val > 0 {
+			limit = val
+		}
+	}
+
+	query.Limit(limit).Find(&records)
 
 	return c.JSON(fiber.Map{
-		"success": true,
-		"data":    records,
-		"history": records,
-		"total":   len(records),
+		"success":       true,
+		"data":          records,
+		"history":       records,
+		"total":         totalRecords,
+		"total_count":   totalRecords,
+		"today_count":   todayRecords,
+		"pending_count": pendingRecords,
 	})
 }
 
